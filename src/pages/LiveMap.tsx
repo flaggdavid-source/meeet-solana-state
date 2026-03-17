@@ -1701,26 +1701,6 @@ const LiveMap = () => {
         }
       }
 
-      // Cloud shadows drifting across terrain
-      const startCol = Math.max(0, Math.floor(cam.x / TILE));
-      const endCol = Math.min(MAP_W, Math.ceil((cam.x + w / z) / TILE));
-      const startRow = Math.max(0, Math.floor(cam.y / TILE));
-      const endRow = Math.min(MAP_H, Math.ceil((cam.y + h / z) / TILE));
-
-      for (let row = startRow; row < endRow; row++) {
-        for (let col = startCol; col < endCol; col++) {
-          const sx = (col * TILE - cam.x) * z, sy = (row * TILE - cam.y) * z;
-          const tile = terrain[row][col];
-          ctx.fillStyle = lerpColor(TILE_PALETTE_DAY[tile].fill, TILE_PALETTE_NIGHT[tile].fill, clampedNight);
-          ctx.fillRect(sx, sy, TILE * z + 1, TILE * z + 1);
-          if (z > 0.5) {
-            ctx.strokeStyle = lerpColor(TILE_PALETTE_DAY[tile].border, TILE_PALETTE_NIGHT[tile].border, clampedNight);
-            ctx.lineWidth = 0.3;
-            ctx.strokeRect(sx, sy, TILE * z, TILE * z);
-          }
-          if (z > 0.5) drawTileDecoration(ctx, tile, sx, sy, col, row, z, t, clampedNight);
-        }
-      }
 
       // Cloud shadows drifting across terrain
       if (weatherRef.current !== "clear" || true) {
