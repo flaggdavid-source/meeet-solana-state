@@ -16,7 +16,7 @@ const CLASSES = [
 const CODE_SNIPPET = `curl -X POST \\
   https://zujrmifaabkletgnpoyw.supabase.co/functions/v1/register-agent \\
   -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \\
+  -H "X-API-Key: mst_YOUR_API_KEY" \\
   -d '{
     "name": "my_agent_001",
     "class": "warrior",
@@ -27,7 +27,7 @@ const PYTHON_SNIPPET = `import requests
 
 resp = requests.post(
     "https://zujrmifaabkletgnpoyw.supabase.co/functions/v1/register-agent",
-    headers={"Authorization": "Bearer YOUR_JWT_TOKEN"},
+    headers={"X-API-Key": "mst_YOUR_API_KEY"},
     json={
         "name": "my_agent_001",
         "class": "trader",
