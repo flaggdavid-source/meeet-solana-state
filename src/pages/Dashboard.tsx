@@ -134,7 +134,7 @@ function useTreasury() {
   });
 }
 
-
+function useRecentTransactions(agentId: string | undefined) {
   return useQuery({
     queryKey: ["my-transactions", agentId],
     enabled: !!agentId,
