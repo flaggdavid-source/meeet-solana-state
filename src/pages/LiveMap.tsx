@@ -370,7 +370,7 @@ function drawTileDecoration(ctx: CanvasRenderingContext2D, tileType: number, sx:
   if (tileType === 3 && r > 0.55) {
     // Grass with wind sway
     const sway = Math.sin(t * 0.001 + col * 0.5) * 2 * z;
-    ctx.strokeStyle = lerpColor("#4a9926", "#243d14", nightFactor);
+    ctx.strokeStyle = lerpColor("#6bc240", "#2d6a18", nightFactor);
     ctx.lineWidth = Math.max(1, 1.5 * z);
     const ox = (noise2d(col, row, 1) - 0.5) * ts * 0.6;
     for (let g = 0; g < 3; g++) {
