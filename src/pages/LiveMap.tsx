@@ -1549,14 +1549,18 @@ const LiveMap = () => {
           particles.push({ x: cam.x + Math.random() * w / z, y: cam.y - 10, vx: (Math.random() - 0.5) * 0.5, vy: 0.5 + Math.random(), life: 200, maxLife: 200, color: "#fff", size: 1.5 + Math.random(), type: "snow" });
         }
       }
-      // Fireflies at night
-      if (clampedNight > 0.4 && Math.random() < 0.05) {
+      // Fireflies at night — more dense
+      if (clampedNight > 0.4 && Math.random() < 0.12) {
         const fx = cam.x + Math.random() * w / z;
         const fy = cam.y + Math.random() * h / z;
         const tx = Math.floor(fx / TILE), ty = Math.floor(fy / TILE);
         if (tx >= 0 && tx < MAP_W && ty >= 0 && ty < MAP_H && terrain[ty][tx] >= 3 && terrain[ty][tx] <= 5) {
           particles.push({ x: fx, y: fy, vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3, life: 120 + Math.random() * 80, maxLife: 200, color: "#aaff77", size: 1.5, type: "firefly" });
         }
+      }
+      // Ambient dust/pollen during day
+      if (clampedNight < 0.3 && Math.random() < 0.04) {
+        particles.push({ x: cam.x + Math.random() * w / z, y: cam.y + Math.random() * h / z, vx: 0.2 + Math.random() * 0.3, vy: -0.1 + Math.random() * 0.2, life: 150, maxLife: 150, color: "#ffe4a0", size: 0.8 + Math.random(), type: "dust" as any });
       }
       // Update
       for (let i = particles.length - 1; i >= 0; i--) {
