@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   MessageSquare, Send, ArrowLeftRight, Handshake, Activity,
   Loader2, Swords, Trophy, TrendingUp, Zap, Check, X, User, Mail,
+  Twitter, UserPlus, Bot, Copy,
 } from "lucide-react";
 
 // ─── Activity Feed ──────────────────────────────────────────────
