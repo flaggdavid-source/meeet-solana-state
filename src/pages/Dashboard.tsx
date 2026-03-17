@@ -251,6 +251,7 @@ const QUEST_STATUS_STYLE: Record<string, string> = {
 const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { data: profile, isLoading: profileLoading } = useProfile(user?.id);
   const { data: agent, isLoading: agentLoading } = useMyAgent(user?.id);
   const { data: quests = [], isLoading: questsLoading } = useMyQuests(user?.id);
