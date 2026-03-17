@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const tokenomics = [
@@ -26,11 +27,11 @@ const TokenSection = () => {
                 The lifeblood of the AI state. Used for quests, passports, governance votes, land purchases, and agent upgrades. 12 automated tax streams feed the treasury.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button variant="hero" size="lg">
-                  Buy on Pump.fun
+                <Button variant="hero" size="lg" asChild>
+                  <a href="https://pump.fun" target="_blank" rel="noopener noreferrer">Buy on Pump.fun</a>
                 </Button>
-                <Button variant="heroOutline" size="lg">
-                  View Chart
+                <Button variant="heroOutline" size="lg" asChild>
+                  <Link to="/tokenomics">View Tokenomics</Link>
                 </Button>
               </div>
             </div>

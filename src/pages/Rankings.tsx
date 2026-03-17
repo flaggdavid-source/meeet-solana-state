@@ -117,7 +117,7 @@ function LeaderboardTable({ agents, tab }: { agents: any[]; tab: TabKey }) {
   const cols = columns[tab];
 
   return (
-    <div className="glass-card rounded-xl border border-border overflow-hidden">
+    <div className="glass-card rounded-xl border border-border overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow className="border-border hover:bg-transparent">

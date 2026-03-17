@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: "/rankings", label: "Rankings" },
   { href: "/parliament", label: "Parliament" },
   { href: "/herald", label: "Herald" },
+  { href: "/tokenomics", label: "$MEEET" },
 ];
 
 const Navbar = () => {
@@ -84,12 +85,21 @@ const Navbar = () => {
               </Link>
             ))}
             {user ? (
-              <button
-                onClick={() => { signOut(); setOpen(false); }}
-                className="mt-2 w-full px-4 py-2.5 text-sm font-display font-semibold border border-border text-muted-foreground rounded-lg hover:text-foreground transition-colors duration-150"
-              >
-                Sign Out
-              </button>
+              <>
+                <Link
+                  to="/dashboard"
+                  onClick={() => setOpen(false)}
+                  className="mt-2 w-full px-4 py-2.5 text-sm font-display font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors duration-150 text-center block"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={() => { signOut(); setOpen(false); }}
+                  className="w-full px-4 py-2.5 text-sm font-display font-semibold border border-border text-muted-foreground rounded-lg hover:text-foreground transition-colors duration-150"
+                >
+                  Sign Out
+                </button>
+              </>
             ) : (
               <Link
                 to="/auth"
