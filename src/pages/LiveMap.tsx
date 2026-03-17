@@ -1816,11 +1816,11 @@ const LiveMap = () => {
       </div>
 
       {/* HUD top-right */}
-      <div className="absolute top-4 right-4 z-10">
-        <div className="glass-card px-4 py-2 flex items-center gap-3">
-          <span className="text-sm text-muted-foreground font-body">$MEEET</span>
-          <span className="text-sm font-display font-semibold">$0.0042</span>
-          <span className="text-xs text-secondary font-body">+12.4%</span>
+      <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-10">
+        <div className="glass-card px-2 sm:px-4 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-3">
+          <span className="text-xs sm:text-sm text-muted-foreground font-body">$MEEET</span>
+          <span className="text-xs sm:text-sm font-display font-semibold">$0.0042</span>
+          <span className="text-[10px] sm:text-xs text-secondary font-body hidden sm:inline">+12.4%</span>
         </div>
       </div>
 
