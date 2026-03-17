@@ -483,7 +483,8 @@ const Dashboard = () => {
               </p>
             </div>
             {agent && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <ConnectWallet savedAddress={profile?.wallet_address} compact />
                 <Link to="/profile">
                   <Button variant="outline" size="sm" className="text-xs gap-1.5">
                     <Users className="w-3.5 h-3.5" /> Profile
