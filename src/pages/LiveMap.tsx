@@ -556,10 +556,10 @@ function drawBuilding(ctx: CanvasRenderingContext2D, b: Building, cam: { x: numb
   const roofDark = darkenHex(roofColor, 0.2);
   const winSize = Math.max(2, 3.5 * z);
 
-  // Ground shadow
-  ctx.fillStyle = `rgba(0,0,0,${0.2 + nightFactor * 0.15})`;
+  // Ground shadow — very subtle, no dark blobs
+  ctx.fillStyle = `rgba(0,0,0,0.06)`;
   ctx.beginPath();
-  ctx.ellipse(sx + w / 2, sy + h + 2 * z, w * 0.55, 4 * z, 0, 0, Math.PI * 2);
+  ctx.ellipse(sx + w / 2, sy + h + 2 * z, w * 0.4, 2 * z, 0, 0, Math.PI * 2);
   ctx.fill();
 
   // ──── Per-type rendering ────
