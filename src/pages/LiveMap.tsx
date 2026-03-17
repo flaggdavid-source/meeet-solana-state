@@ -1046,13 +1046,13 @@ function drawBuilding(ctx: CanvasRenderingContext2D, b: Building, cam: { x: numb
 
   } else {
     // ──── Default generic building (improved) ────
-    // Ground pad
-    ctx.fillStyle = `rgba(0,0,0,${0.15 + nightFactor * 0.1})`;
-    ctx.fillRect(sx - 3 * z, sy + h - 2 * z, w + 6 * z, 4 * z);
+    // Ground pad — subtle
+    ctx.fillStyle = `rgba(0,0,0,0.06)`;
+    ctx.fillRect(sx - 3 * z, sy + h - 2 * z, w + 6 * z, 3 * z);
 
-    // Shadow
-    ctx.fillStyle = `rgba(0,0,0,${0.2 + nightFactor * 0.15})`;
-    ctx.fillRect(sx + 4 * z, sy + 4 * z, w, h);
+    // Shadow — minimal offset
+    ctx.fillStyle = `rgba(0,0,0,0.04)`;
+    ctx.fillRect(sx + 2 * z, sy + 2 * z, w, h);
 
     // Main walls
     ctx.fillStyle = wallBase + "dd";
