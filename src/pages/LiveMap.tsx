@@ -2500,6 +2500,25 @@ const LiveMap = () => {
       if (clampedNight < 0.3 && Math.random() < 0.04) {
         particles.push({ x: cam.x + Math.random() * w / z, y: cam.y + Math.random() * h / z, vx: 0.2 + Math.random() * 0.3, vy: -0.1 + Math.random() * 0.2, life: 150, maxLife: 150, color: "#ffe4a0", size: 0.8 + Math.random(), type: "dust" as any });
       }
+      // Sandstorm particles
+      if (weatherRef.current === "storm") {
+        for (let i = 0; i < 5; i++) {
+          particles.push({
+            x: cam.x - 20 + Math.random() * (w / z + 40),
+            y: cam.y + Math.random() * h / z,
+            vx: 3 + Math.random() * 2,
+            vy: (Math.random() - 0.5) * 0.8,
+            life: 80 + Math.random() * 40,
+            maxLife: 120,
+            color: "#d4a76a",
+            size: 1 + Math.random() * 2,
+            type: "dust" as any
+          });
+        }
+        // Sandstorm overlay
+        ctx.fillStyle = `rgba(180,140,70,0.06)`;
+        ctx.fillRect(0, 0, w, h);
+      }
 
       // ─── Lightning during rain ───
       if (weatherRef.current === "rain" && Math.random() < 0.003) {
