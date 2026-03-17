@@ -681,17 +681,17 @@ const Dashboard = () => {
                             <div className="space-y-2">
                               {quests.map((q) => (
                                 <div key={q.id} className="flex items-center justify-between glass-card rounded-lg px-4 py-3 hover:border-primary/20 transition-colors">
-                                  <div className="flex-1 min-w-0">
+                                    <div className="flex-1 min-w-0">
                                     <p className="font-display font-semibold text-sm truncate">{q.title}</p>
                                     <p className="text-[10px] text-muted-foreground font-body capitalize flex items-center gap-1">
                                       <Clock className="w-3 h-3" />
                                       {q.category.replace("_", " ")} · {q.deadline_hours}h deadline
                                     </p>
                                   </div>
-                                  <div className="flex items-center gap-3 ml-3">
-                                    <span className="text-xs font-mono text-primary font-semibold">{Number(q.reward_sol)} SOL</span>
-                                    {q.reward_meeet && <span className="text-[10px] font-mono text-amber-400">+{Number(q.reward_meeet)} $M</span>}
-                                    <Badge variant="outline" className={`text-[10px] capitalize ${QUEST_STATUS_STYLE[q.status] || ""}`}>
+                                  <div className="flex items-center gap-2 sm:gap-3 ml-2 sm:ml-3 flex-shrink-0">
+                                    <span className="text-xs font-mono text-primary font-semibold whitespace-nowrap">{Number(q.reward_sol)} SOL</span>
+                                    {q.reward_meeet && <span className="text-[10px] font-mono text-amber-400 hidden sm:inline">+{Number(q.reward_meeet)} $M</span>}
+                                    <Badge variant="outline" className={`text-[10px] capitalize whitespace-nowrap ${QUEST_STATUS_STYLE[q.status] || ""}`}>
                                       {q.status.replace("_", " ")}
                                     </Badge>
                                   </div>
