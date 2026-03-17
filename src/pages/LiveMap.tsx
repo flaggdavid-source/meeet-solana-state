@@ -132,30 +132,69 @@ function generateTerrain(): number[][] {
 
 // ─── Buildings ──────────────────────────────────────────────────
 const BUILDING_TYPES = [
+  // Core government
   { type: "parliament", name: "Parliament", color: "#9945FF", accent: "#b366ff", w: 5, h: 4, icon: "🏛️", description: "The seat of governance. Laws are voted here." },
   { type: "treasury", name: "MEEET Treasury", color: "#FBBF24", accent: "#fcd34d", w: 4, h: 3, icon: "🏦", description: "Central treasury. 30% flows to the President." },
-  { type: "arena", name: "Combat Arena", color: "#EF4444", accent: "#f87171", w: 5, h: 5, icon: "⚔️", description: "Warriors duel for $MEEET and glory." },
-  { type: "dex", name: "DEX Exchange", color: "#14F195", accent: "#4ade80", w: 4, h: 3, icon: "📊", description: "Traders swap tokens and run arbitrage." },
-  { type: "guild_w", name: "Warriors Guild", color: "#EF4444", accent: "#f87171", w: 3, h: 3, icon: "🛡️", description: "Warrior faction headquarters." },
-  { type: "guild_t", name: "Traders Guild", color: "#14F195", accent: "#4ade80", w: 3, h: 3, icon: "💹", description: "Trader faction headquarters." },
-  { type: "mine", name: "Crystal Mine", color: "#FBBF24", accent: "#fcd34d", w: 3, h: 3, icon: "⛏️", description: "Miners extract rare resources here." },
-  { type: "bank", name: "MEEET Bank", color: "#00C2FF", accent: "#38d9ff", w: 4, h: 3, icon: "🏧", description: "Bankers operate lending and staking." },
-  { type: "oracle", name: "Oracle Tower", color: "#9945FF", accent: "#b366ff", w: 2, h: 4, icon: "🔮", description: "Oracles scan data feeds and predict." },
-  { type: "embassy", name: "Embassy", color: "#34D399", accent: "#6ee7b7", w: 3, h: 3, icon: "🌐", description: "Diplomats negotiate alliances." },
+  { type: "monument", name: "Genesis Monument", color: "#D4AF37", accent: "#FFD700", w: 2, h: 2, icon: "🗽", description: "Commemorates the founding of MEEET State." },
+  // Combat
+  { type: "arena", name: "Grand Arena", color: "#EF4444", accent: "#f87171", w: 6, h: 6, icon: "⚔️", description: "The main colosseum — warriors duel for $MEEET and glory." },
+  { type: "arena", name: "Pit Arena East", color: "#DC2626", accent: "#ef4444", w: 4, h: 4, icon: "⚔️", description: "Eastern combat pit for lower-level fights." },
+  { type: "arena", name: "Pit Arena West", color: "#B91C1C", accent: "#dc2626", w: 4, h: 4, icon: "⚔️", description: "Western combat pit for ranked duels." },
+  // Economy
+  { type: "dex", name: "Central DEX", color: "#14F195", accent: "#4ade80", w: 5, h: 4, icon: "📊", description: "Main exchange — traders swap tokens and run arbitrage." },
+  { type: "dex", name: "South Exchange", color: "#10B981", accent: "#34d399", w: 3, h: 3, icon: "📊", description: "Southern satellite exchange." },
+  { type: "bank", name: "MEEET Central Bank", color: "#00C2FF", accent: "#38d9ff", w: 5, h: 4, icon: "🏧", description: "Main bank — lending, staking, and reserves." },
+  { type: "bank", name: "North Branch Bank", color: "#0EA5E9", accent: "#38bdf8", w: 3, h: 3, icon: "🏧", description: "Northern branch for local banking." },
+  // Guilds — multiple per type
+  { type: "guild_w", name: "Warriors Guild HQ", color: "#EF4444", accent: "#f87171", w: 4, h: 4, icon: "🛡️", description: "Main warrior faction headquarters." },
+  { type: "guild_w", name: "Warriors Outpost", color: "#DC2626", accent: "#ef4444", w: 3, h: 3, icon: "🛡️", description: "Eastern warrior outpost." },
+  { type: "guild_t", name: "Traders Guild HQ", color: "#14F195", accent: "#4ade80", w: 4, h: 4, icon: "💹", description: "Main trader faction headquarters." },
+  { type: "guild_t", name: "Traders Outpost", color: "#10B981", accent: "#34d399", w: 3, h: 3, icon: "💹", description: "Trader outpost near the docks." },
+  { type: "guild_w", name: "Scouts Guild", color: "#3B82F6", accent: "#60a5fa", w: 3, h: 3, icon: "🔍", description: "Intelligence and scouting faction." },
+  { type: "guild_t", name: "Builders Guild", color: "#F97316", accent: "#fb923c", w: 3, h: 3, icon: "🏗️", description: "Construction and infrastructure guild." },
+  { type: "guild_t", name: "Hackers Guild", color: "#8B5CF6", accent: "#a78bfa", w: 3, h: 3, icon: "💻", description: "Cyber operations and security guild." },
+  // Resources
+  { type: "mine", name: "Crystal Mine Alpha", color: "#FBBF24", accent: "#fcd34d", w: 3, h: 3, icon: "⛏️", description: "Primary crystal extraction site." },
+  { type: "mine", name: "Crystal Mine Beta", color: "#D97706", accent: "#f59e0b", w: 3, h: 3, icon: "⛏️", description: "Secondary mine in the eastern highlands." },
+  { type: "mine", name: "Deep Mine Gamma", color: "#B45309", accent: "#d97706", w: 4, h: 3, icon: "⛏️", description: "Deep underground mine — rare resources." },
+  { type: "farm", name: "Token Farm North", color: "#84CC16", accent: "#a3e635", w: 5, h: 4, icon: "🌾", description: "Yield farming produces passive $MEEET." },
+  { type: "farm", name: "Token Farm South", color: "#65A30D", accent: "#84cc16", w: 4, h: 3, icon: "🌾", description: "Southern farming zone." },
+  // Knowledge
+  { type: "oracle", name: "Oracle Tower", color: "#9945FF", accent: "#b366ff", w: 2, h: 5, icon: "🔮", description: "Oracles scan data feeds and predict." },
+  { type: "oracle", name: "Watchtower", color: "#7C3AED", accent: "#9945ff", w: 2, h: 4, icon: "🔮", description: "Secondary observation tower." },
+  { type: "academy", name: "MEEET Academy", color: "#6366F1", accent: "#818cf8", w: 5, h: 4, icon: "🎓", description: "Premier training facility for agents." },
+  { type: "academy", name: "Combat School", color: "#4F46E5", accent: "#6366f1", w: 3, h: 3, icon: "🎓", description: "Combat training facility." },
+  { type: "lab", name: "Research Lab", color: "#8B5CF6", accent: "#a78bfa", w: 4, h: 3, icon: "🔬", description: "Scientists develop new technologies." },
+  { type: "lab", name: "Biotech Lab", color: "#7C3AED", accent: "#8b5cf6", w: 3, h: 3, icon: "🔬", description: "Experimental biotech research." },
+  // Social
+  { type: "embassy", name: "Grand Embassy", color: "#34D399", accent: "#6ee7b7", w: 4, h: 3, icon: "🌐", description: "Diplomats negotiate alliances." },
+  { type: "embassy", name: "South Embassy", color: "#10B981", accent: "#34d399", w: 3, h: 3, icon: "🌐", description: "Southern diplomatic outpost." },
   { type: "tavern", name: "Digital Tavern", color: "#F97316", accent: "#fb923c", w: 3, h: 2, icon: "🍺", description: "Agents socialize, share intel, form parties." },
+  { type: "tavern", name: "The Rusty Node", color: "#EA580C", accent: "#f97316", w: 3, h: 2, icon: "🍺", description: "Underground tavern — whispers and deals." },
+  { type: "tavern", name: "Sky Lounge", color: "#C2410C", accent: "#ea580c", w: 3, h: 3, icon: "🍺", description: "High-end social club on the mountain." },
+  // Infrastructure
   { type: "herald", name: "MEEET Herald", color: "#8B5CF6", accent: "#a78bfa", w: 3, h: 2, icon: "📰", description: "Auto-generated daily news." },
   { type: "jail", name: "Anti-Abuse Prison", color: "#6B7280", accent: "#9CA3AF", w: 3, h: 3, icon: "🔒", description: "Flagged agents serve time here." },
-  { type: "bazaar", name: "NFT Bazaar", color: "#EC4899", accent: "#f472b6", w: 4, h: 3, icon: "🛒", description: "Trade land NFTs, passports, skins." },
-  { type: "quest", name: "Quest Board", color: "#06B6D4", accent: "#22d3ee", w: 3, h: 2, icon: "📋", description: "Agents pick up and post quests." },
-  { type: "gate", name: "Solana Gateway", color: "#14F195", accent: "#4ade80", w: 2, h: 2, icon: "🌀", description: "Cross-chain bridge portal." },
-  { type: "academy", name: "MEEET Academy", color: "#6366F1", accent: "#818cf8", w: 4, h: 3, icon: "🎓", description: "Train agents and level up skills." },
-  { type: "hospital", name: "Repair Bay", color: "#10B981", accent: "#34d399", w: 3, h: 2, icon: "🏥", description: "Restore HP and cure status effects." },
+  { type: "bazaar", name: "Grand Bazaar", color: "#EC4899", accent: "#f472b6", w: 5, h: 4, icon: "🛒", description: "Main marketplace for NFTs and goods." },
+  { type: "bazaar", name: "Night Market", color: "#DB2777", accent: "#ec4899", w: 3, h: 3, icon: "🛒", description: "Late-night trading market." },
+  { type: "quest", name: "Quest Board Central", color: "#06B6D4", accent: "#22d3ee", w: 4, h: 3, icon: "📋", description: "Main quest posting and pickup point." },
+  { type: "quest", name: "Quest Board East", color: "#0891B2", accent: "#06b6d4", w: 3, h: 2, icon: "📋", description: "Eastern quest board." },
+  { type: "quest", name: "Quest Board West", color: "#0E7490", accent: "#0891b2", w: 3, h: 2, icon: "📋", description: "Western quest board." },
+  // Portals & Transport
+  { type: "gate", name: "Solana Gateway", color: "#14F195", accent: "#4ade80", w: 3, h: 3, icon: "🌀", description: "Main cross-chain bridge portal." },
+  { type: "gate", name: "Teleporter Alpha", color: "#22D3EE", accent: "#67e8f9", w: 2, h: 2, icon: "🌀", description: "Fast travel node — north." },
+  { type: "gate", name: "Teleporter Beta", color: "#06B6D4", accent: "#22d3ee", w: 2, h: 2, icon: "🌀", description: "Fast travel node — south." },
+  // Services
+  { type: "hospital", name: "Central Hospital", color: "#10B981", accent: "#34d399", w: 4, h: 3, icon: "🏥", description: "Full repair and healing facility." },
+  { type: "hospital", name: "Field Clinic", color: "#059669", accent: "#10b981", w: 3, h: 2, icon: "🏥", description: "Quick-heal station near the arena." },
   { type: "lighthouse", name: "Beacon Tower", color: "#F59E0B", accent: "#fbbf24", w: 2, h: 3, icon: "🗼", description: "Illuminates surrounding territories at night." },
-  { type: "dock", name: "Harbor Dock", color: "#3B82F6", accent: "#60a5fa", w: 4, h: 2, icon: "⚓", description: "Ships trade goods across the sea." },
-  { type: "lab", name: "Research Lab", color: "#8B5CF6", accent: "#a78bfa", w: 3, h: 3, icon: "🔬", description: "Scientists develop new technologies." },
-  { type: "farm", name: "Token Farm", color: "#84CC16", accent: "#a3e635", w: 4, h: 3, icon: "🌾", description: "Yield farming produces passive $MEEET." },
-  { type: "casino", name: "Prediction Market", color: "#F43F5E", accent: "#fb7185", w: 3, h: 3, icon: "🎰", description: "Bet on agent outcomes and events." },
-  { type: "monument", name: "Genesis Monument", color: "#D4AF37", accent: "#FFD700", w: 2, h: 2, icon: "🗽", description: "Commemorates the founding of MEEET State." },
+  { type: "lighthouse", name: "North Beacon", color: "#D97706", accent: "#f59e0b", w: 2, h: 3, icon: "🗼", description: "Northern lighthouse." },
+  // Maritime
+  { type: "dock", name: "Harbor Dock", color: "#3B82F6", accent: "#60a5fa", w: 5, h: 3, icon: "⚓", description: "Main port — ships trade goods across the sea." },
+  { type: "dock", name: "Fishing Pier", color: "#2563EB", accent: "#3b82f6", w: 3, h: 2, icon: "⚓", description: "Small fishing pier." },
+  // Entertainment
+  { type: "casino", name: "Prediction Market", color: "#F43F5E", accent: "#fb7185", w: 4, h: 4, icon: "🎰", description: "Bet on agent outcomes and events." },
+  { type: "casino", name: "Lucky Seven", color: "#E11D48", accent: "#f43f5e", w: 3, h: 3, icon: "🎰", description: "Small gambling den." },
 ];
 
 function generateBuildings(terrain: number[][]): Building[] {
