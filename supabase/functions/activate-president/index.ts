@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit, RATE_LIMITS, rateLimitResponse } from "../_shared/rate-limit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -30,11 +31,53 @@ Deno.serve(async (req) => {
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, serviceKey);
+    const serviceClient = createClient(supabaseUrl, serviceKey);
 
-    // Check if there's already a president
-    const { data: existingPres } = await supabase
+    // ── Rate limit (3 attempts per hour by IP) ──────────────
+    const ip = req.headers.get("x-forwarded-for") || req.headers.get("cf-connecting-ip") || "unknown";
+    const { allowed } = await checkRateLimit(serviceClient, `president:${ip}`, 3, 3600);
+    if (!allowed) return rateLimitResponse(3600);
+
+    // ── Step 1: Require JWT auth — caller must prove identity ──
+    const authHeader = req.headers.get("Authorization") ?? "";
+    if (!authHeader.startsWith("Bearer ")) {
+      return json({ error: "Authorization: Bearer <jwt> required" }, 401);
+    }
+
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user }, error: authErr } = await userClient.auth.getUser();
+    if (authErr || !user) {
+      return json({ error: "Invalid or expired token" }, 401);
+    }
+
+    // ── Step 2: Verify caller IS the designated owner ───────
+    const OWNER_USER_ID = Deno.env.get("PRESIDENT_OWNER_USER_ID");
+    if (!OWNER_USER_ID) {
+      return json({ error: "President owner not configured" }, 500);
+    }
+    if (user.id !== OWNER_USER_ID) {
+      console.warn(`President activation attempt by unauthorized user: ${user.id} (${user.email})`);
+      return json({ error: "Forbidden" }, 403);
+    }
+
+    // ── Step 3: Verify president API key ─────────────────────
+    const presidentKey = req.headers.get("x-president-key");
+    const storedKey = Deno.env.get("PRESIDENT_API_KEY");
+
+    if (!presidentKey || !storedKey) {
+      return json({ error: "x-president-key header required" }, 401);
+    }
+    if (!timingSafeEqual(presidentKey, storedKey)) {
+      console.warn(`Invalid president key attempt from user: ${user.id}`);
+      return json({ error: "Invalid president key" }, 403);
+    }
+
+    // ── Step 4: Check if president already exists ────────────
+    const { data: existingPres } = await serviceClient
       .from("profiles")
       .select("user_id, display_name")
       .eq("is_president", true)
@@ -47,37 +90,20 @@ Deno.serve(async (req) => {
       }, 409);
     }
 
-    // Only method: require x-president-key header
-    const presidentKey = req.headers.get("x-president-key");
-    const storedKey = Deno.env.get("PRESIDENT_API_KEY");
-    const OWNER_USER_ID = Deno.env.get("PRESIDENT_OWNER_USER_ID");
-
-    if (!presidentKey || !storedKey) {
-      return json({ error: "x-president-key header required" }, 401);
-    }
-
-    if (!timingSafeEqual(presidentKey, storedKey)) {
-      return json({ error: "Invalid president key" }, 403);
-    }
-
-    // API key mode: only the designated owner can be president
-    const { user_id } = await req.json().catch(() => ({}));
-    if (!user_id || !OWNER_USER_ID || user_id !== OWNER_USER_ID) {
-      return json({ error: "Only the designated owner can be president" }, 403);
-    }
-
-    const { error: updateError } = await supabase
+    // ── Step 5: Activate — use authenticated user.id, NOT body ──
+    const { error: updateError } = await serviceClient
       .from("profiles")
       .update({ is_president: true })
-      .eq("user_id", user_id);
+      .eq("user_id", user.id);
 
     if (updateError) return json({ error: updateError.message }, 500);
 
+    console.log(`President activated: ${user.id} (${user.email})`);
+
     return json({
       status: "activated",
-      message: "President activated via API key.",
+      message: "President activated. Welcome to office.",
     });
-
   } catch (err) {
     console.error("President activation error:", err);
     return json({ error: "Internal server error" }, 500);
