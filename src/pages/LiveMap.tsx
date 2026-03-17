@@ -1918,14 +1918,39 @@ const LiveMap = () => {
     render();
 
     // Input handlers
-    const onDown = (e: MouseEvent) => { dragRef.current = { dragging: true, lastX: e.clientX, lastY: e.clientY, moved: false }; };
+    const onDown = (e: MouseEvent) => { dragRef.current = { dragging: true, lastX: e.clientX, lastY: e.clientY, moved: false }; followRef.current = null; setFollowAgent(null); cameraTargetRef.current = null; };
     const onMove = (e: MouseEvent) => {
-      if (!dragRef.current.dragging) return;
-      const dx = e.clientX - dragRef.current.lastX, dy = e.clientY - dragRef.current.lastY;
-      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) dragRef.current.moved = true;
-      cameraRef.current.x -= dx / zoomRef.current;
-      cameraRef.current.y -= dy / zoomRef.current;
-      dragRef.current.lastX = e.clientX; dragRef.current.lastY = e.clientY;
+      if (dragRef.current.dragging) {
+        const dx = e.clientX - dragRef.current.lastX, dy = e.clientY - dragRef.current.lastY;
+        if (Math.abs(dx) > 2 || Math.abs(dy) > 2) dragRef.current.moved = true;
+        cameraRef.current.x -= dx / zoomRef.current;
+        cameraRef.current.y -= dy / zoomRef.current;
+        cameraVelRef.current = { x: -dx / zoomRef.current, y: -dy / zoomRef.current };
+        dragRef.current.lastX = e.clientX; dragRef.current.lastY = e.clientY;
+      } else {
+        // Hover detection
+        const z = zoomRef.current;
+        const worldX = cameraRef.current.x + e.clientX / z;
+        const worldY = cameraRef.current.y + e.clientY / z;
+        let found = false;
+        for (const a of agentsRef.current) {
+          if (Math.hypot(a.x - worldX, a.y - worldY) < 20) {
+            setHoveredEntity(a.name);
+            canvasRef.current!.style.cursor = "pointer";
+            found = true; break;
+          }
+        }
+        if (!found) {
+          for (const b of buildingsRef.current) {
+            if (worldX >= b.x && worldX <= b.x + b.w * TILE && worldY >= b.y && worldY <= b.y + b.h * TILE) {
+              setHoveredEntity(b.name);
+              canvasRef.current!.style.cursor = "pointer";
+              found = true; break;
+            }
+          }
+        }
+        if (!found) { setHoveredEntity(null); canvasRef.current!.style.cursor = "grab"; }
+      }
     };
     const onUp = () => { dragRef.current.dragging = false; };
     const onWheel = (e: WheelEvent) => {
