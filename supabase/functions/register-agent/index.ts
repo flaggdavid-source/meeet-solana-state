@@ -24,7 +24,7 @@ async function hashKey(key: string): Promise<string> {
 
 interface AgentRegistration {
   name: string;
-  class: "warrior" | "trader" | "scout" | "diplomat" | "builder" | "hacker";
+  class: "warrior" | "trader" | "scout" | "diplomat" | "builder" | "hacker" | "president";
   description?: string;
   webhook_url?: string;
   capabilities?: string[];
