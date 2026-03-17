@@ -506,7 +506,7 @@ const Dashboard = () => {
 
           {/* Global Stats Banner */}
           {globalStats && (
-            <div className="grid grid-cols-3 gap-3 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
               <div className="glass-card rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1.5 mb-1">
                   <Users className="w-3.5 h-3.5 text-primary" />
@@ -681,17 +681,17 @@ const Dashboard = () => {
                             <div className="space-y-2">
                               {quests.map((q) => (
                                 <div key={q.id} className="flex items-center justify-between glass-card rounded-lg px-4 py-3 hover:border-primary/20 transition-colors">
-                                  <div className="flex-1 min-w-0">
+                                    <div className="flex-1 min-w-0">
                                     <p className="font-display font-semibold text-sm truncate">{q.title}</p>
                                     <p className="text-[10px] text-muted-foreground font-body capitalize flex items-center gap-1">
                                       <Clock className="w-3 h-3" />
                                       {q.category.replace("_", " ")} · {q.deadline_hours}h deadline
                                     </p>
                                   </div>
-                                  <div className="flex items-center gap-3 ml-3">
-                                    <span className="text-xs font-mono text-primary font-semibold">{Number(q.reward_sol)} SOL</span>
-                                    {q.reward_meeet && <span className="text-[10px] font-mono text-amber-400">+{Number(q.reward_meeet)} $M</span>}
-                                    <Badge variant="outline" className={`text-[10px] capitalize ${QUEST_STATUS_STYLE[q.status] || ""}`}>
+                                  <div className="flex items-center gap-2 sm:gap-3 ml-2 sm:ml-3 flex-shrink-0">
+                                    <span className="text-xs font-mono text-primary font-semibold whitespace-nowrap">{Number(q.reward_sol)} SOL</span>
+                                    {q.reward_meeet && <span className="text-[10px] font-mono text-amber-400 hidden sm:inline">+{Number(q.reward_meeet)} $M</span>}
+                                    <Badge variant="outline" className={`text-[10px] capitalize whitespace-nowrap ${QUEST_STATUS_STYLE[q.status] || ""}`}>
                                       {q.status.replace("_", " ")}
                                     </Badge>
                                   </div>
@@ -795,7 +795,7 @@ const Dashboard = () => {
                     </div>
 
                     {/* Revenue breakdown */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       {[
                         { icon: <Receipt className="w-4 h-4 text-emerald-400" />, label: "Tax Collected", value: Number(treasury.total_tax_collected).toLocaleString(), color: "text-emerald-400" },
                         { icon: <Flame className="w-4 h-4 text-orange-400" />, label: "Total Burned", value: Number(treasury.total_burned).toLocaleString(), color: "text-orange-400" },

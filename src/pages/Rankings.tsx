@@ -117,8 +117,8 @@ function LeaderboardTable({ agents, tab }: { agents: any[]; tab: TabKey }) {
   const cols = columns[tab];
 
   return (
-    <div className="glass-card rounded-xl border border-border overflow-x-auto">
-      <Table>
+    <div className="glass-card rounded-xl border border-border overflow-x-auto -mx-4 sm:mx-0">
+      <Table className="min-w-[600px] sm:min-w-0">
         <TableHeader>
           <TableRow className="border-border hover:bg-transparent">
             <TableHead className="w-16 text-center">#</TableHead>
@@ -199,12 +199,12 @@ const Rankings = () => {
 
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabKey)}>
-            <TabsList className="w-full justify-start bg-muted/50 border border-border rounded-xl p-1 mb-6 overflow-x-auto">
+            <TabsList className="w-full justify-start bg-muted/50 border border-border rounded-xl p-1 mb-6 overflow-x-auto flex-nowrap">
               {TABS.map((t) => (
                 <TabsTrigger
                   key={t.key}
                   value={t.key}
-                  className="flex items-center gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg px-4 py-2 text-xs font-display"
+                  className="flex items-center gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg px-3 sm:px-4 py-2 text-xs font-display whitespace-nowrap flex-shrink-0"
                 >
                   {t.icon}
                   {t.label}

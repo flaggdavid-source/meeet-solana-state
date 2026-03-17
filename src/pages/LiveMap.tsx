@@ -1794,21 +1794,21 @@ const LiveMap = () => {
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 
       {/* HUD top-left */}
-      <div className="absolute top-4 left-4 z-10 flex items-center gap-2 flex-wrap">
-        <button onClick={() => navigate("/")} className="glass-card p-2 hover:bg-card/80 transition-colors"><ArrowLeft className="w-5 h-5 text-foreground" /></button>
-        <div className="glass-card px-3 py-2 flex items-center gap-2">
+      <div className="absolute top-2 sm:top-4 left-2 sm:left-4 z-10 flex items-center gap-1.5 sm:gap-2 flex-wrap max-w-[calc(100%-4rem)] sm:max-w-none">
+        <button onClick={() => navigate("/")} className="glass-card p-1.5 sm:p-2 hover:bg-card/80 transition-colors"><ArrowLeft className="w-4 sm:w-5 h-4 sm:h-5 text-foreground" /></button>
+        <div className="glass-card px-2 sm:px-3 py-1.5 sm:py-2 flex items-center gap-1.5 sm:gap-2">
           <span className="w-2 h-2 rounded-full bg-secondary animate-pulse-glow" />
-          <span className="text-sm font-display font-semibold">{agentCount} AGENTS</span>
+          <span className="text-xs sm:text-sm font-display font-semibold">{agentCount} AGENTS</span>
         </div>
-        <div className="glass-card px-3 py-2 flex items-center gap-2">
+        <div className="glass-card px-2 sm:px-3 py-1.5 sm:py-2 hidden sm:flex items-center gap-2">
           <span className="text-xs text-muted-foreground font-body">{buildingsRef.current.length} buildings</span>
         </div>
-        <div className="glass-card px-3 py-1.5 flex items-center gap-1.5">
+        <div className="glass-card px-2 sm:px-3 py-1 sm:py-1.5 flex items-center gap-1.5">
           {timeLabel === "Night" || timeLabel === "Dusk" ? <Moon className="w-3 h-3 text-indigo-300" /> : <Sun className="w-3 h-3 text-amber-400" />}
           <span className="text-[10px] font-body text-muted-foreground">{timeLabel}</span>
         </div>
         {weather !== "clear" && (
-          <div className="glass-card px-3 py-1.5 flex items-center gap-1.5">
+          <div className="glass-card px-2 sm:px-3 py-1 sm:py-1.5 flex items-center gap-1.5">
             <Cloud className="w-3 h-3 text-muted-foreground" />
             <span className="text-[10px] font-body text-muted-foreground capitalize">{weather}</span>
           </div>
@@ -1816,24 +1816,24 @@ const LiveMap = () => {
       </div>
 
       {/* HUD top-right */}
-      <div className="absolute top-4 right-4 z-10">
-        <div className="glass-card px-4 py-2 flex items-center gap-3">
-          <span className="text-sm text-muted-foreground font-body">$MEEET</span>
-          <span className="text-sm font-display font-semibold">$0.0042</span>
-          <span className="text-xs text-secondary font-body">+12.4%</span>
+      <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-10">
+        <div className="glass-card px-2 sm:px-4 py-1.5 sm:py-2 flex items-center gap-2 sm:gap-3">
+          <span className="text-xs sm:text-sm text-muted-foreground font-body">$MEEET</span>
+          <span className="text-xs sm:text-sm font-display font-semibold">$0.0042</span>
+          <span className="text-[10px] sm:text-xs text-secondary font-body hidden sm:inline">+12.4%</span>
         </div>
       </div>
 
       {/* Zoom */}
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2">
-        <button onClick={() => handleZoom(0.25)} className="glass-card p-2 hover:bg-card/80"><ZoomIn className="w-4 h-4 text-foreground" /></button>
-        <div className="glass-card px-2 py-1 text-center"><span className="text-[10px] font-body text-muted-foreground">{Math.round(zoom * 100)}%</span></div>
-        <button onClick={() => handleZoom(-0.25)} className="glass-card p-2 hover:bg-card/80"><ZoomOut className="w-4 h-4 text-foreground" /></button>
+      <div className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-1.5 sm:gap-2">
+        <button onClick={() => handleZoom(0.25)} className="glass-card p-1.5 sm:p-2 hover:bg-card/80"><ZoomIn className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-foreground" /></button>
+        <div className="glass-card px-1.5 sm:px-2 py-0.5 sm:py-1 text-center"><span className="text-[9px] sm:text-[10px] font-body text-muted-foreground">{Math.round(zoom * 100)}%</span></div>
+        <button onClick={() => handleZoom(-0.25)} className="glass-card p-1.5 sm:p-2 hover:bg-card/80"><ZoomOut className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-foreground" /></button>
       </div>
 
       {/* Events */}
       {showChat && (
-        <div className="absolute top-16 right-4 bottom-4 w-72 z-10 flex flex-col max-h-[calc(100vh-5rem)]">
+        <div className="absolute top-12 sm:top-16 right-2 sm:right-4 bottom-12 sm:bottom-4 w-56 sm:w-72 z-10 flex flex-col max-h-[calc(100vh-5rem)]">
           <div className="glass-card flex-1 flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-3 py-2 border-b border-border">
               <span className="text-xs font-display uppercase tracking-wider text-muted-foreground">Live Events</span>
@@ -1854,7 +1854,7 @@ const LiveMap = () => {
 
       {/* Building inspector */}
       {selectedBuilding && (
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 glass-card p-4 w-80 animate-fade-in">
+        <div className="absolute bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 z-20 glass-card p-3 sm:p-4 w-[calc(100%-2rem)] sm:w-80 max-w-80 animate-fade-in">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-3">
               <span className="text-3xl">{selectedBuilding.icon}</span>
@@ -1885,7 +1885,7 @@ const LiveMap = () => {
 
       {/* Agent inspector */}
       {selectedAgent && (
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 glass-card p-4 w-80 animate-fade-in">
+        <div className="absolute bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 z-20 glass-card p-3 sm:p-4 w-[calc(100%-2rem)] sm:w-80 max-w-80 animate-fade-in">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-lg flex items-center justify-center" style={{ backgroundColor: selectedAgent.color + "25", border: `1px solid ${selectedAgent.color}40` }}>
@@ -1929,7 +1929,7 @@ const LiveMap = () => {
 
       {/* Building Directory */}
       {showDirectory && (
-        <div className="absolute top-16 left-4 bottom-16 w-64 z-10 glass-card flex flex-col overflow-hidden">
+        <div className="absolute top-12 sm:top-16 left-2 sm:left-4 bottom-14 sm:bottom-16 w-56 sm:w-64 z-10 glass-card flex flex-col overflow-hidden">
           <div className="flex items-center justify-between px-3 py-2 border-b border-border">
             <span className="text-xs font-display uppercase tracking-wider text-muted-foreground">Directory</span>
             <button onClick={() => setShowDirectory(false)}><X className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" /></button>
@@ -1959,11 +1959,11 @@ const LiveMap = () => {
         </div>
       )}
 
-      <div className="absolute bottom-4 left-4 z-10 flex items-center gap-2">
-        <button onClick={() => setShowDirectory(!showDirectory)} className="glass-card px-3 py-1.5 text-[10px] text-muted-foreground font-body hover:text-foreground transition-colors">
+      <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 z-10 flex items-center gap-1.5 sm:gap-2">
+        <button onClick={() => setShowDirectory(!showDirectory)} className="glass-card px-2 sm:px-3 py-1 sm:py-1.5 text-[9px] sm:text-[10px] text-muted-foreground font-body hover:text-foreground transition-colors">
           📍 {buildingsRef.current.length} Buildings
         </button>
-        <span className="text-[10px] text-muted-foreground font-body glass-card px-3 py-1.5">
+        <span className="text-[9px] sm:text-[10px] text-muted-foreground font-body glass-card px-2 sm:px-3 py-1 sm:py-1.5 hidden sm:inline-block">
           ESC — back · Drag to pan · Scroll to zoom · Click to inspect
         </span>
       </div>
