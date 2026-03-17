@@ -2343,8 +2343,10 @@ const LiveMap = () => {
       if (label !== "Day") setTimeLabel(label);
       else setTimeLabel("Day");
 
-      // Sky
-      const skyColor = lerpColor("#050a12", "#010208", clampedNight);
+      // Sky — bright fantasy gradient
+      const skyDay = "#78c8f0";
+      const skyNight = "#0a1e3a";
+      const skyColor = lerpColor(skyDay, skyNight, clampedNight);
       ctx.fillStyle = skyColor;
       ctx.fillRect(0, 0, w, h);
 
