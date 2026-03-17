@@ -2087,6 +2087,38 @@ const LiveMap = () => {
       if (clampedNight < 0.3 && Math.random() < 0.04) {
         particles.push({ x: cam.x + Math.random() * w / z, y: cam.y + Math.random() * h / z, vx: 0.2 + Math.random() * 0.3, vy: -0.1 + Math.random() * 0.2, life: 150, maxLife: 150, color: "#ffe4a0", size: 0.8 + Math.random(), type: "dust" as any });
       }
+
+      // ─── Lightning during rain ───
+      if (weatherRef.current === "rain" && Math.random() < 0.003) {
+        // Flash
+        ctx.fillStyle = `rgba(255,255,255,0.15)`;
+        ctx.fillRect(0, 0, w, h);
+        // Lightning bolt
+        const lx = Math.random() * w;
+        const ly = 0;
+        ctx.strokeStyle = `rgba(200,220,255,0.9)`;
+        ctx.lineWidth = 2;
+        ctx.shadowColor = "rgba(180,200,255,0.8)";
+        ctx.shadowBlur = 15;
+        ctx.beginPath();
+        ctx.moveTo(lx, ly);
+        let cx = lx, cy = ly;
+        while (cy < h * 0.6) {
+          cx += (Math.random() - 0.5) * 40;
+          cy += 15 + Math.random() * 25;
+          ctx.lineTo(cx, cy);
+          // Branch
+          if (Math.random() < 0.3) {
+            const bx = cx + (Math.random() - 0.5) * 60;
+            const by = cy + 20 + Math.random() * 30;
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(bx, by);
+            ctx.moveTo(cx, cy);
+          }
+        }
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
       // Update
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
