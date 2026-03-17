@@ -432,7 +432,7 @@ function drawTileDecoration(ctx: CanvasRenderingContext2D, tileType: number, sx:
   }
   if (tileType === 6 && r > 0.4) {
     const ox = (noise2d(col, row, 5) - 0.5) * ts * 0.5;
-    ctx.fillStyle = lerpColor("#6e6e6e", "#3a3a3c", nightFactor);
+    ctx.fillStyle = lerpColor("#8a8a9a", "#4a4a58", nightFactor);
     ctx.beginPath();
     ctx.moveTo(sx + ts * 0.5 + ox, sy + ts * 0.15);
     ctx.lineTo(sx + ts * 0.2 + ox, sy + ts * 0.8);
