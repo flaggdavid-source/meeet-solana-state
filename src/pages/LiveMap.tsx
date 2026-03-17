@@ -2668,21 +2668,27 @@ const LiveMap = () => {
       // ─── Valley Fog ───
       drawValleyFog(ctx, w, h, t, clampedNight);
 
+      // ─── God Rays ───
+      drawGodRays(ctx, w, h, t, clampedNight);
+
+      // ─── Guild Territory Pulse ───
+      drawGuildTerritoryPulse(ctx, buildings, cam, z, t);
+
       // ─── Fog of War ───
       drawFogOfWar(ctx, agents, cam, z, w, h, clampedNight);
 
       // Minimap
       drawMinimap(ctx, terrain, buildings, agents, cam, z, w, h, clampedNight);
 
-      // ─── Hover Tooltip ───
-      drawHoverTooltip(ctx, hoveredEntityRef.current, mouseRef.current.x, mouseRef.current.y);
+      // ─── Enhanced Tooltip ───
+      drawEnhancedTooltip(ctx, agents, buildings, mouseRef.current.x, mouseRef.current.y, cam, z);
 
       raf = requestAnimationFrame(render);
     };
     render();
 
     // Input handlers
-    const onDown = (e: MouseEvent) => { dragRef.current = { dragging: true, lastX: e.clientX, lastY: e.clientY, moved: false }; followRef.current = null; setFollowAgent(null); cameraTargetRef.current = null; };
+    const onDown = (e: MouseEvent) => { dragRef.current = { dragging: true, lastX: e.clientX, lastY: e.clientY, moved: false }; followRef.current = null; setFollowAgent(null); cameraTargetRef.current = null; setContextMenu(null); };
     const onMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY };
       if (dragRef.current.dragging) {
