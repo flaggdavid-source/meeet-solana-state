@@ -1825,10 +1825,10 @@ const LiveMap = () => {
       </div>
 
       {/* Zoom */}
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2">
-        <button onClick={() => handleZoom(0.25)} className="glass-card p-2 hover:bg-card/80"><ZoomIn className="w-4 h-4 text-foreground" /></button>
-        <div className="glass-card px-2 py-1 text-center"><span className="text-[10px] font-body text-muted-foreground">{Math.round(zoom * 100)}%</span></div>
-        <button onClick={() => handleZoom(-0.25)} className="glass-card p-2 hover:bg-card/80"><ZoomOut className="w-4 h-4 text-foreground" /></button>
+      <div className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-1.5 sm:gap-2">
+        <button onClick={() => handleZoom(0.25)} className="glass-card p-1.5 sm:p-2 hover:bg-card/80"><ZoomIn className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-foreground" /></button>
+        <div className="glass-card px-1.5 sm:px-2 py-0.5 sm:py-1 text-center"><span className="text-[9px] sm:text-[10px] font-body text-muted-foreground">{Math.round(zoom * 100)}%</span></div>
+        <button onClick={() => handleZoom(-0.25)} className="glass-card p-1.5 sm:p-2 hover:bg-card/80"><ZoomOut className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-foreground" /></button>
       </div>
 
       {/* Events */}
