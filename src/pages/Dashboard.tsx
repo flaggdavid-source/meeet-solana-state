@@ -767,6 +767,9 @@ const Dashboard = () => {
                 <div className="space-y-4">
                   <MiniLeaderboard agents={topAgents} myAgentId={agent.id} />
 
+                  {/* Raid Claim Widget for regular users */}
+                  {!profile?.is_president && <RaidClaimForm />}
+
                   {/* Milestone mini-widget */}
                   <Card className="glass-card border-border overflow-hidden">
                     <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-secondary" />
