@@ -441,7 +441,7 @@ function AlliancesPanel() {
   });
 
   const respondAlliance = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+    mutationFn: async ({ id, status }: { id: string; status: "active" | "broken" | "expired" | "proposed" }) => {
       const { error } = await supabase.from("alliances").update({ status, updated_at: new Date().toISOString() }).eq("id", id);
       if (error) throw error;
     },
