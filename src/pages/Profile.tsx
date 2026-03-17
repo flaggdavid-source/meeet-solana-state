@@ -50,7 +50,7 @@ const ProfilePage = () => {
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [twitterHandle, setTwitterHandle] = useState("");
-  const [walletAddress, setWalletAddress] = useState("");
+  const [walletAddress, setWalletAddress] = useState(""); // kept for manual fallback
 
   useEffect(() => {
     if (profile) {
