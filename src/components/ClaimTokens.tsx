@@ -1,17 +1,16 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import {
-  Loader2, Coins, ArrowDown, Wallet, AlertTriangle, Flame, Receipt, CheckCircle2, Lock,
+  Loader2, Coins, ArrowDown, Wallet, AlertTriangle, Flame, Receipt, CheckCircle2, Lock, Clock,
 } from "lucide-react";
 import ConnectWallet from "./ConnectWallet";
+import { Progress } from "@/components/ui/progress";
 
 interface ClaimTokensProps {
   agentId: string;
@@ -19,9 +18,10 @@ interface ClaimTokensProps {
   walletAddress?: string | null;
 }
 
-const TAX_RATE = 0.05; // 5% claim tax
-const BURN_RATE = 0.20; // 20% of tax burned
+const TAX_RATE = 0.05;
+const BURN_RATE = 0.20;
 const MIN_CLAIM = 100;
+const DAILY_LIMIT = 10_000;
 
 export default function ClaimTokens({ agentId, agentBalance, walletAddress }: ClaimTokensProps) {
   const { user } = useAuth();
@@ -30,10 +30,34 @@ export default function ClaimTokens({ agentId, agentBalance, walletAddress }: Cl
   const [amount, setAmount] = useState("");
   const [open, setOpen] = useState(false);
 
+  // Fetch today's claimed amount for this agent
+  const { data: claimedToday = 0, refetch: refetchClaimed } = useQuery({
+    queryKey: ["daily-claim", agentId],
+    queryFn: async () => {
+      const todayStart = new Date();
+      todayStart.setUTCHours(0, 0, 0, 0);
+      const { data } = await supabase
+        .from("transactions")
+        .select("amount_meeet, tax_amount")
+        .eq("type", "transfer")
+        .eq("from_agent_id", agentId)
+        .gte("created_at", todayStart.toISOString());
+      return (data || []).reduce(
+        (sum, t) => sum + Number(t.amount_meeet || 0) + Number(t.tax_amount || 0), 0
+      );
+    },
+    enabled: !!agentId && open,
+  });
+
+  const remainingToday = Math.max(0, DAILY_LIMIT - claimedToday);
+  const usagePct = Math.min(100, (claimedToday / DAILY_LIMIT) * 100);
+
   const numAmount = Number(amount) || 0;
   const taxAmount = Math.floor(numAmount * TAX_RATE);
   const burnAmount = Math.floor(taxAmount * BURN_RATE);
   const netAmount = numAmount - taxAmount;
+
+  const effectiveMax = Math.min(agentBalance, remainingToday);
 
   const claimMutation = useMutation({
     mutationFn: async () => {
@@ -47,6 +71,7 @@ export default function ClaimTokens({ agentId, agentBalance, walletAddress }: Cl
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["my-agent"] });
       queryClient.invalidateQueries({ queryKey: ["recent-tx"] });
+      refetchClaimed();
       toast({
         title: "🎉 Claim submitted!",
         description: `${data.net_amount.toLocaleString()} $MEEET queued for withdrawal to ${walletAddress?.slice(0, 4)}...${walletAddress?.slice(-4)}.`,
@@ -59,8 +84,8 @@ export default function ClaimTokens({ agentId, agentBalance, walletAddress }: Cl
     },
   });
 
-  const canClaim = numAmount >= MIN_CLAIM && numAmount <= agentBalance && !!walletAddress;
-  const isTokenLive = false; // Toggle when SPL token launches
+  const canClaim = numAmount >= MIN_CLAIM && numAmount <= effectiveMax && !!walletAddress;
+  const isTokenLive = false;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -93,6 +118,34 @@ export default function ClaimTokens({ agentId, agentBalance, walletAddress }: Cl
             </p>
           </div>
 
+          {/* Daily limit tracker */}
+          <div className="glass-card rounded-lg p-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-muted-foreground font-body uppercase tracking-wider flex items-center gap-1">
+                <Clock className="w-3 h-3" /> Daily Limit
+              </span>
+              <span className="text-xs font-mono text-foreground">
+                {claimedToday.toLocaleString()} / {DAILY_LIMIT.toLocaleString()}
+              </span>
+            </div>
+            <Progress value={usagePct} className="h-1.5" />
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-muted-foreground font-body">Remaining today</span>
+              <span className={`text-xs font-mono font-semibold ${remainingToday > 0 ? "text-emerald-400" : "text-destructive"}`}>
+                {remainingToday.toLocaleString()} $MEEET
+              </span>
+            </div>
+          </div>
+
+          {remainingToday <= 0 && (
+            <div className="flex items-center gap-2 p-2.5 rounded-lg bg-destructive/10 border border-destructive/20">
+              <AlertTriangle className="w-4 h-4 text-destructive shrink-0" />
+              <p className="text-xs text-destructive font-body">
+                Daily claim limit reached. Resets at 00:00 UTC.
+              </p>
+            </div>
+          )}
+
           {/* Wallet check */}
           {!walletAddress ? (
             <div className="space-y-3">
@@ -106,7 +159,7 @@ export default function ClaimTokens({ agentId, agentBalance, walletAddress }: Cl
             </div>
           ) : (
             <>
-              {/* Connected wallet display */}
+              {/* Connected wallet */}
               <div className="flex items-center gap-2 p-2.5 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
                 <Wallet className="w-4 h-4 text-emerald-400 shrink-0" />
                 <div className="flex-1 min-w-0">
@@ -121,10 +174,10 @@ export default function ClaimTokens({ agentId, agentBalance, walletAddress }: Cl
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-body text-muted-foreground">Amount to claim</label>
                   <button
-                    onClick={() => setAmount(String(agentBalance))}
+                    onClick={() => setAmount(String(effectiveMax))}
                     className="text-[10px] text-primary hover:underline font-body"
                   >
-                    MAX
+                    MAX ({effectiveMax.toLocaleString()})
                   </button>
                 </div>
                 <Input
@@ -133,7 +186,7 @@ export default function ClaimTokens({ agentId, agentBalance, walletAddress }: Cl
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   min={MIN_CLAIM}
-                  max={agentBalance}
+                  max={effectiveMax}
                   className="font-mono bg-background"
                 />
               </div>
@@ -165,7 +218,7 @@ export default function ClaimTokens({ agentId, agentBalance, walletAddress }: Cl
                 <div className="flex items-center gap-2 p-2.5 rounded-lg bg-primary/5 border border-primary/20">
                   <Lock className="w-4 h-4 text-primary shrink-0" />
                   <p className="text-[10px] text-muted-foreground font-body">
-                    Claims are queued and will be processed after the $MEEET SPL token launches on Solana. Your claim is recorded on-chain.
+                    Claims are queued and will be processed after the $MEEET SPL token launches on Solana.
                   </p>
                 </div>
               )}
@@ -174,7 +227,7 @@ export default function ClaimTokens({ agentId, agentBalance, walletAddress }: Cl
               <Button
                 variant="hero"
                 className="w-full gap-2"
-                disabled={!canClaim || claimMutation.isPending}
+                disabled={!canClaim || claimMutation.isPending || remainingToday <= 0}
                 onClick={() => claimMutation.mutate()}
               >
                 {claimMutation.isPending ? (
@@ -182,11 +235,13 @@ export default function ClaimTokens({ agentId, agentBalance, walletAddress }: Cl
                 ) : (
                   <ArrowDown className="w-4 h-4" />
                 )}
-                {numAmount < MIN_CLAIM
-                  ? `Minimum ${MIN_CLAIM} $MEEET`
-                  : numAmount > agentBalance
-                    ? "Insufficient balance"
-                    : `Claim ${netAmount.toLocaleString()} $MEEET`}
+                {remainingToday <= 0
+                  ? "Daily limit reached"
+                  : numAmount > effectiveMax
+                    ? `Max ${effectiveMax.toLocaleString()} today`
+                    : numAmount < MIN_CLAIM
+                      ? `Minimum ${MIN_CLAIM} $MEEET`
+                      : `Claim ${netAmount.toLocaleString()} $MEEET`}
               </Button>
             </>
           )}
