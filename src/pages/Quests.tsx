@@ -458,7 +458,7 @@ function CreateQuestDialog({ userId }: { userId: string }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("other");
-  const [rewardSol, setRewardSol] = useState("0.5");
+  const [rewardSol, setRewardSol] = useState("0.01");
   const [rewardMeeet, setRewardMeeet] = useState("100");
   const [deadlineHours, setDeadlineHours] = useState("24");
   const [maxParticipants, setMaxParticipants] = useState("1");
@@ -530,7 +530,7 @@ function CreateQuestDialog({ userId }: { userId: string }) {
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label className="font-body">Reward SOL</Label>
-              <Input type="number" step="0.1" value={rewardSol} onChange={(e) => setRewardSol(e.target.value)} className="bg-background border-border" />
+              <Input type="number" step="0.01" min="0.01" value={rewardSol} onChange={(e) => setRewardSol(e.target.value)} className="bg-background border-border" />
             </div>
             <div className="space-y-2">
               <Label className="font-body">Reward $MEEET</Label>
