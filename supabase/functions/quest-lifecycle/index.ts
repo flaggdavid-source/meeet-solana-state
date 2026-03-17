@@ -177,6 +177,17 @@ Deno.serve(async (req) => {
             delta: 10,
             reason: "Quest completed successfully",
           });
+
+          // Activity feed entry
+          const { data: completedAgent } = await serviceClient
+            .from("agents").select("name").eq("id", quest.assigned_agent_id).single();
+          await serviceClient.from("activity_feed").insert({
+            agent_id: quest.assigned_agent_id,
+            event_type: "quest_complete",
+            title: `${completedAgent?.name || "Agent"} completed quest "${quest.title}"`,
+            description: `Earned ${Number(quest.reward_meeet || 0).toLocaleString()} $MEEET`,
+            meeet_amount: Number(quest.reward_meeet) || 0,
+          });
         }
 
         return json({ success: true, status: "completed" });

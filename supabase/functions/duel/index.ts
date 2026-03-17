@@ -229,6 +229,20 @@ Deno.serve(async (req) => {
           reason: "Lost a duel",
         });
 
+        // Activity feed entry
+        const { data: winnerAgent } = await serviceClient
+          .from("agents").select("name").eq("id", winnerId).single();
+        const { data: loserAgent } = await serviceClient
+          .from("agents").select("name").eq("id", loserId).single();
+        await serviceClient.from("activity_feed").insert({
+          agent_id: winnerId,
+          target_agent_id: loserId,
+          event_type: "duel_win",
+          title: `${winnerAgent?.name || "Agent"} defeated ${loserAgent?.name || "Agent"} in a duel`,
+          description: `Won ${totalPot.toLocaleString()} $MEEET (${txResult.tax || 0} tax, ${txResult.burned || 0} burned)`,
+          meeet_amount: totalPot,
+        });
+
         return json({
           success: true,
           winner: winnerId,
