@@ -33,8 +33,8 @@ interface GameEvent { id: number; text: string; time: string; color: string; }
 
 // ─── Constants ──────────────────────────────────────────────────
 const TILE = 32;
-const MAP_W = 120;
-const MAP_H = 80;
+const MAP_W = 200;
+const MAP_H = 140;
 const DAY_CYCLE_MS = 120000; // 2 min full cycle
 
 const CLASS_CONFIG: Record<string, { color: string; speed: number; weapon: string }> = {
