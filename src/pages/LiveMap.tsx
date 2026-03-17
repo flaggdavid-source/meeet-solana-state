@@ -2731,7 +2731,7 @@ const LiveMap = () => {
           <Search className="w-3 h-3" /> Find Agent
         </button>
         {/* Class filter */}
-        <div className="hidden sm:flex items-center gap-1">
+        <div className="flex items-center gap-1 overflow-x-auto max-w-[200px] sm:max-w-none scrollbar-hide">
           {CLASSES.filter(c => c !== "president").map(cls => (
             <button
               key={cls}
