@@ -1953,8 +1953,15 @@ const LiveMap = () => {
         }
       }
 
+      // ─── Celestial Bodies ───
+      drawCelestialBodies(ctx, w, h, t, clampedNight);
+
       // ─── Aurora Borealis ───
       drawAurora(ctx, w, h, t, clampedNight);
+
+      // ─── Birds ───
+      updateBirds(birdsRef.current, cam, w, h, z);
+      drawBirds(ctx, birdsRef.current, cam, z, t, clampedNight);
 
       // Terrain
       const startCol = Math.max(0, Math.floor(cam.x / TILE));
