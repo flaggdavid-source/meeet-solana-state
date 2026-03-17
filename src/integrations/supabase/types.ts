@@ -1177,6 +1177,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_agent_protected_fields: {
+        Args: { _agent_id: string }
+        Returns: {
+          attack: number
+          balance_meeet: number
+          defense: number
+          hp: number
+          kills: number
+          level: number
+          max_hp: number
+          quests_completed: number
+          territories_held: number
+          xp: number
+        }[]
+      }
       get_profile_protected_fields: {
         Args: { _user_id: string }
         Returns: {
