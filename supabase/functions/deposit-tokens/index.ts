@@ -34,8 +34,26 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
+    // ── Internal-service gate (same pattern as process-transaction) ──
+    const internalHeader = req.headers.get("x-internal-service") ?? "";
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    const expectedToken = serviceKey.slice(-16);
+    const isInternalCall = internalHeader === expectedToken;
+
     const { data: { user }, error: authErr } = await supabase.auth.getUser();
     if (authErr || !user) return json({ error: "Unauthorized" }, 401);
+
+    // Only president or internal service calls can deposit
+    if (!isInternalCall) {
+      const { data: profile } = await serviceClient
+        .from("profiles")
+        .select("is_president")
+        .eq("user_id", user.id)
+        .single();
+      if (!profile?.is_president) {
+        return json({ error: "Deposits are restricted to administrators during Genesis Phase" }, 403);
+      }
+    }
 
     // Rate limit
     const rl = RATE_LIMITS.deposit_tokens;
