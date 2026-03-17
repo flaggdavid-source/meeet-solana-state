@@ -2701,9 +2701,9 @@ const LiveMap = () => {
         drawAgent(ctx, a, cam, z, t, clampedNight);
       });
 
-      // Night overlay — very light
-      if (clampedNight > 0.3) {
-        ctx.fillStyle = `rgba(10,15,40,${(clampedNight - 0.3) * 0.2})`;
+      // Night overlay — extremely subtle blue tint, no dark blobs
+      if (clampedNight > 0.5) {
+        ctx.fillStyle = `rgba(15,20,50,${(clampedNight - 0.5) * 0.08})`;
         ctx.fillRect(0, 0, w, h);
       }
 
