@@ -2371,20 +2371,40 @@ const LiveMap = () => {
       const startRow = Math.max(0, Math.floor(cam.y / TILE));
       const endRow = Math.min(MAP_H, Math.ceil((cam.y + h / z) / TILE));
 
-      for (let row = startRow; row < endRow; row++) {
-        for (let col = startCol; col < endCol; col++) {
-          const sx = (col * TILE - cam.x) * z, sy = (row * TILE - cam.y) * z;
-          const tile = terrain[row][col];
-          ctx.fillStyle = lerpColor(TILE_PALETTE_DAY[tile].fill, TILE_PALETTE_NIGHT[tile].fill, clampedNight);
-          ctx.fillRect(sx, sy, TILE * z + 1, TILE * z + 1);
-          if (z > 0.5) {
-            ctx.strokeStyle = lerpColor(TILE_PALETTE_DAY[tile].border, TILE_PALETTE_NIGHT[tile].border, clampedNight);
-            ctx.lineWidth = 0.3;
-            ctx.strokeRect(sx, sy, TILE * z, TILE * z);
+      // ─── Terrain Caching ───
+      const tc = terrainCacheRef.current;
+      const needsRedraw = !tc ||
+        Math.abs(tc.camX - cam.x) > TILE * 3 ||
+        Math.abs(tc.camY - cam.y) > TILE * 3 ||
+        Math.abs(tc.zoom - z) > 0.02 ||
+        Math.abs(tc.nightFactor - clampedNight) > 0.08 ||
+        tc.w !== w || tc.h !== h;
+
+      if (needsRedraw) {
+        let offCanvas: HTMLCanvasElement;
+        if (tc) { offCanvas = tc.canvas; } else { offCanvas = document.createElement("canvas"); }
+        offCanvas.width = w;
+        offCanvas.height = h;
+        const offCtx = offCanvas.getContext("2d")!;
+        offCtx.clearRect(0, 0, w, h);
+
+        for (let row = startRow; row < endRow; row++) {
+          for (let col = startCol; col < endCol; col++) {
+            const sx = (col * TILE - cam.x) * z, sy = (row * TILE - cam.y) * z;
+            const tile = terrain[row][col];
+            offCtx.fillStyle = lerpColor(TILE_PALETTE_DAY[tile].fill, TILE_PALETTE_NIGHT[tile].fill, clampedNight);
+            offCtx.fillRect(sx, sy, TILE * z + 1, TILE * z + 1);
+            if (z > 0.5) {
+              offCtx.strokeStyle = lerpColor(TILE_PALETTE_DAY[tile].border, TILE_PALETTE_NIGHT[tile].border, clampedNight);
+              offCtx.lineWidth = 0.3;
+              offCtx.strokeRect(sx, sy, TILE * z, TILE * z);
+            }
+            if (z > 0.5) drawTileDecoration(offCtx, tile, sx, sy, col, row, z, t, clampedNight);
           }
-          if (z > 0.5) drawTileDecoration(ctx, tile, sx, sy, col, row, z, t, clampedNight);
         }
+        terrainCacheRef.current = { canvas: offCanvas, camX: cam.x, camY: cam.y, zoom: z, nightFactor: clampedNight, w, h };
       }
+      ctx.drawImage(terrainCacheRef.current!.canvas, 0, 0);
 
 
       // Cloud shadows drifting across terrain
