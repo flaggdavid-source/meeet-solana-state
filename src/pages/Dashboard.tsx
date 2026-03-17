@@ -486,6 +486,8 @@ const Dashboard = () => {
                   )}
                 </CardContent>
               </Card>
+              {/* President Inbox */}
+              {profile?.is_president && <PresidentInbox />}
             </div>
           )}
         </div>
