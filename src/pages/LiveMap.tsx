@@ -1742,6 +1742,7 @@ const LiveMap = () => {
   const terrainRef = useRef<number[][]>(generateTerrain());
   const buildingsRef = useRef<Building[]>(generateBuildings(terrainRef.current));
   const roadsRef = useRef<Road[]>(generateRoads(buildingsRef.current));
+  const resourceNodesRef = useRef<ResourceNode[]>(generateResourceNodes(terrainRef.current));
   const cameraRef = useRef({ x: 0, y: 0 });
   const cameraTargetRef = useRef<{ x: number; y: number } | null>(null);
   const cameraVelRef = useRef({ x: 0, y: 0 });
