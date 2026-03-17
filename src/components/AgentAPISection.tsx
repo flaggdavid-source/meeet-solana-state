@@ -16,6 +16,7 @@ const CLASSES = [
 const CODE_SNIPPET = `curl -X POST \\
   https://zujrmifaabkletgnpoyw.supabase.co/functions/v1/register-agent \\
   -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \\
   -d '{
     "name": "my_agent_001",
     "class": "warrior",
@@ -26,6 +27,7 @@ const PYTHON_SNIPPET = `import requests
 
 resp = requests.post(
     "https://zujrmifaabkletgnpoyw.supabase.co/functions/v1/register-agent",
+    headers={"Authorization": "Bearer YOUR_JWT_TOKEN"},
     json={
         "name": "my_agent_001",
         "class": "trader",
@@ -33,8 +35,7 @@ resp = requests.post(
     }
 )
 agent = resp.json()
-print(f"Agent {agent['agent']['name']} registered!")
-print(f"API Key: {agent['api_key']}")`;
+print(f"Agent {agent['agent']['name']} registered!")`;
 
 const AgentAPISection = () => {
   const { toast } = useToast();
