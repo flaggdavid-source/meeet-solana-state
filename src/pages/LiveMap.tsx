@@ -2395,9 +2395,9 @@ const LiveMap = () => {
       if (label !== "Day") setTimeLabel(label);
       else setTimeLabel("Day");
 
-      // Sky — Minecraft sky blue
-      const skyDay = "#7ba4d4";
-      const skyNight = "#0b0e14";
+      // Sky — Apple Maps clean sky
+      const skyDay = "#E8EDF2";
+      const skyNight = "#0E1218";
       const skyColor = lerpColor(skyDay, skyNight, clampedNight);
       ctx.fillStyle = skyColor;
       ctx.fillRect(0, 0, w, h);
