@@ -143,7 +143,7 @@ const AgentAPISection = () => {
             COPY & CONNECT YOUR AGENT
           </Button>
           <p className="text-xs text-muted-foreground font-body mt-3">
-            No auth required · Instant spawn · Free welcome bonus
+            Requires authentication · One agent per user · Free welcome bonus
           </p>
         </div>
       </div>
