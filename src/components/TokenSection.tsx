@@ -4,11 +4,9 @@ import { Lock, ArrowRight } from "lucide-react";
 
 const tokenomics = [
   { label: "Liquidity Pool", pct: "40%", color: "bg-primary" },
-  { label: "Treasury", pct: "20%", color: "bg-secondary" },
-  { label: "Quest Rewards", pct: "15%", color: "bg-accent" },
-  { label: "Team & Dev", pct: "10%", color: "bg-amber-400" },
-  { label: "Community Airdrop", pct: "10%", color: "bg-rose-400" },
-  { label: "Burn Reserve", pct: "5%", color: "bg-muted-foreground" },
+  { label: "System (Dev Buy)", pct: "10%", color: "bg-secondary" },
+  { label: "Team", pct: "5%", color: "bg-amber-400" },
+  { label: "Airdrop", pct: "5%", color: "bg-rose-400" },
 ];
 
 const roadmap = [
