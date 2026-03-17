@@ -2199,8 +2199,14 @@ const LiveMap = () => {
         ctx.fillRect(0, 0, w, h);
       }
 
+      // ─── Valley Fog ───
+      drawValleyFog(ctx, w, h, t, clampedNight);
+
       // Minimap
       drawMinimap(ctx, terrain, buildings, agents, cam, z, w, h, clampedNight);
+
+      // ─── Hover Tooltip ───
+      drawHoverTooltip(ctx, hoveredEntity, mouseRef.current.x, mouseRef.current.y);
 
       raf = requestAnimationFrame(render);
     };
