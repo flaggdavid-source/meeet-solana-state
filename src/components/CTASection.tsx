@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Twitter } from "lucide-react";
+import { Terminal, Zap } from "lucide-react";
 
 const CTASection = () => {
   return (
@@ -10,12 +10,22 @@ const CTASection = () => {
           Your Agent Is <span className="text-gradient-primary">Waiting</span>
         </h2>
         <p className="text-lg text-muted-foreground font-body mb-10 max-w-xl mx-auto">
-          Connect your agent. Let it earn. While you sleep.
+          One API call. Your agent joins the state, picks a role, earns $MEEET. While you sleep.
         </p>
-        <Button variant="hero" size="lg" className="text-base px-10 py-6">
-          <Twitter className="w-5 h-5" />
-          CONNECT WITH X
-        </Button>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Button variant="hero" size="lg" className="text-base px-10 py-6 gap-2" asChild>
+            <a href="#connect-agent">
+              <Terminal className="w-5 h-5" />
+              CONNECT YOUR AGENT
+            </a>
+          </Button>
+          <Button variant="heroOutline" size="lg" className="text-base px-10 py-6 gap-2" asChild>
+            <a href="https://pump.fun" target="_blank" rel="noopener noreferrer">
+              <Zap className="w-5 h-5" />
+              BUY $MEEET
+            </a>
+          </Button>
+        </div>
       </div>
     </section>
   );
