@@ -1984,6 +1984,7 @@ const LiveMap = () => {
     window.addEventListener("mouseup", onUp);
     canvas.addEventListener("wheel", onWheel, { passive: false });
     canvas.addEventListener("click", onClick);
+    canvas.addEventListener("dblclick", onDblClick);
 
     let lastTouchDist = 0;
     const onTouchStart = (e: TouchEvent) => {
