@@ -28,6 +28,10 @@ interface FloatingText {
   x: number; y: number; text: string; color: string; life: number; vy: number;
 }
 
+interface Trail {
+  x: number; y: number; color: string; life: number; maxLife: number;
+}
+
 interface Road { x1: number; y1: number; x2: number; y2: number; }
 
 interface GameEvent { id: number; text: string; time: string; color: string; }
