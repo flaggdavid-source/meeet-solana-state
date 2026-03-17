@@ -1669,23 +1669,9 @@ function drawTorchLights(ctx: CanvasRenderingContext2D, buildings: Building[], c
   });
 }
 
-// ─── Valley Fog ─────────────────────────────────────────────────
-function drawValleyFog(ctx: CanvasRenderingContext2D, w: number, h: number, t: number, nightFactor: number) {
-  const fogIntensity = nightFactor > 0.25 && nightFactor < 0.75 ? 1 - Math.abs(nightFactor - 0.5) / 0.25 : 0;
-  if (fogIntensity <= 0.01) return;
-  const alpha = fogIntensity * 0.07;
-  for (let i = 0; i < 8; i++) {
-    const fogX = ((t * 0.008 + i * 280) % (w + 500)) - 250;
-    const fogY = h * (0.45 + i * 0.065) + Math.sin(t * 0.0004 + i * 1.8) * 35;
-    const fogW = 220 + noise2d(i, 0, 42) * 180;
-    const fogH = 35 + noise2d(0, i, 43) * 25;
-    const fogGrad = ctx.createRadialGradient(fogX, fogY, 0, fogX, fogY, fogW);
-    fogGrad.addColorStop(0, `rgba(200,215,235,${alpha})`);
-    fogGrad.addColorStop(0.45, `rgba(180,195,220,${alpha * 0.45})`);
-    fogGrad.addColorStop(1, "transparent");
-    ctx.fillStyle = fogGrad;
-    ctx.beginPath(); ctx.ellipse(fogX, fogY, fogW, fogH, 0, 0, Math.PI * 2); ctx.fill();
-  }
+// ─── Valley Fog (DISABLED — no dark spots) ─────────────────────
+function drawValleyFog(_ctx: CanvasRenderingContext2D, _w: number, _h: number, _t: number, _nightFactor: number) {
+  return;
 }
 
 // ─── Hover Tooltip ──────────────────────────────────────────────
