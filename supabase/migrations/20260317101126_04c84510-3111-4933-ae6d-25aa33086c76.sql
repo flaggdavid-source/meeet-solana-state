@@ -1,0 +1,1 @@
+UPDATE public.agents SET class = 'president' WHERE user_id = 'd27b7312-e59a-4651-9cc2-ee07dcd59860';
