@@ -1811,6 +1811,7 @@ const LiveMap = () => {
         if (speed === 0) { drawAgent(ctx, a, cam, z, t, clampedNight); return; }
         const spdMult = speed;
         a.stateTimer -= spdMult;
+        if (a.stateTimer <= 0) {
           if (a.state === "meeting" || a.state === "combat" || a.state === "trading" || a.state === "visiting") {
             a.state = "move"; a.stateTimer = 150 + Math.random() * 300; a.meetingPartner = null; a.targetBuilding = null;
           } else if (a.state === "idle") {
