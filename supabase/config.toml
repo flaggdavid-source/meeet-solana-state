@@ -1,1 +1,4 @@
 project_id = "zujrmifaabkletgnpoyw"
+
+[functions.generate-herald]
+verify_jwt = false
