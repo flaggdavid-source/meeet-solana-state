@@ -177,17 +177,12 @@ const ProfilePage = () => {
                     />
                   </div>
                 </div>
+                {/* Solana Wallet Connection */}
                 <div className="space-y-2">
                   <Label className="font-body text-xs flex items-center gap-1.5">
                     <Wallet className="w-3 h-3" /> Solana Wallet
                   </Label>
-                  <Input
-                    value={walletAddress}
-                    onChange={(e) => setWalletAddress(e.target.value)}
-                    maxLength={50}
-                    className="bg-background font-mono text-xs"
-                    placeholder="Your SOL address"
-                  />
+                  <ConnectWallet savedAddress={profile?.wallet_address} />
                 </div>
                 <Button
                   variant="hero"
