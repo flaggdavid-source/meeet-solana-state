@@ -290,30 +290,7 @@ const Dashboard = () => {
                 {profile?.is_president && <Badge className="ml-2 bg-amber-500/20 text-amber-400 border-amber-500/30">👑 President</Badge>}
               </p>
             </div>
-            {!profile?.is_president && (
-              <Button
-                variant="heroOutline"
-                size="sm"
-                className="gap-2 text-xs"
-                onClick={async () => {
-                  try {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (!session) return;
-                    const res = await supabase.functions.invoke("activate-president", {
-                      headers: { Authorization: `Bearer ${session.access_token}` },
-                    });
-                    if (res.error) throw res.error;
-                    toast({ title: "👑 President Activated!", description: "You are now the President of MEEET State." });
-                    window.location.reload();
-                  } catch (e: any) {
-                    toast({ title: "Error", description: e.message || "Could not activate", variant: "destructive" });
-                  }
-                }}
-              >
-                👑 Activate President
-              </Button>
-            )}
-          </div>
+            </div>
 
           {!agent ? (
             /* ── No agent: show Create Agent ── */

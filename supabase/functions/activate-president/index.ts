@@ -40,16 +40,17 @@ Deno.serve(async (req) => {
     // ── Method 1: API Key activation (for external AI like Claude) ──
     const presidentKey = req.headers.get("x-president-key");
     const storedKey = Deno.env.get("PRESIDENT_API_KEY");
+    const OWNER_USER_ID = "d27b7312-e59a-4651-9cc2-ee07dcd59860";
 
     if (presidentKey) {
       if (!storedKey || presidentKey !== storedKey) {
         return json({ error: "Invalid president key" }, 403);
       }
 
-      // API key mode: accept user_id in body
+      // API key mode: only the owner can be president
       const { user_id } = await req.json().catch(() => ({}));
-      if (!user_id) {
-        return json({ error: "user_id required in body" }, 400);
+      if (!user_id || user_id !== OWNER_USER_ID) {
+        return json({ error: "Only the designated owner can be president" }, 403);
       }
 
       const { error: updateError } = await supabase
