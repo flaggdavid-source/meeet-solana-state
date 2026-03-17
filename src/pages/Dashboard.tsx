@@ -795,7 +795,7 @@ const Dashboard = () => {
                     </div>
 
                     {/* Revenue breakdown */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       {[
                         { icon: <Receipt className="w-4 h-4 text-emerald-400" />, label: "Tax Collected", value: Number(treasury.total_tax_collected).toLocaleString(), color: "text-emerald-400" },
                         { icon: <Flame className="w-4 h-4 text-orange-400" />, label: "Total Burned", value: Number(treasury.total_burned).toLocaleString(), color: "text-orange-400" },

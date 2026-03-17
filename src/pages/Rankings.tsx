@@ -204,7 +204,7 @@ const Rankings = () => {
                 <TabsTrigger
                   key={t.key}
                   value={t.key}
-                  className="flex items-center gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg px-4 py-2 text-xs font-display"
+                  className="flex items-center gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg px-3 sm:px-4 py-2 text-xs font-display whitespace-nowrap flex-shrink-0"
                 >
                   {t.icon}
                   {t.label}
