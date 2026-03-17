@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, X, ZoomIn, ZoomOut, Eye, Sun, Moon, Cloud } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 // ─── Types ──────────────────────────────────────────────────────
 interface Agent {
@@ -38,12 +39,13 @@ const MAP_H = 140;
 const DAY_CYCLE_MS = 120000; // 2 min full cycle
 
 const CLASS_CONFIG: Record<string, { color: string; speed: number; weapon: string }> = {
-  Warrior:  { color: "#EF4444", speed: 1.4, weapon: "sword" },
-  Trader:   { color: "#14F195", speed: 1.0, weapon: "bag" },
-  Miner:    { color: "#FBBF24", speed: 0.8, weapon: "pick" },
-  Diplomat: { color: "#34D399", speed: 0.6, weapon: "scroll" },
-  Oracle:   { color: "#9945FF", speed: 0.9, weapon: "orb" },
-  Banker:   { color: "#00C2FF", speed: 0.7, weapon: "coin" },
+  warrior:   { color: "#EF4444", speed: 1.4, weapon: "sword" },
+  trader:    { color: "#14F195", speed: 1.0, weapon: "bag" },
+  scout:     { color: "#FBBF24", speed: 0.8, weapon: "pick" },
+  diplomat:  { color: "#34D399", speed: 0.6, weapon: "scroll" },
+  builder:   { color: "#00C2FF", speed: 0.7, weapon: "coin" },
+  hacker:    { color: "#9945FF", speed: 0.9, weapon: "orb" },
+  president: { color: "#FFD700", speed: 0.5, weapon: "crown" },
 };
 const CLASSES = Object.keys(CLASS_CONFIG);
 
@@ -1344,35 +1346,47 @@ const LiveMap = () => {
     floatingTextsRef.current.push({ x, y, text, color, life: 60, vy: -0.5 });
   }, []);
 
-  // Init
+  // Init — fetch real agents from database
   useEffect(() => {
     const terrain = terrainRef.current;
-    const count = 100 + Math.floor(Math.random() * 25);
-    const agents: Agent[] = Array.from({ length: count }, (_, i) => {
-      const cls = CLASSES[i % CLASSES.length];
-      const cfg = CLASS_CONFIG[cls];
-      let x = 0, y = 0;
-      for (let a = 0; a < 200; a++) {
-        x = Math.random() * MAP_W * TILE; y = Math.random() * MAP_H * TILE;
-        const tx = Math.floor(x / TILE), ty = Math.floor(y / TILE);
-        if (tx >= 0 && tx < MAP_W && ty >= 0 && ty < MAP_H && terrain[ty][tx] >= 2 && terrain[ty][tx] <= 5) break;
-      }
-      return {
-        id: i, x, y, dir: Math.random() * Math.PI * 2, speed: cfg.speed,
-        name: NAMES[i % NAMES.length], cls, color: cfg.color,
-        phase: Math.random() * Math.PI * 2, linked: Math.random() > 0.6,
-        state: "move" as const, stateTimer: 100 + Math.random() * 300,
-        meetingPartner: null, reputation: Math.floor(100 + Math.random() * 800),
-        balance: Math.floor(Math.random() * 5000), level: 1 + Math.floor(Math.random() * 25),
-        targetBuilding: null, hp: 80 + Math.floor(Math.random() * 20), maxHp: 100,
-      };
-    });
-    agentsRef.current = agents;
-    setAgentCount(count);
-    cameraRef.current = { x: (MAP_W * TILE) / 2 - window.innerWidth / 2, y: (MAP_H * TILE) / 2 - window.innerHeight / 2 };
-    addEvent("🌐 Welcome to MEEET State — The First AI Nation on Solana", "#14F195");
-    addEvent(`👥 ${count} agents roaming across ${buildingsRef.current.length} structures`, "#00C2FF");
-    addEvent("🏛️ Parliament is in session — 3 laws pending vote", "#9945FF");
+
+    const initAgents = async () => {
+      const { data: dbAgents } = await supabase
+        .from("agents")
+        .select("id, name, class, level, balance_meeet, hp, max_hp, status, pos_x, pos_y")
+        .order("created_at", { ascending: true });
+
+      const realAgents = dbAgents ?? [];
+      const agents: Agent[] = realAgents.map((db, i) => {
+        const cls = db.class || "warrior";
+        const cfg = CLASS_CONFIG[cls] || CLASS_CONFIG.warrior;
+        // Use stored position or find a valid spawn
+        let x = (db.pos_x || 50) * TILE;
+        let y = (db.pos_y || 50) * TILE;
+        // Ensure position is within map bounds
+        x = Math.max(TILE, Math.min(x, (MAP_W - 1) * TILE));
+        y = Math.max(TILE, Math.min(y, (MAP_H - 1) * TILE));
+
+        return {
+          id: i, x, y, dir: Math.random() * Math.PI * 2, speed: cfg.speed,
+          name: db.name, cls, color: cfg.color,
+          phase: Math.random() * Math.PI * 2, linked: Math.random() > 0.6,
+          state: "move" as const, stateTimer: 100 + Math.random() * 300,
+          meetingPartner: null, reputation: Math.floor(100 + Math.random() * 800),
+          balance: Number(db.balance_meeet) || 0, level: db.level || 1,
+          targetBuilding: null, hp: db.hp || 100, maxHp: db.max_hp || 100,
+        };
+      });
+
+      agentsRef.current = agents;
+      setAgentCount(agents.length);
+      cameraRef.current = { x: (MAP_W * TILE) / 2 - window.innerWidth / 2, y: (MAP_H * TILE) / 2 - window.innerHeight / 2 };
+      addEvent("🌐 Welcome to MEEET State — The First AI Nation on Solana", "#14F195");
+      addEvent(`👥 ${agents.length} agents roaming across ${buildingsRef.current.length} structures`, "#00C2FF");
+      addEvent("🏛️ Parliament is in session — laws pending vote", "#9945FF");
+    };
+
+    initAgents();
   }, [addEvent]);
 
   // Weather cycle
