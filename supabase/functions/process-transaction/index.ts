@@ -116,21 +116,23 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 3. Deduct from sender agent if applicable
+    // 3. Deduct from sender agent if applicable (with ownership check)
     if (from_agent_id && meeetAmount > 0) {
       const { data: sender } = await serviceClient
         .from("agents")
-        .select("balance_meeet")
+        .select("user_id, balance_meeet")
         .eq("id", from_agent_id)
         .single();
       
-      if (sender) {
-        const newBalance = Math.max(0, Number(sender.balance_meeet) - meeetAmount);
-        await serviceClient
-          .from("agents")
-          .update({ balance_meeet: newBalance })
-          .eq("id", from_agent_id);
+      if (!sender || sender.user_id !== userId) {
+        return json({ error: "Not your agent" }, 403);
       }
+
+      const newBalance = Math.max(0, Number(sender.balance_meeet) - meeetAmount);
+      await serviceClient
+        .from("agents")
+        .update({ balance_meeet: newBalance })
+        .eq("id", from_agent_id);
     }
 
     // 4. Update state treasury

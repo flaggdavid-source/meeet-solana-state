@@ -14,6 +14,96 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_feed: {
+        Row: {
+          agent_id: string | null
+          created_at: string
+          description: string | null
+          event_type: string
+          id: string
+          meeet_amount: number | null
+          target_agent_id: string | null
+          title: string
+        }
+        Insert: {
+          agent_id?: string | null
+          created_at?: string
+          description?: string | null
+          event_type: string
+          id?: string
+          meeet_amount?: number | null
+          target_agent_id?: string | null
+          title: string
+        }
+        Update: {
+          agent_id?: string | null
+          created_at?: string
+          description?: string | null
+          event_type?: string
+          id?: string
+          meeet_amount?: number | null
+          target_agent_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_feed_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_feed_target_agent_id_fkey"
+            columns: ["target_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_messages: {
+        Row: {
+          channel: string
+          content: string
+          created_at: string
+          from_agent_id: string
+          id: string
+          to_agent_id: string | null
+        }
+        Insert: {
+          channel?: string
+          content: string
+          created_at?: string
+          from_agent_id: string
+          id?: string
+          to_agent_id?: string | null
+        }
+        Update: {
+          channel?: string
+          content?: string
+          created_at?: string
+          from_agent_id?: string
+          id?: string
+          to_agent_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_messages_from_agent_id_fkey"
+            columns: ["from_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_messages_to_agent_id_fkey"
+            columns: ["to_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agents: {
         Row: {
           attack: number
@@ -79,6 +169,67 @@ export type Database = {
           xp?: number
         }
         Relationships: []
+      }
+      alliances: {
+        Row: {
+          agent_a_id: string
+          agent_b_id: string
+          alliance_type: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          message: string | null
+          proposed_by: string
+          status: Database["public"]["Enums"]["alliance_status"]
+          updated_at: string
+        }
+        Insert: {
+          agent_a_id: string
+          agent_b_id: string
+          alliance_type?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          message?: string | null
+          proposed_by: string
+          status?: Database["public"]["Enums"]["alliance_status"]
+          updated_at?: string
+        }
+        Update: {
+          agent_a_id?: string
+          agent_b_id?: string
+          alliance_type?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          message?: string | null
+          proposed_by?: string
+          status?: Database["public"]["Enums"]["alliance_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alliances_agent_a_id_fkey"
+            columns: ["agent_a_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alliances_agent_b_id_fkey"
+            columns: ["agent_b_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alliances_proposed_by_fkey"
+            columns: ["proposed_by"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       disputes: {
         Row: {
@@ -815,6 +966,60 @@ export type Database = {
           },
         ]
       }
+      trade_offers: {
+        Row: {
+          created_at: string
+          expires_at: string
+          from_agent_id: string
+          id: string
+          message: string | null
+          offer_meeet: number
+          request_meeet: number
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["trade_status"]
+          to_agent_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          from_agent_id: string
+          id?: string
+          message?: string | null
+          offer_meeet?: number
+          request_meeet?: number
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["trade_status"]
+          to_agent_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          from_agent_id?: string
+          id?: string
+          message?: string | null
+          offer_meeet?: number
+          request_meeet?: number
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["trade_status"]
+          to_agent_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trade_offers_from_agent_id_fkey"
+            columns: ["from_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trade_offers_to_agent_id_fkey"
+            columns: ["to_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           amount_meeet: number | null
@@ -952,6 +1157,7 @@ export type Database = {
         | "in_combat"
         | "trading"
         | "exploring"
+      alliance_status: "proposed" | "active" | "broken" | "expired"
       bid_type: "yes" | "no" | "counter"
       dispute_status:
         | "open"
@@ -996,6 +1202,12 @@ export type Database = {
         | "jail"
         | "teleporter"
       territory_type: "plains" | "forest" | "mountain" | "coastal" | "desert"
+      trade_status:
+        | "pending"
+        | "accepted"
+        | "declined"
+        | "cancelled"
+        | "expired"
       transaction_type:
         | "quest_reward"
         | "trade"
@@ -1156,6 +1368,7 @@ export const Constants = {
         "trading",
         "exploring",
       ],
+      alliance_status: ["proposed", "active", "broken", "expired"],
       bid_type: ["yes", "no", "counter"],
       dispute_status: [
         "open",
@@ -1204,6 +1417,7 @@ export const Constants = {
         "teleporter",
       ],
       territory_type: ["plains", "forest", "mountain", "coastal", "desert"],
+      trade_status: ["pending", "accepted", "declined", "cancelled", "expired"],
       transaction_type: [
         "quest_reward",
         "trade",

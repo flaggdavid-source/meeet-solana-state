@@ -7,6 +7,7 @@ const NAV_LINKS = [
   { href: "/live", label: "Map" },
   { href: "/quests", label: "Quests" },
   { href: "/arena", label: "Arena" },
+  { href: "/social", label: "Social" },
   { href: "/rankings", label: "Rankings" },
   { href: "/parliament", label: "Parliament" },
   { href: "/herald", label: "Herald" },
