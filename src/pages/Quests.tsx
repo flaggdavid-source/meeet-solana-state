@@ -530,7 +530,7 @@ function CreateQuestDialog({ userId }: { userId: string }) {
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label className="font-body">Reward SOL</Label>
-              <Input type="number" step="0.1" value={rewardSol} onChange={(e) => setRewardSol(e.target.value)} className="bg-background border-border" />
+              <Input type="number" step="0.01" min="0.01" value={rewardSol} onChange={(e) => setRewardSol(e.target.value)} className="bg-background border-border" />
             </div>
             <div className="space-y-2">
               <Label className="font-body">Reward $MEEET</Label>
