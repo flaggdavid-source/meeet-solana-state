@@ -5,6 +5,7 @@ import AgentAPISection from "@/components/AgentAPISection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import TokenSection from "@/components/TokenSection";
 import CTASection from "@/components/CTASection";
+import PetitionForm from "@/components/PetitionForm";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -17,6 +18,12 @@ const Index = () => {
         <AgentAPISection />
         <HowItWorksSection />
         <TokenSection />
+        {/* Petition Section */}
+        <section id="petition" className="py-24 relative">
+          <div className="container max-w-lg mx-auto px-4">
+            <PetitionForm />
+          </div>
+        </section>
         <CTASection />
       </main>
       <Footer />

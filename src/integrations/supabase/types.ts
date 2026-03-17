@@ -328,6 +328,50 @@ export type Database = {
         }
         Relationships: []
       }
+      petitions: {
+        Row: {
+          agent_id: string | null
+          created_at: string
+          id: string
+          message: string
+          replied_at: string | null
+          reply: string | null
+          sender_name: string
+          status: string
+          subject: string
+        }
+        Insert: {
+          agent_id?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          replied_at?: string | null
+          reply?: string | null
+          sender_name: string
+          status?: string
+          subject: string
+        }
+        Update: {
+          agent_id?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          replied_at?: string | null
+          reply?: string | null
+          sender_name?: string
+          status?: string
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "petitions_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
