@@ -2693,14 +2693,14 @@ const LiveMap = () => {
         drawAgent(ctx, a, cam, z, t, clampedNight);
       });
 
-      // Night overlay
-      if (clampedNight > 0.1) {
-        ctx.fillStyle = `rgba(5,5,20,${clampedNight * 0.35})`;
+      // Night overlay — softer for fantasy feel
+      if (clampedNight > 0.15) {
+        ctx.fillStyle = `rgba(10,15,40,${clampedNight * 0.25})`;
         ctx.fillRect(0, 0, w, h);
-        // Vignette
-        const vig = ctx.createRadialGradient(w / 2, h / 2, w * 0.3, w / 2, h / 2, w * 0.7);
+        // Subtle vignette
+        const vig = ctx.createRadialGradient(w / 2, h / 2, w * 0.35, w / 2, h / 2, w * 0.75);
         vig.addColorStop(0, "transparent");
-        vig.addColorStop(1, `rgba(0,0,10,${clampedNight * 0.4})`);
+        vig.addColorStop(1, `rgba(5,10,25,${clampedNight * 0.25})`);
         ctx.fillStyle = vig;
         ctx.fillRect(0, 0, w, h);
       }
