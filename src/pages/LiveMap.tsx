@@ -3027,6 +3027,74 @@ const LiveMap = () => {
         </div>
       )}
 
+      {/* Right-click Context Menu */}
+      {contextMenu && (
+        <div
+          className="absolute z-30 glass-card py-1 w-44 animate-scale-in"
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+          onClick={() => setContextMenu(null)}
+        >
+          {contextMenu.agent && (
+            <>
+              <div className="px-3 py-1.5 border-b border-border">
+                <p className="text-[10px] font-display font-bold" style={{ color: contextMenu.agent.color }}>{contextMenu.agent.name}</p>
+                <p className="text-[9px] text-muted-foreground">{contextMenu.agent.cls} · Lv.{contextMenu.agent.level}</p>
+              </div>
+              <button
+                className="w-full text-left px-3 py-1.5 text-[10px] font-body text-foreground hover:bg-muted/40 transition-colors flex items-center gap-2"
+                onClick={() => { setSelectedAgent({ ...contextMenu.agent! }); setContextMenu(null); }}
+              >
+                <Eye className="w-3 h-3" /> Inspect Agent
+              </button>
+              <button
+                className="w-full text-left px-3 py-1.5 text-[10px] font-body text-foreground hover:bg-muted/40 transition-colors flex items-center gap-2"
+                onClick={() => {
+                  followRef.current = contextMenu.agent!.id;
+                  setFollowAgent(contextMenu.agent!.id);
+                  setSelectedAgent({ ...contextMenu.agent! });
+                  addEvent(`👁️ Following ${contextMenu.agent!.name}`, contextMenu.agent!.color);
+                  setContextMenu(null);
+                }}
+              >
+                <Crosshair className="w-3 h-3" /> Follow Agent
+              </button>
+              <button
+                className="w-full text-left px-3 py-1.5 text-[10px] font-body text-foreground hover:bg-muted/40 transition-colors flex items-center gap-2"
+                onClick={() => {
+                  navigateToAgent(contextMenu.agent!.id);
+                  setContextMenu(null);
+                }}
+              >
+                <MapPin className="w-3 h-3" /> Navigate To
+              </button>
+            </>
+          )}
+          {contextMenu.building && (
+            <>
+              <div className="px-3 py-1.5 border-b border-border">
+                <p className="text-[10px] font-display font-bold" style={{ color: contextMenu.building.accent }}>{contextMenu.building.icon} {contextMenu.building.name}</p>
+              </div>
+              <button
+                className="w-full text-left px-3 py-1.5 text-[10px] font-body text-foreground hover:bg-muted/40 transition-colors flex items-center gap-2"
+                onClick={() => { setSelectedBuilding(contextMenu.building!); setContextMenu(null); }}
+              >
+                <Eye className="w-3 h-3" /> Inspect Building
+              </button>
+              <button
+                className="w-full text-left px-3 py-1.5 text-[10px] font-body text-foreground hover:bg-muted/40 transition-colors flex items-center gap-2"
+                onClick={() => {
+                  const b = contextMenu.building!;
+                  cameraTargetRef.current = { x: b.x + b.w * TILE / 2 - window.innerWidth / zoomRef.current / 2, y: b.y + b.h * TILE / 2 - window.innerHeight / zoomRef.current / 2 };
+                  setContextMenu(null);
+                }}
+              >
+                <MapPin className="w-3 h-3" /> Center on Map
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
       {/* Building Directory */}
       {showDirectory && (
         <div className="absolute top-12 sm:top-16 left-2 sm:left-4 bottom-14 sm:bottom-16 w-56 sm:w-64 z-10 glass-card flex flex-col overflow-hidden">
