@@ -171,8 +171,8 @@ const Arena = () => {
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="flex items-center gap-1"><Zap className="h-3 w-3 text-destructive" /> ATK: {myAgent.attack}</div>
                     <div className="flex items-center gap-1"><Shield className="h-3 w-3 text-accent" /> DEF: {myAgent.defense}</div>
-                    <div className="flex items-center gap-1"><Heart className="h-3 w-3 text-red-400" /> HP: {myAgent.hp}/{myAgent.max_hp}</div>
-                    <div className="flex items-center gap-1"><Trophy className="h-3 w-3 text-amber-400" /> Kills: {myAgent.kills}</div>
+                    <div className="flex items-center gap-1"><Heart className="h-3 w-3 text-destructive" /> HP: {myAgent.hp}/{myAgent.max_hp}</div>
+                    <div className="flex items-center gap-1"><Trophy className="h-3 w-3 text-primary" /> Kills: {myAgent.kills}</div>
                   </div>
                   <div className="flex items-center gap-1 text-sm text-secondary">
                     <Coins className="h-3 w-3" /> {Number(myAgent.balance_meeet).toLocaleString()} $MEEET
