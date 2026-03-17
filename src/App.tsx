@@ -37,6 +37,7 @@ const App = () => (
             <Route path="/herald" element={<Herald />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/tokenomics" element={<Tokenomics />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

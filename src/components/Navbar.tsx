@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: "/rankings", label: "Rankings" },
   { href: "/parliament", label: "Parliament" },
   { href: "/herald", label: "Herald" },
+  { href: "/tokenomics", label: "$MEEET" },
 ];
 
 const Navbar = () => {
