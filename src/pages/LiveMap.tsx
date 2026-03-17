@@ -136,17 +136,28 @@ function lerpColor(a: string, b: string, t: number): string {
 function generateTerrain(): number[][] {
   const tiles: number[][] = [];
   const seed = 42;
+  const cx = MAP_W / 2, cy = MAP_H / 2;
+  const maxR = Math.min(cx, cy) - 2; // island radius
   for (let y = 0; y < MAP_H; y++) {
     tiles[y] = [];
     for (let x = 0; x < MAP_W; x++) {
-      const elevation = fbm(x * 0.06, y * 0.06, seed);
+      // Distance from center normalized to 0..1
+      const dx = (x - cx) / maxR, dy = (y - cy) / maxR;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      // Smooth circular falloff — ocean beyond radius
+      const falloff = 1 - Math.pow(Math.min(dist, 1.3), 2.2);
+      const elevation = fbm(x * 0.06, y * 0.06, seed) * falloff;
       const moisture = fbm(x * 0.08 + 100, y * 0.08 + 100, seed + 7);
-      if (elevation < 0.28) tiles[y][x] = 0;
-      else if (elevation < 0.35) tiles[y][x] = 1;
-      else if (elevation < 0.38) tiles[y][x] = 2;
-      else if (elevation < 0.55) tiles[y][x] = moisture > 0.5 ? 4 : 3;
-      else if (elevation < 0.65) tiles[y][x] = 5;
-      else if (elevation < 0.78) tiles[y][x] = 6;
+      // Soft beach edge with noise
+      const edgeNoise = fbm(x * 0.12, y * 0.12, seed + 20) * 0.08;
+      const adjustedElevation = elevation + edgeNoise;
+      if (dist > 1.05) tiles[y][x] = 0; // deep ocean outside circle
+      else if (adjustedElevation < 0.28) tiles[y][x] = 0;
+      else if (adjustedElevation < 0.35) tiles[y][x] = 1;
+      else if (adjustedElevation < 0.38) tiles[y][x] = 2;
+      else if (adjustedElevation < 0.55) tiles[y][x] = moisture > 0.5 ? 4 : 3;
+      else if (adjustedElevation < 0.65) tiles[y][x] = 5;
+      else if (adjustedElevation < 0.78) tiles[y][x] = 6;
       else tiles[y][x] = 7;
     }
   }
