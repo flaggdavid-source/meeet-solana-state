@@ -1314,6 +1314,26 @@ function drawMinimap(ctx: CanvasRenderingContext2D, terrain: number[][], buildin
   ctx.fillText("MEEET STATE", mmX + 4, mmY + mmH - 4);
 }
 
+const EVENT_TYPE_CONFIG: Record<string, { icon: string; color: string }> = {
+  duel: { icon: "⚔️", color: "#EF4444" },
+  trade: { icon: "💰", color: "#14F195" },
+  quest_complete: { icon: "📜", color: "#06B6D4" },
+  quest_created: { icon: "📋", color: "#3B82F6" },
+  level_up: { icon: "🎓", color: "#6366F1" },
+  alliance: { icon: "🤝", color: "#34D399" },
+  vote: { icon: "🗳️", color: "#9945FF" },
+  law: { icon: "🏛️", color: "#9945FF" },
+  burn: { icon: "🔥", color: "#F97316" },
+  mining: { icon: "⛏️", color: "#FBBF24" },
+  transfer: { icon: "💸", color: "#00C2FF" },
+  stake: { icon: "🏦", color: "#00C2FF" },
+  combat: { icon: "⚔️", color: "#EF4444" },
+  death: { icon: "💀", color: "#EF4444" },
+  spawn: { icon: "🆕", color: "#14F195" },
+  petition: { icon: "📨", color: "#A78BFA" },
+  guild: { icon: "🏰", color: "#F59E0B" },
+};
+
 // ─── Aurora Borealis ────────────────────────────────────────────
 function drawAurora(ctx: CanvasRenderingContext2D, w: number, h: number, t: number, nightFactor: number) {
   if (nightFactor < 0.4) return;
