@@ -2041,24 +2041,44 @@ const LiveMap = () => {
       window.removeEventListener("mouseup", onUp);
       canvas.removeEventListener("wheel", onWheel);
       canvas.removeEventListener("click", onClick);
+      canvas.removeEventListener("dblclick", onDblClick);
       canvas.removeEventListener("touchstart", onTouchStart);
       canvas.removeEventListener("touchmove", onTouchMove);
       canvas.removeEventListener("touchend", onTouchEnd);
     };
   }, []);
 
+  // WASD + Escape keyboard handler
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (selectedBuilding || selectedAgent) { setSelectedBuilding(null); setSelectedAgent(null); }
+    const onKeyDown = (e: KeyboardEvent) => {
+      const key = e.key.toLowerCase();
+      if (["w","a","s","d","arrowup","arrowdown","arrowleft","arrowright"].includes(key)) {
+        keysRef.current.add(key);
+        e.preventDefault();
+      }
+      if (key === "escape") {
+        if (followRef.current !== null) { followRef.current = null; setFollowAgent(null); }
+        else if (selectedBuilding || selectedAgent) { setSelectedBuilding(null); setSelectedAgent(null); }
         else navigate("/");
       }
+      if (key === " ") { e.preventDefault(); simSpeedRef.current = simSpeedRef.current === 0 ? 1 : 0; setSimSpeed(simSpeedRef.current as 0|1|2); }
+      if (key === "f" && !e.ctrlKey) { simSpeedRef.current = simSpeedRef.current === 2 ? 1 : 2; setSimSpeed(simSpeedRef.current as 0|1|2); }
     };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    const onKeyUp = (e: KeyboardEvent) => { keysRef.current.delete(e.key.toLowerCase()); };
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    return () => { window.removeEventListener("keydown", onKeyDown); window.removeEventListener("keyup", onKeyUp); };
   }, [navigate, selectedBuilding, selectedAgent]);
 
   const handleZoom = (d: number) => { const nz = Math.max(0.25, Math.min(3.5, zoomRef.current + d)); zoomRef.current = nz; setZoom(nz); };
+  const navigateToAgent = (agentId: number) => {
+    const a = agentsRef.current.find(ag => ag.id === agentId);
+    if (!a) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    cameraTargetRef.current = { x: a.x - canvas.width / zoomRef.current / 2, y: a.y - canvas.height / zoomRef.current / 2 };
+    setSelectedAgent({ ...a });
+  };
 
   return (
     <div className="fixed inset-0 bg-background overflow-hidden cursor-grab active:cursor-grabbing">
