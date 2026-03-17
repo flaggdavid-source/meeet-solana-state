@@ -2360,6 +2360,9 @@ const LiveMap = () => {
       // ─── Valley Fog ───
       drawValleyFog(ctx, w, h, t, clampedNight);
 
+      // ─── Fog of War ───
+      drawFogOfWar(ctx, agents, cam, z, w, h, clampedNight);
+
       // Minimap
       drawMinimap(ctx, terrain, buildings, agents, cam, z, w, h, clampedNight);
 
