@@ -914,7 +914,7 @@ const Dashboard = () => {
                     </Card>
                   </div>
 
-                  {/* Presidential Actions Row */}
+                  {/* Presidential Actions + Raid Claims Row */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {/* Quick Presidential Actions */}
                     <Card className="glass-card border-amber-500/15">
@@ -973,6 +973,9 @@ const Dashboard = () => {
                     {/* President Inbox */}
                     <PresidentInbox />
                   </div>
+
+                  {/* Raid Claims Admin Row */}
+                  <RaidClaimsAdmin />
                 </div>
               )}
             </div>
