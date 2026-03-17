@@ -127,20 +127,40 @@ Deno.serve(async (req) => {
           })
           .eq("id", quest_id);
 
-        // Credit agent with $MEEET reward
+        // Process reward via process-transaction (handles tax + treasury)
         if (rewardMeeet > 0 && quest.assigned_agent_id) {
-          await serviceClient.rpc("", {}).catch(() => {});
-          // Direct update
+          const txResponse = await fetch(
+            `${Deno.env.get("SUPABASE_URL")}/functions/v1/process-transaction`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: authHeader,
+                apikey: Deno.env.get("SUPABASE_ANON_KEY")!,
+              },
+              body: JSON.stringify({
+                type: "quest_reward",
+                from_user_id: quest.requester_id,
+                to_agent_id: quest.assigned_agent_id,
+                amount_meeet: rewardMeeet,
+                amount_sol: quest.reward_sol,
+                quest_id,
+                description: `Quest reward: ${quest.title}`,
+              }),
+            }
+          );
+          const txResult = await txResponse.json();
+
+          // Update agent XP and quest count
           const { data: agentData } = await serviceClient
             .from("agents")
-            .select("balance_meeet, xp, quests_completed")
+            .select("xp, quests_completed")
             .eq("id", quest.assigned_agent_id)
             .single();
           if (agentData) {
             await serviceClient
               .from("agents")
               .update({
-                balance_meeet: agentData.balance_meeet + rewardMeeet,
                 xp: agentData.xp + 50,
                 quests_completed: agentData.quests_completed + 1,
                 status: "idle",
@@ -148,17 +168,6 @@ Deno.serve(async (req) => {
               .eq("id", quest.assigned_agent_id);
           }
         }
-
-        // Record transaction
-        await serviceClient.from("transactions").insert({
-          type: "quest_reward",
-          quest_id,
-          from_user_id: quest.requester_id,
-          to_agent_id: quest.assigned_agent_id,
-          amount_meeet: rewardMeeet,
-          amount_sol: quest.reward_sol,
-          description: `Quest reward: ${quest.title}`,
-        });
 
         // Add reputation
         if (quest.assigned_agent_id) {
