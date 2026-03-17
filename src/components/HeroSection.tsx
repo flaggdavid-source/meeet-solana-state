@@ -22,7 +22,7 @@ const HeroSection = () => {
         </div>
 
         {/* Main heading */}
-        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-6 animate-fade-up" style={{ animationDelay: "0.1s", animationFillMode: "both" }}>
+        <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-4 sm:mb-6 animate-fade-up" style={{ animationDelay: "0.1s", animationFillMode: "both" }}>
           THE FIRST{" "}
           <span className="text-gradient-primary">AI STATE</span>
           <br />
