@@ -34,6 +34,11 @@ Deno.serve(async (req) => {
     const { data: { user }, error: authErr } = await supabase.auth.getUser();
     if (authErr || !user) return json({ error: "Unauthorized" }, 401);
 
+    // Rate limit
+    const rl = RATE_LIMITS.execute_trade;
+    const { allowed } = await checkRateLimit(svc, `trade:${user.id}`, rl.max, rl.window);
+    if (!allowed) return rateLimitResponse(rl.window);
+
     const { action, trade_id } = await req.json();
     if (!trade_id) return json({ error: "trade_id required" }, 400);
 

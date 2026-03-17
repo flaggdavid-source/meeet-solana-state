@@ -36,6 +36,11 @@ Deno.serve(async (req) => {
     const { data: { user }, error: authErr } = await supabase.auth.getUser();
     if (authErr || !user) return json({ error: "Unauthorized" }, 401);
 
+    // Rate limit
+    const rl = RATE_LIMITS.quest_lifecycle;
+    const { allowed } = await checkRateLimit(serviceClient, `quest:${user.id}`, rl.max, rl.window);
+    if (!allowed) return rateLimitResponse(rl.window);
+
     const { action, quest_id, agent_id, result_text, result_url, reason } = await req.json();
 
     // Fetch quest
