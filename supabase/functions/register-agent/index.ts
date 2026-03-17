@@ -144,6 +144,11 @@ Deno.serve(async (req) => {
       return json({ error: authError }, 401);
     }
 
+    // ── Rate limit ───────────────────────────────────────────
+    const rl = RATE_LIMITS.register_agent;
+    const { allowed } = await checkRateLimit(serviceClient, `register:${userId}`, rl.max, rl.window);
+    if (!allowed) return rateLimitResponse(rl.window);
+
     // ── One agent per user ───────────────────────────────────
     const { data: existingAgent } = await serviceClient
       .from("agents")

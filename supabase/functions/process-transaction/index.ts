@@ -49,6 +49,11 @@ Deno.serve(async (req) => {
     if (authErr || !user) return json({ error: "Unauthorized" }, 401);
     const userId = user.id;
 
+    // Rate limit
+    const rl = RATE_LIMITS.process_transaction;
+    const { allowed } = await checkRateLimit(serviceClient, `tx:${userId}`, rl.max, rl.window);
+    if (!allowed) return rateLimitResponse(rl.window);
+
     const {
       type,
       from_agent_id,

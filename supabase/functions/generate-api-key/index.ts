@@ -58,6 +58,11 @@ Deno.serve(async (req) => {
 
     const serviceClient = createClient(supabaseUrl, serviceKey);
 
+    // Rate limit
+    const rl = RATE_LIMITS.generate_api_key;
+    const { allowed } = await checkRateLimit(serviceClient, `apikey:${user.id}`, rl.max, rl.window);
+    if (!allowed) return rateLimitResponse(rl.window);
+
     if (req.method === "DELETE") {
       const { key_id } = await req.json();
       if (!key_id) return json({ error: "key_id required" }, 400);

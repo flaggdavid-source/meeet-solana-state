@@ -61,6 +61,12 @@ Deno.serve(async (req) => {
 
     const { action, duel_id, challenger_agent_id, defender_agent_id, stake_meeet } = await req.json();
 
+    // Rate limit based on action
+    const rlKey = action === "challenge" ? "duel_challenge" : "duel_accept";
+    const rl = RATE_LIMITS[rlKey as keyof typeof RATE_LIMITS] || RATE_LIMITS.duel_challenge;
+    const { allowed } = await checkRateLimit(serviceClient, `duel:${user.id}:${action}`, rl.max, rl.window);
+    if (!allowed) return rateLimitResponse(rl.window);
+
     switch (action) {
       // ── CHALLENGE ──────────────────────────────────────────
       case "challenge": {
