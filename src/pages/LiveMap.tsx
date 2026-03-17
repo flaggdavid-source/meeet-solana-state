@@ -1909,7 +1909,42 @@ const LiveMap = () => {
         </div>
       )}
 
-      <div className="absolute bottom-4 left-4 z-10">
+      {/* Building Directory */}
+      {showDirectory && (
+        <div className="absolute top-16 left-4 bottom-16 w-64 z-10 glass-card flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+            <span className="text-xs font-display uppercase tracking-wider text-muted-foreground">Directory</span>
+            <button onClick={() => setShowDirectory(false)}><X className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" /></button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
+            {buildingsRef.current.map(b => (
+              <button
+                key={b.id}
+                className="w-full text-left px-2 py-1.5 rounded hover:bg-muted/40 transition-colors flex items-center gap-2"
+                onClick={() => {
+                  const cx = b.x + (b.w * TILE) / 2;
+                  const cy = b.y + (b.h * TILE) / 2;
+                  cameraRef.current.x = cx - window.innerWidth / zoomRef.current / 2;
+                  cameraRef.current.y = cy - window.innerHeight / zoomRef.current / 2;
+                  setSelectedBuilding(b);
+                  setShowDirectory(false);
+                }}
+              >
+                <span className="text-base">{b.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] font-display font-semibold truncate" style={{ color: b.accent }}>{b.name}</p>
+                  <p className="text-[9px] text-muted-foreground font-body truncate">{b.description.slice(0, 40)}…</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="absolute bottom-4 left-4 z-10 flex items-center gap-2">
+        <button onClick={() => setShowDirectory(!showDirectory)} className="glass-card px-3 py-1.5 text-[10px] text-muted-foreground font-body hover:text-foreground transition-colors">
+          📍 {buildingsRef.current.length} Buildings
+        </button>
         <span className="text-[10px] text-muted-foreground font-body glass-card px-3 py-1.5">
           ESC — back · Drag to pan · Scroll to zoom · Click to inspect
         </span>
