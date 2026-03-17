@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
+import MilestoneTracker from "@/components/MilestoneTracker";
 import AgentClassesSection from "@/components/AgentClassesSection";
 import AgentAPISection from "@/components/AgentAPISection";
 import HowItWorksSection from "@/components/HowItWorksSection";
@@ -14,11 +15,11 @@ const Index = () => {
       <Navbar />
       <main className="pt-16">
         <HeroSection />
+        <MilestoneTracker />
         <AgentClassesSection />
         <AgentAPISection />
         <HowItWorksSection />
         <TokenSection />
-        {/* Petition Section */}
         <section id="petition" className="py-24 relative">
           <div className="container max-w-lg mx-auto px-4">
             <PetitionForm />

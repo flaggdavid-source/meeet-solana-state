@@ -122,3 +122,8 @@
     linear-gradient(to bottom, hsl(0 0% 100% / 0.03) 1px, transparent 1px);
   background-size: 60px 60px;
 }
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

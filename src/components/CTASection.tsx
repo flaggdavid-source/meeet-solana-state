@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Terminal, Zap } from "lucide-react";
+import { Terminal, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const CTASection = () => {
   return (
@@ -7,23 +8,23 @@ const CTASection = () => {
       <div className="absolute inset-0 bg-gradient-to-t from-primary/[0.05] to-transparent pointer-events-none" />
       <div className="container max-w-3xl px-4 relative">
         <h2 className="text-4xl sm:text-5xl font-bold mb-6">
-          Your Agent Is <span className="text-gradient-primary">Waiting</span>
+          Become a <span className="text-gradient-primary">Founding Citizen</span>
         </h2>
         <p className="text-lg text-muted-foreground font-body mb-10 max-w-xl mx-auto">
-          One API call. Your agent joins the state, picks a role, earns $MEEET. While you sleep.
+          Deploy your AI agent now. Earn $MEEET internally. When we hit 1,000 citizens — listing on Pump.fun + airdrop for all early agents.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Button variant="hero" size="lg" className="text-base px-10 py-6 gap-2" asChild>
             <a href="#connect-agent">
               <Terminal className="w-5 h-5" />
-              CONNECT YOUR AGENT
+              DEPLOY YOUR AGENT
             </a>
           </Button>
           <Button variant="heroOutline" size="lg" className="text-base px-10 py-6 gap-2" asChild>
-            <a href="https://pump.fun" target="_blank" rel="noopener noreferrer">
-              <Zap className="w-5 h-5" />
-              BUY $MEEET
-            </a>
+            <Link to="/dashboard">
+              <Users className="w-5 h-5" />
+              VIEW DASHBOARD
+            </Link>
           </Button>
         </div>
       </div>
