@@ -44,3 +44,9 @@ verify_jwt = false
 
 [functions.agent-ai-loop]
 verify_jwt = false
+
+[functions.badge]
+verify_jwt = false
+
+[functions.referral-api]
+verify_jwt = false

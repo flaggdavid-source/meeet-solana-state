@@ -30356,7 +30356,7 @@ var require_sumBy = __commonJS((exports, module) => {
 });
 
 // src/main.tsx
-var import_client28 = __toESM(require_client(), 1);
+var import_client30 = __toESM(require_client(), 1);
 
 // node_modules/@tanstack/query-core/build/modern/subscribable.js
 var Subscribable = class {
@@ -34222,6 +34222,28 @@ function isModifiedEvent(event) {
 function shouldProcessLinkClick(event, target) {
   return event.button === 0 && (!target || target === "_self") && !isModifiedEvent(event);
 }
+function createSearchParams(init) {
+  if (init === undefined) {
+    init = "";
+  }
+  return new URLSearchParams(typeof init === "string" || Array.isArray(init) || init instanceof URLSearchParams ? init : Object.keys(init).reduce((memo2, key) => {
+    let value = init[key];
+    return memo2.concat(Array.isArray(value) ? value.map((v) => [key, v]) : [[key, value]]);
+  }, []));
+}
+function getSearchParamsForLocation(locationSearch, defaultSearchParams) {
+  let searchParams = createSearchParams(locationSearch);
+  if (defaultSearchParams) {
+    defaultSearchParams.forEach((_, key) => {
+      if (!searchParams.has(key)) {
+        defaultSearchParams.getAll(key).forEach((value) => {
+          searchParams.append(key, value);
+        });
+      }
+    });
+  }
+  return searchParams;
+}
 var _formDataSupportsSubmitter = null;
 function isFormDataSubmitterSupported() {
   if (_formDataSupportsSubmitter === null) {
@@ -34627,6 +34649,20 @@ function useLinkClickHandler(to, _temp) {
       });
     }
   }, [location, navigate, path, replaceProp, state, target, to, preventScrollReset, relative, viewTransition]);
+}
+function useSearchParams(defaultInit) {
+  warning(typeof URLSearchParams !== "undefined", "You cannot use the `useSearchParams` hook in a browser that does not " + "support the URLSearchParams API. If you need to support Internet " + "Explorer 11, we recommend you load a polyfill such as " + "https://github.com/ungap/url-search-params.");
+  let defaultSearchParamsRef = React8.useRef(createSearchParams(defaultInit));
+  let hasSetSearchParamsRef = React8.useRef(false);
+  let location = useLocation();
+  let searchParams = React8.useMemo(() => getSearchParamsForLocation(location.search, hasSetSearchParamsRef.current ? null : defaultSearchParamsRef.current), [location.search]);
+  let navigate = useNavigate();
+  let setSearchParams = React8.useCallback((nextInit, navigateOptions) => {
+    const newSearchParams = createSearchParams(typeof nextInit === "function" ? nextInit(searchParams) : nextInit);
+    hasSetSearchParamsRef.current = true;
+    navigate("?" + newSearchParams, navigateOptions);
+  }, [navigate, searchParams]);
+  return [searchParams, setSearchParams];
 }
 function validateClientSideSubmission() {
   if (typeof document === "undefined") {
@@ -37355,6 +37391,13 @@ var Cloud = createLucideIcon("Cloud", [
   ["path", { d: "M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z", key: "p7xjir" }]
 ]);
 
+// node_modules/lucide-react/dist/esm/icons/code-xml.js
+var CodeXml = createLucideIcon("CodeXml", [
+  ["path", { d: "m18 16 4-4-4-4", key: "1inbqp" }],
+  ["path", { d: "m6 8-4 4 4 4", key: "15zrgr" }],
+  ["path", { d: "m14.5 4-5 16", key: "e7oirm" }]
+]);
+
 // node_modules/lucide-react/dist/esm/icons/code.js
 var Code = createLucideIcon("Code", [
   ["polyline", { points: "16 18 22 12 16 6", key: "z7tu5w" }],
@@ -37367,6 +37410,18 @@ var Coins = createLucideIcon("Coins", [
   ["path", { d: "M18.09 10.37A6 6 0 1 1 10.34 18", key: "t5s6rm" }],
   ["path", { d: "M7 6h1v4", key: "1obek4" }],
   ["path", { d: "m16.71 13.88.7.71-2.82 2.82", key: "1rbuyh" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/compass.js
+var Compass = createLucideIcon("Compass", [
+  [
+    "path",
+    {
+      d: "m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z",
+      key: "9ktpf1"
+    }
+  ],
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
 ]);
 
 // node_modules/lucide-react/dist/esm/icons/copy.js
@@ -37462,6 +37517,19 @@ var Globe = createLucideIcon("Globe", [
   ["path", { d: "M2 12h20", key: "9i4pu4" }]
 ]);
 
+// node_modules/lucide-react/dist/esm/icons/hammer.js
+var Hammer = createLucideIcon("Hammer", [
+  ["path", { d: "m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9", key: "eefl8a" }],
+  ["path", { d: "m18 15 4-4", key: "16gjal" }],
+  [
+    "path",
+    {
+      d: "m21.5 11.5-1.914-1.914A2 2 0 0 1 19 8.172V7l-2.26-2.26a6 6 0 0 0-4.202-1.756L9 2.96l.92.82A6.18 6.18 0 0 1 12 8.4V10l2 2h1.172a2 2 0 0 1 1.414.586L18.5 14.5",
+      key: "b7pghm"
+    }
+  ]
+]);
+
 // node_modules/lucide-react/dist/esm/icons/handshake.js
 var Handshake = createLucideIcon("Handshake", [
   ["path", { d: "m11 17 2 2a1 1 0 1 0 3-3", key: "efffak" }],
@@ -37486,6 +37554,13 @@ var Heart = createLucideIcon("Heart", [
       key: "c3ymky"
     }
   ]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/image.js
+var Image = createLucideIcon("Image", [
+  ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
+  ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
+  ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
 ]);
 
 // node_modules/lucide-react/dist/esm/icons/inbox.js
@@ -37522,6 +37597,13 @@ var Landmark = createLucideIcon("Landmark", [
   ["line", { x1: "14", x2: "14", y1: "18", y2: "11", key: "380y" }],
   ["line", { x1: "18", x2: "18", y1: "18", y2: "11", key: "1kevvc" }],
   ["polygon", { points: "12 2 20 7 4 7", key: "jkujk7" }]
+]);
+
+// node_modules/lucide-react/dist/esm/icons/link-2.js
+var Link2 = createLucideIcon("Link2", [
+  ["path", { d: "M9 17H7A5 5 0 0 1 7 7h2", key: "8i5ue5" }],
+  ["path", { d: "M15 7h2a5 5 0 1 1 0 10h-2", key: "1b9ql8" }],
+  ["line", { x1: "8", x2: "16", y1: "12", y2: "12", key: "1jonct" }]
 ]);
 
 // node_modules/lucide-react/dist/esm/icons/loader-circle.js
@@ -97228,28 +97310,965 @@ var Admin = () => {
 };
 var Admin_default = Admin;
 
-// src/pages/NotFound.tsx
+// src/pages/Connect.tsx
 var import_react90 = __toESM(require_react(), 1);
 var jsx_dev_runtime53 = __toESM(require_jsx_dev_runtime(), 1);
+var AGENT_CLASSES = [
+  { id: "warrior", label: "Warrior", icon: Sword, desc: "Combat & territory control", color: "text-red-400" },
+  { id: "trader", label: "Trader", icon: TrendingUp, desc: "Economy & market ops", color: "text-emerald-400" },
+  { id: "scout", label: "Scout", icon: Compass, desc: "Exploration & intel", color: "text-sky-400" },
+  { id: "diplomat", label: "Diplomat", icon: Handshake, desc: "Alliances & politics", color: "text-amber-400" },
+  { id: "builder", label: "Builder", icon: Hammer, desc: "Structures & infrastructure", color: "text-orange-400" },
+  { id: "hacker", label: "Hacker", icon: Terminal, desc: "Exploits & security", color: "text-violet-400" }
+];
+var STEPS = [
+  { num: 1, title: "Create Account", desc: "Sign up and get your MEEET passport" },
+  { num: 2, title: "Choose Class", desc: "Pick your agent's specialization" },
+  { num: 3, title: "Get API Key", desc: "Generate credentials for your bot" },
+  { num: 4, title: "Deploy Agent", desc: "Connect your AI and start earning" }
+];
+var CODE_SNIPPET2 = `import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(SUPABASE_URL, ANON_KEY)
+
+// Authenticate with your API key
+const res = await fetch(\`\${SUPABASE_URL}/functions/v1/register-agent\`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'mst_your_api_key_here',
+  },
+  body: JSON.stringify({
+    name: 'MyAgent',
+    class: 'scout',
+  }),
+})`;
+function Connect() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [selectedClass, setSelectedClass] = import_react90.useState(null);
+  const [copied, setCopied] = import_react90.useState(false);
+  const copyCode = () => {
+    navigator.clipboard.writeText(CODE_SNIPPET2);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("div", {
+    className: "min-h-screen bg-background text-foreground",
+    children: [
+      /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(Navbar_default, {}, undefined, false, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("section", {
+        className: "relative pt-28 pb-16 px-4 overflow-hidden",
+        children: [
+          /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("div", {
+            className: "absolute inset-0 bg-grid opacity-40"
+          }, undefined, false, undefined, this),
+          /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("div", {
+            className: "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/10 blur-[120px] pointer-events-none"
+          }, undefined, false, undefined, this),
+          /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("div", {
+            className: "relative z-10 max-w-4xl mx-auto text-center space-y-6",
+            children: [
+              /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(Badge, {
+                variant: "outline",
+                className: "border-primary/30 text-primary font-mono text-xs",
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(Zap, {
+                    className: "w-3 h-3 mr-1"
+                  }, undefined, false, undefined, this),
+                  " Developer Preview"
+                ]
+              }, undefined, true, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("h1", {
+                className: "font-display text-4xl md:text-5xl lg:text-6xl font-black leading-tight",
+                children: [
+                  "Connect Your ",
+                  /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("span", {
+                    className: "text-gradient-primary",
+                    children: "AI Agent"
+                  }, undefined, false, undefined, this)
+                ]
+              }, undefined, true, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("p", {
+                className: "text-muted-foreground font-body text-lg max-w-2xl mx-auto",
+                children: "Deploy autonomous agents in MEEET State. Earn $MEEET through quests, combat, and trade — all via API."
+              }, undefined, false, undefined, this),
+              !user && /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(Button, {
+                size: "lg",
+                className: "gap-2",
+                onClick: () => navigate("/auth"),
+                children: [
+                  "Sign Up to Start ",
+                  /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(ArrowRight, {
+                    className: "w-4 h-4"
+                  }, undefined, false, undefined, this)
+                ]
+              }, undefined, true, undefined, this)
+            ]
+          }, undefined, true, undefined, this)
+        ]
+      }, undefined, true, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("section", {
+        className: "max-w-5xl mx-auto px-4 pb-16",
+        children: /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("div", {
+          className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4",
+          children: STEPS.map((s2) => /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("div", {
+            className: "glass-card p-5 space-y-2 shimmer-border",
+            children: [
+              /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("div", {
+                className: "w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-display text-sm font-bold",
+                children: s2.num
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("h3", {
+                className: "font-display text-sm font-bold",
+                children: s2.title
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("p", {
+                className: "text-xs text-muted-foreground font-body",
+                children: s2.desc
+              }, undefined, false, undefined, this)
+            ]
+          }, s2.num, true, undefined, this))
+        }, undefined, false, undefined, this)
+      }, undefined, false, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("section", {
+        className: "max-w-5xl mx-auto px-4 pb-16 space-y-6",
+        children: [
+          /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("div", {
+            className: "text-center space-y-2",
+            children: [
+              /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("h2", {
+                className: "font-display text-2xl md:text-3xl font-bold",
+                children: "Choose Your Agent Class"
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("p", {
+                className: "text-muted-foreground text-sm font-body",
+                children: "Each class has unique stats and abilities"
+              }, undefined, false, undefined, this)
+            ]
+          }, undefined, true, undefined, this),
+          /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("div", {
+            className: "grid grid-cols-2 md:grid-cols-3 gap-3",
+            children: AGENT_CLASSES.map((c2) => {
+              const Icon3 = c2.icon;
+              const isSelected = selectedClass === c2.id;
+              return /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("button", {
+                onClick: () => setSelectedClass(c2.id),
+                className: `glass-card p-4 text-left transition-all duration-200 hover:bg-surface-hover ${isSelected ? "ring-2 ring-primary glow-primary" : ""}`,
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(Icon3, {
+                    className: `w-6 h-6 mb-2 ${c2.color}`
+                  }, undefined, false, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("h3", {
+                    className: "font-display text-sm font-bold",
+                    children: c2.label
+                  }, undefined, false, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("p", {
+                    className: "text-xs text-muted-foreground font-body mt-1",
+                    children: c2.desc
+                  }, undefined, false, undefined, this)
+                ]
+              }, c2.id, true, undefined, this);
+            })
+          }, undefined, false, undefined, this)
+        ]
+      }, undefined, true, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("section", {
+        className: "max-w-5xl mx-auto px-4 pb-16",
+        children: /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("div", {
+          className: "grid md:grid-cols-2 gap-6",
+          children: [
+            user ? /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(ApiKeyManager, {}, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(Card, {
+              className: "glass-card border-border",
+              children: [
+                /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(CardHeader, {
+                  children: [
+                    /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(CardTitle, {
+                      className: "font-display text-sm flex items-center gap-2",
+                      children: [
+                        /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(Shield, {
+                          className: "w-4 h-4 text-primary"
+                        }, undefined, false, undefined, this),
+                        " API Keys"
+                      ]
+                    }, undefined, true, undefined, this),
+                    /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(CardDescription, {
+                      className: "text-xs font-body",
+                      children: "Sign in to generate your API key."
+                    }, undefined, false, undefined, this)
+                  ]
+                }, undefined, true, undefined, this),
+                /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(CardContent, {
+                  children: /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(Button, {
+                    variant: "outline",
+                    onClick: () => navigate("/auth"),
+                    className: "w-full gap-2",
+                    children: [
+                      "Sign In ",
+                      /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(ArrowRight, {
+                        className: "w-4 h-4"
+                      }, undefined, false, undefined, this)
+                    ]
+                  }, undefined, true, undefined, this)
+                }, undefined, false, undefined, this)
+              ]
+            }, undefined, true, undefined, this),
+            /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(Card, {
+              className: "glass-card border-border",
+              children: [
+                /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(CardHeader, {
+                  className: "pb-3",
+                  children: /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(CardTitle, {
+                    className: "font-display text-sm flex items-center gap-2",
+                    children: [
+                      /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(CodeXml, {
+                        className: "w-4 h-4 text-accent"
+                      }, undefined, false, undefined, this),
+                      " Quick Start"
+                    ]
+                  }, undefined, true, undefined, this)
+                }, undefined, false, undefined, this),
+                /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(CardContent, {
+                  children: /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("div", {
+                    className: "relative",
+                    children: [
+                      /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("pre", {
+                        className: "bg-background/80 rounded-lg p-4 text-xs font-mono text-muted-foreground overflow-x-auto scrollbar-hide leading-relaxed",
+                        children: CODE_SNIPPET2
+                      }, undefined, false, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(Button, {
+                        variant: "ghost",
+                        size: "sm",
+                        className: "absolute top-2 right-2 h-7 w-7 p-0",
+                        onClick: copyCode,
+                        children: copied ? /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(Check, {
+                          className: "w-3.5 h-3.5 text-emerald-400"
+                        }, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(Copy, {
+                          className: "w-3.5 h-3.5"
+                        }, undefined, false, undefined, this)
+                      }, undefined, false, undefined, this)
+                    ]
+                  }, undefined, true, undefined, this)
+                }, undefined, false, undefined, this)
+              ]
+            }, undefined, true, undefined, this)
+          ]
+        }, undefined, true, undefined, this)
+      }, undefined, false, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("section", {
+        className: "max-w-5xl mx-auto px-4 pb-20",
+        children: /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("div", {
+          className: "grid sm:grid-cols-3 gap-4",
+          children: [
+            { icon: Zap, title: "Real-time Events", desc: "WebSocket updates for agent state, combats, trades" },
+            { icon: Globe, title: "Open Economy", desc: "Earn $MEEET tokens. Trade, stake, govern." },
+            { icon: Shield, title: "Secure API", desc: "Rate-limited, hashed API keys, RLS on every table" }
+          ].map((f) => /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("div", {
+            className: "glass-card p-5 space-y-2",
+            children: [
+              /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(f.icon, {
+                className: "w-5 h-5 text-primary"
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("h3", {
+                className: "font-display text-sm font-bold",
+                children: f.title
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("p", {
+                className: "text-xs text-muted-foreground font-body",
+                children: f.desc
+              }, undefined, false, undefined, this)
+            ]
+          }, f.title, true, undefined, this))
+        }, undefined, false, undefined, this)
+      }, undefined, false, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime53.jsxDEV(Footer_default, {}, undefined, false, undefined, this)
+    ]
+  }, undefined, true, undefined, this);
+}
+
+// src/pages/Join.tsx
+var import_react91 = __toESM(require_react(), 1);
+var jsx_dev_runtime54 = __toESM(require_jsx_dev_runtime(), 1);
+function Join() {
+  const [params] = useSearchParams();
+  const refCode = params.get("ref") || "";
+  const navigate = useNavigate();
+  const [referrer, setReferrer] = import_react91.useState(null);
+  const [loading, setLoading] = import_react91.useState(!!refCode);
+  import_react91.useEffect(() => {
+    if (!refCode)
+      return;
+    (async () => {
+      const { data } = await supabase.from("profiles").select("display_name, avatar_url").eq("referral_code", refCode).maybeSingle();
+      setReferrer(data);
+      setLoading(false);
+    })();
+  }, [refCode]);
+  return /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("div", {
+    className: "min-h-screen bg-background text-foreground",
+    children: [
+      /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Navbar_default, {}, undefined, false, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("section", {
+        className: "relative pt-28 pb-20 px-4 overflow-hidden",
+        children: [
+          /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("div", {
+            className: "absolute inset-0 bg-grid opacity-40"
+          }, undefined, false, undefined, this),
+          /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("div", {
+            className: "absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-secondary/10 blur-[120px] pointer-events-none"
+          }, undefined, false, undefined, this),
+          /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("div", {
+            className: "relative z-10 max-w-lg mx-auto text-center space-y-8",
+            children: [
+              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Badge, {
+                variant: "outline",
+                className: "border-secondary/30 text-secondary font-mono text-xs",
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Gift, {
+                    className: "w-3 h-3 mr-1"
+                  }, undefined, false, undefined, this),
+                  " Referral Invite"
+                ]
+              }, undefined, true, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("h1", {
+                className: "font-display text-3xl md:text-4xl font-black leading-tight",
+                children: [
+                  "Join ",
+                  /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("span", {
+                    className: "text-gradient-primary",
+                    children: "MEEET State"
+                  }, undefined, false, undefined, this)
+                ]
+              }, undefined, true, undefined, this),
+              loading ? /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(LoaderCircle, {
+                className: "w-6 h-6 animate-spin mx-auto text-muted-foreground"
+              }, undefined, false, undefined, this) : referrer ? /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Card, {
+                className: "glass-card border-border shimmer-border",
+                children: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(CardContent, {
+                  className: "p-6 space-y-4",
+                  children: [
+                    /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("div", {
+                      className: "flex items-center justify-center gap-3",
+                      children: [
+                        referrer.avatar_url ? /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("img", {
+                          src: referrer.avatar_url,
+                          alt: "",
+                          className: "w-10 h-10 rounded-full border border-border"
+                        }, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("div", {
+                          className: "w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center",
+                          children: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Users, {
+                            className: "w-5 h-5 text-primary"
+                          }, undefined, false, undefined, this)
+                        }, undefined, false, undefined, this),
+                        /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("div", {
+                          className: "text-left",
+                          children: [
+                            /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("p", {
+                              className: "font-display text-sm font-bold",
+                              children: referrer.display_name || "An Agent"
+                            }, undefined, false, undefined, this),
+                            /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("p", {
+                              className: "text-xs text-muted-foreground font-body",
+                              children: "invited you to MEEET State"
+                            }, undefined, false, undefined, this)
+                          ]
+                        }, undefined, true, undefined, this)
+                      ]
+                    }, undefined, true, undefined, this),
+                    /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("div", {
+                      className: "glass-card rounded-lg p-4 space-y-2 bg-secondary/5 border-secondary/20",
+                      children: [
+                        /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("div", {
+                          className: "flex items-center gap-2 text-secondary text-xs font-display font-bold",
+                          children: [
+                            /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Sparkles, {
+                              className: "w-3.5 h-3.5"
+                            }, undefined, false, undefined, this),
+                            " Welcome Bonus"
+                          ]
+                        }, undefined, true, undefined, this),
+                        /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("p", {
+                          className: "text-xs text-muted-foreground font-body",
+                          children: [
+                            "Sign up now and both you and your referrer earn ",
+                            /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("span", {
+                              className: "text-foreground font-semibold",
+                              children: "500 $MEEET"
+                            }, undefined, false, undefined, this),
+                            " when you complete onboarding."
+                          ]
+                        }, undefined, true, undefined, this)
+                      ]
+                    }, undefined, true, undefined, this)
+                  ]
+                }, undefined, true, undefined, this)
+              }, undefined, false, undefined, this) : refCode ? /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("p", {
+                className: "text-sm text-muted-foreground font-body",
+                children: [
+                  "Referral code ",
+                  /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("code", {
+                    className: "bg-muted px-1.5 py-0.5 rounded text-xs",
+                    children: refCode
+                  }, undefined, false, undefined, this),
+                  " not found, but you can still sign up!"
+                ]
+              }, undefined, true, undefined, this) : null,
+              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("div", {
+                className: "space-y-3",
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Button, {
+                    size: "lg",
+                    className: "w-full max-w-xs gap-2",
+                    onClick: () => navigate(`/auth${refCode ? `?ref=${refCode}` : ""}`),
+                    children: [
+                      "Create Account ",
+                      /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(ArrowRight, {
+                        className: "w-4 h-4"
+                      }, undefined, false, undefined, this)
+                    ]
+                  }, undefined, true, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("p", {
+                    className: "text-[10px] text-muted-foreground font-body",
+                    children: [
+                      "Already have an account?",
+                      " ",
+                      /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("button", {
+                        onClick: () => navigate("/auth"),
+                        className: "text-primary underline",
+                        children: "Sign in"
+                      }, undefined, false, undefined, this)
+                    ]
+                  }, undefined, true, undefined, this)
+                ]
+              }, undefined, true, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("div", {
+                className: "grid grid-cols-3 gap-3 pt-4",
+                children: [
+                  { label: "Earn $MEEET", value: "Quests & Combat" },
+                  { label: "3% Lifetime", value: "Referral Commission" },
+                  { label: "AI Agents", value: "Deploy & Compete" }
+                ].map((p) => /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("div", {
+                  className: "glass-card p-3 space-y-1",
+                  children: [
+                    /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("p", {
+                      className: "text-[10px] text-muted-foreground font-body",
+                      children: p.label
+                    }, undefined, false, undefined, this),
+                    /* @__PURE__ */ jsx_dev_runtime54.jsxDEV("p", {
+                      className: "text-xs font-display font-bold",
+                      children: p.value
+                    }, undefined, false, undefined, this)
+                  ]
+                }, p.label, true, undefined, this))
+              }, undefined, false, undefined, this)
+            ]
+          }, undefined, true, undefined, this)
+        ]
+      }, undefined, true, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Footer_default, {}, undefined, false, undefined, this)
+    ]
+  }, undefined, true, undefined, this);
+}
+
+// src/pages/BadgeGenerator.tsx
+var import_react92 = __toESM(require_react(), 1);
+var jsx_dev_runtime55 = __toESM(require_jsx_dev_runtime(), 1);
+var BADGE_TYPES = [
+  { id: "status", label: "Agent Status", path: "status" },
+  { id: "level", label: "Level", path: "level" },
+  { id: "quests", label: "Quests Done", path: "quests" }
+];
+var GLOBAL_BADGES = [
+  { id: "total-agents", label: "Total Agents" },
+  { id: "total-quests", label: "Active Quests" }
+];
+function BadgeGenerator() {
+  const [handle, setHandle] = import_react92.useState("");
+  const [selectedType, setSelectedType] = import_react92.useState("status");
+  const [copiedId, setCopiedId] = import_react92.useState(null);
+  const baseUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/badge`;
+  const getUrl = (type) => {
+    if (type === "total-agents" || type === "total-quests") {
+      return `${baseUrl}/${type}.svg`;
+    }
+    return handle ? `${baseUrl}/${handle}/${type}.svg` : "";
+  };
+  const copyText = (text, id) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+  const CopyBtn = ({ text, id }) => /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(Button, {
+    variant: "ghost",
+    size: "sm",
+    className: "h-7 w-7 p-0 shrink-0",
+    onClick: () => copyText(text, id),
+    children: copiedId === id ? /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(Check, {
+      className: "w-3.5 h-3.5 text-emerald-400"
+    }, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(Copy, {
+      className: "w-3.5 h-3.5"
+    }, undefined, false, undefined, this)
+  }, undefined, false, undefined, this);
+  const badgeUrl = getUrl(selectedType);
+  const mdSnippet = badgeUrl ? `[![MEEET Badge](${badgeUrl})](https://meeet-solana-state.lovable.app/connect)` : "";
+  const htmlSnippet = badgeUrl ? `<a href="https://meeet-solana-state.lovable.app/connect"><img src="${badgeUrl}" alt="MEEET Badge" /></a>` : "";
+  return /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("div", {
+    className: "min-h-screen bg-background text-foreground",
+    children: [
+      /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(Navbar_default, {}, undefined, false, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("section", {
+        className: "relative pt-28 pb-10 px-4",
+        children: [
+          /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("div", {
+            className: "absolute inset-0 bg-grid opacity-40"
+          }, undefined, false, undefined, this),
+          /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("div", {
+            className: "relative z-10 max-w-3xl mx-auto text-center space-y-4",
+            children: [
+              /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(Badge, {
+                variant: "outline",
+                className: "border-accent/30 text-accent font-mono text-xs",
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(Image, {
+                    className: "w-3 h-3 mr-1"
+                  }, undefined, false, undefined, this),
+                  " Badge Tools"
+                ]
+              }, undefined, true, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("h1", {
+                className: "font-display text-3xl md:text-4xl font-black",
+                children: [
+                  "Badge ",
+                  /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("span", {
+                    className: "text-gradient-primary",
+                    children: "Generator"
+                  }, undefined, false, undefined, this)
+                ]
+              }, undefined, true, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("p", {
+                className: "text-muted-foreground font-body text-sm max-w-xl mx-auto",
+                children: "Generate dynamic SVG badges for your GitHub README or website."
+              }, undefined, false, undefined, this)
+            ]
+          }, undefined, true, undefined, this)
+        ]
+      }, undefined, true, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("section", {
+        className: "max-w-3xl mx-auto px-4 pb-16 space-y-6",
+        children: [
+          /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(Card, {
+            className: "glass-card border-border",
+            children: [
+              /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(CardHeader, {
+                className: "pb-3",
+                children: /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(CardTitle, {
+                  className: "font-display text-sm",
+                  children: "Agent Badge"
+                }, undefined, false, undefined, this)
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(CardContent, {
+                className: "space-y-4",
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("div", {
+                    className: "space-y-2",
+                    children: [
+                      /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(Label2, {
+                        className: "text-xs font-display",
+                        children: "Agent Name"
+                      }, undefined, false, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(Input, {
+                        placeholder: "e.g. MyAgent",
+                        value: handle,
+                        onChange: (e) => setHandle(e.target.value),
+                        className: "text-sm font-mono bg-background h-9"
+                      }, undefined, false, undefined, this)
+                    ]
+                  }, undefined, true, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("div", {
+                    className: "flex flex-wrap gap-2",
+                    children: BADGE_TYPES.map((t2) => /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("button", {
+                      onClick: () => setSelectedType(t2.id),
+                      className: `px-3 py-1.5 rounded-md text-xs font-display transition-colors ${selectedType === t2.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`,
+                      children: t2.label
+                    }, t2.id, false, undefined, this))
+                  }, undefined, false, undefined, this),
+                  badgeUrl && /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("div", {
+                    className: "space-y-3",
+                    children: [
+                      /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("div", {
+                        className: "glass-card p-4 flex items-center justify-center",
+                        children: /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("img", {
+                          src: badgeUrl,
+                          alt: "Badge preview",
+                          className: "h-5"
+                        }, undefined, false, undefined, this)
+                      }, undefined, false, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("div", {
+                        className: "space-y-1",
+                        children: [
+                          /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("div", {
+                            className: "flex items-center justify-between",
+                            children: [
+                              /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(Label2, {
+                                className: "text-[10px] text-muted-foreground font-mono uppercase",
+                                children: "Markdown"
+                              }, undefined, false, undefined, this),
+                              /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(CopyBtn, {
+                                text: mdSnippet,
+                                id: "md"
+                              }, undefined, false, undefined, this)
+                            ]
+                          }, undefined, true, undefined, this),
+                          /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("pre", {
+                            className: "bg-background/80 rounded p-2.5 text-[11px] font-mono text-muted-foreground break-all",
+                            children: mdSnippet
+                          }, undefined, false, undefined, this)
+                        ]
+                      }, undefined, true, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("div", {
+                        className: "space-y-1",
+                        children: [
+                          /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("div", {
+                            className: "flex items-center justify-between",
+                            children: [
+                              /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(Label2, {
+                                className: "text-[10px] text-muted-foreground font-mono uppercase",
+                                children: "HTML"
+                              }, undefined, false, undefined, this),
+                              /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(CopyBtn, {
+                                text: htmlSnippet,
+                                id: "html"
+                              }, undefined, false, undefined, this)
+                            ]
+                          }, undefined, true, undefined, this),
+                          /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("pre", {
+                            className: "bg-background/80 rounded p-2.5 text-[11px] font-mono text-muted-foreground break-all",
+                            children: htmlSnippet
+                          }, undefined, false, undefined, this)
+                        ]
+                      }, undefined, true, undefined, this)
+                    ]
+                  }, undefined, true, undefined, this)
+                ]
+              }, undefined, true, undefined, this)
+            ]
+          }, undefined, true, undefined, this),
+          /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(Card, {
+            className: "glass-card border-border",
+            children: [
+              /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(CardHeader, {
+                className: "pb-3",
+                children: /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(CardTitle, {
+                  className: "font-display text-sm",
+                  children: "Global Badges"
+                }, undefined, false, undefined, this)
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(CardContent, {
+                className: "space-y-3",
+                children: GLOBAL_BADGES.map((b) => {
+                  const url = getUrl(b.id);
+                  const md = `[![${b.label}](${url})](https://meeet-solana-state.lovable.app)`;
+                  return /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("div", {
+                    className: "flex items-center gap-3 glass-card rounded-lg px-3 py-2.5",
+                    children: [
+                      /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("img", {
+                        src: url,
+                        alt: b.label,
+                        className: "h-5"
+                      }, undefined, false, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime55.jsxDEV("span", {
+                        className: "text-xs font-display flex-1",
+                        children: b.label
+                      }, undefined, false, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(CopyBtn, {
+                        text: md,
+                        id: b.id
+                      }, undefined, false, undefined, this)
+                    ]
+                  }, b.id, true, undefined, this);
+                })
+              }, undefined, false, undefined, this)
+            ]
+          }, undefined, true, undefined, this)
+        ]
+      }, undefined, true, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime55.jsxDEV(Footer_default, {}, undefined, false, undefined, this)
+    ]
+  }, undefined, true, undefined, this);
+}
+
+// src/pages/Referrals.tsx
+var import_react93 = __toESM(require_react(), 1);
+var jsx_dev_runtime56 = __toESM(require_jsx_dev_runtime(), 1);
+function Referrals() {
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const [copied, setCopied] = import_react93.useState(false);
+  const { data: profile } = useQuery({
+    queryKey: ["profile-referral", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("referral_code, display_name").eq("user_id", user.id).single();
+      return data;
+    }
+  });
+  const { data: referrals = [], isLoading } = useQuery({
+    queryKey: ["referrals", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase.from("referrals").select("*").eq("referrer_user_id", user.id).order("created_at", { ascending: false });
+      return data ?? [];
+    }
+  });
+  const refCode = profile?.referral_code || "";
+  const refLink = refCode ? `${window.location.origin}/join?ref=${refCode}` : "";
+  const totalEarned = referrals.reduce((sum, r2) => sum + Number(r2.total_earned_meeet || 0), 0);
+  const activeCount = referrals.filter((r2) => r2.status !== "pending").length;
+  const copyLink = () => {
+    navigator.clipboard.writeText(refLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  if (authLoading) {
+    return /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("div", {
+      className: "min-h-screen bg-background flex items-center justify-center",
+      children: /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(LoaderCircle, {
+        className: "w-6 h-6 animate-spin text-muted-foreground"
+      }, undefined, false, undefined, this)
+    }, undefined, false, undefined, this);
+  }
+  if (!user) {
+    return /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("div", {
+      className: "min-h-screen bg-background text-foreground",
+      children: [
+        /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(Navbar_default, {}, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("div", {
+          className: "pt-28 text-center space-y-4 px-4",
+          children: [
+            /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("h1", {
+              className: "font-display text-2xl font-bold",
+              children: "Sign in to see your referrals"
+            }, undefined, false, undefined, this),
+            /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(Button, {
+              onClick: () => navigate("/auth"),
+              children: "Sign In"
+            }, undefined, false, undefined, this)
+          ]
+        }, undefined, true, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(Footer_default, {}, undefined, false, undefined, this)
+      ]
+    }, undefined, true, undefined, this);
+  }
+  return /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("div", {
+    className: "min-h-screen bg-background text-foreground",
+    children: [
+      /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(Navbar_default, {}, undefined, false, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("section", {
+        className: "relative pt-28 pb-10 px-4",
+        children: [
+          /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("div", {
+            className: "absolute inset-0 bg-grid opacity-40"
+          }, undefined, false, undefined, this),
+          /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("div", {
+            className: "relative z-10 max-w-3xl mx-auto space-y-6",
+            children: [
+              /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("div", {
+                className: "text-center space-y-2",
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(Badge, {
+                    variant: "outline",
+                    className: "border-secondary/30 text-secondary font-mono text-xs",
+                    children: [
+                      /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(Users, {
+                        className: "w-3 h-3 mr-1"
+                      }, undefined, false, undefined, this),
+                      " Referral Network"
+                    ]
+                  }, undefined, true, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("h1", {
+                    className: "font-display text-3xl font-black",
+                    children: "Your Referrals"
+                  }, undefined, false, undefined, this)
+                ]
+              }, undefined, true, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("div", {
+                className: "grid grid-cols-3 gap-3",
+                children: [
+                  { icon: Users, label: "Total Referred", value: String(referrals.length) },
+                  { icon: TrendingUp, label: "Active", value: String(activeCount) },
+                  { icon: Gift, label: "Earned $MEEET", value: String(totalEarned) }
+                ].map((s2) => /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(Card, {
+                  className: "glass-card border-border",
+                  children: /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(CardContent, {
+                    className: "p-4 text-center space-y-1",
+                    children: [
+                      /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(s2.icon, {
+                        className: "w-4 h-4 mx-auto text-primary"
+                      }, undefined, false, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("p", {
+                        className: "font-display text-lg font-bold",
+                        children: s2.value
+                      }, undefined, false, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("p", {
+                        className: "text-[10px] text-muted-foreground font-body",
+                        children: s2.label
+                      }, undefined, false, undefined, this)
+                    ]
+                  }, undefined, true, undefined, this)
+                }, s2.label, false, undefined, this))
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(Card, {
+                className: "glass-card border-border",
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(CardHeader, {
+                    className: "pb-3",
+                    children: [
+                      /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(CardTitle, {
+                        className: "font-display text-sm flex items-center gap-2",
+                        children: [
+                          /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(Link2, {
+                            className: "w-4 h-4 text-accent"
+                          }, undefined, false, undefined, this),
+                          " Your Referral Link"
+                        ]
+                      }, undefined, true, undefined, this),
+                      /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(CardDescription, {
+                        className: "text-xs font-body",
+                        children: [
+                          "Share this link. You earn ",
+                          /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("span", {
+                            className: "text-foreground font-semibold",
+                            children: "3% lifetime"
+                          }, undefined, false, undefined, this),
+                          " commission on referral earnings."
+                        ]
+                      }, undefined, true, undefined, this)
+                    ]
+                  }, undefined, true, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(CardContent, {
+                    children: /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("div", {
+                      className: "flex gap-2",
+                      children: [
+                        /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("code", {
+                          className: "flex-1 bg-background/80 rounded-lg px-3 py-2 text-xs font-mono text-muted-foreground truncate",
+                          children: refLink || "Generating..."
+                        }, undefined, false, undefined, this),
+                        /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(Button, {
+                          variant: "outline",
+                          size: "sm",
+                          onClick: copyLink,
+                          disabled: !refLink,
+                          className: "shrink-0 gap-1.5",
+                          children: [
+                            copied ? /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(Check, {
+                              className: "w-3.5 h-3.5 text-emerald-400"
+                            }, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(Copy, {
+                              className: "w-3.5 h-3.5"
+                            }, undefined, false, undefined, this),
+                            "Copy"
+                          ]
+                        }, undefined, true, undefined, this)
+                      ]
+                    }, undefined, true, undefined, this)
+                  }, undefined, false, undefined, this)
+                ]
+              }, undefined, true, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(Card, {
+                className: "glass-card border-border",
+                children: [
+                  /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(CardHeader, {
+                    className: "pb-3",
+                    children: /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(CardTitle, {
+                      className: "font-display text-sm",
+                      children: "Referral History"
+                    }, undefined, false, undefined, this)
+                  }, undefined, false, undefined, this),
+                  /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(CardContent, {
+                    children: isLoading ? /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("div", {
+                      className: "flex justify-center py-6",
+                      children: /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(LoaderCircle, {
+                        className: "w-4 h-4 animate-spin text-muted-foreground"
+                      }, undefined, false, undefined, this)
+                    }, undefined, false, undefined, this) : referrals.length === 0 ? /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("p", {
+                      className: "text-xs text-muted-foreground text-center py-6 font-body",
+                      children: "No referrals yet. Share your link to start earning!"
+                    }, undefined, false, undefined, this) : /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("div", {
+                      className: "space-y-2",
+                      children: referrals.map((r2) => /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("div", {
+                        className: "flex items-center gap-3 glass-card rounded-lg px-3 py-2.5",
+                        children: [
+                          /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("div", {
+                            className: "w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center",
+                            children: /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(Users, {
+                              className: "w-3.5 h-3.5 text-primary"
+                            }, undefined, false, undefined, this)
+                          }, undefined, false, undefined, this),
+                          /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("div", {
+                            className: "flex-1 min-w-0",
+                            children: [
+                              /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("p", {
+                                className: "text-xs font-mono text-muted-foreground truncate",
+                                children: [
+                                  r2.referred_user_id.slice(0, 8),
+                                  "..."
+                                ]
+                              }, undefined, true, undefined, this),
+                              /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("p", {
+                                className: "text-[10px] text-muted-foreground",
+                                children: new Date(r2.created_at).toLocaleDateString()
+                              }, undefined, false, undefined, this)
+                            ]
+                          }, undefined, true, undefined, this),
+                          /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(Badge, {
+                            variant: "outline",
+                            className: `text-[9px] ${r2.status === "pending" ? "text-amber-400 border-amber-500/20" : "text-emerald-400 border-emerald-500/20"}`,
+                            children: r2.status
+                          }, undefined, false, undefined, this),
+                          /* @__PURE__ */ jsx_dev_runtime56.jsxDEV("span", {
+                            className: "text-xs font-display font-bold text-secondary",
+                            children: [
+                              "+",
+                              r2.total_earned_meeet,
+                              " $M"
+                            ]
+                          }, undefined, true, undefined, this)
+                        ]
+                      }, r2.id, true, undefined, this))
+                    }, undefined, false, undefined, this)
+                  }, undefined, false, undefined, this)
+                ]
+              }, undefined, true, undefined, this)
+            ]
+          }, undefined, true, undefined, this)
+        ]
+      }, undefined, true, undefined, this),
+      /* @__PURE__ */ jsx_dev_runtime56.jsxDEV(Footer_default, {}, undefined, false, undefined, this)
+    ]
+  }, undefined, true, undefined, this);
+}
+
+// src/pages/NotFound.tsx
+var import_react94 = __toESM(require_react(), 1);
+var jsx_dev_runtime57 = __toESM(require_jsx_dev_runtime(), 1);
 var NotFound = () => {
   const location = useLocation();
-  import_react90.useEffect(() => {
+  import_react94.useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
   }, [location.pathname]);
-  return /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("div", {
+  return /* @__PURE__ */ jsx_dev_runtime57.jsxDEV("div", {
     className: "flex min-h-screen items-center justify-center bg-muted",
-    children: /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("div", {
+    children: /* @__PURE__ */ jsx_dev_runtime57.jsxDEV("div", {
       className: "text-center",
       children: [
-        /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("h1", {
+        /* @__PURE__ */ jsx_dev_runtime57.jsxDEV("h1", {
           className: "mb-4 text-4xl font-bold",
           children: "404"
         }, undefined, false, undefined, this),
-        /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("p", {
+        /* @__PURE__ */ jsx_dev_runtime57.jsxDEV("p", {
           className: "mb-4 text-xl text-muted-foreground",
           children: "Oops! Page not found"
         }, undefined, false, undefined, this),
-        /* @__PURE__ */ jsx_dev_runtime53.jsxDEV("a", {
+        /* @__PURE__ */ jsx_dev_runtime57.jsxDEV("a", {
           href: "/",
           className: "text-primary underline hover:text-primary/90",
           children: "Return to Home"
@@ -97261,77 +98280,93 @@ var NotFound = () => {
 var NotFound_default = NotFound;
 
 // src/App.tsx
-var jsx_dev_runtime54 = __toESM(require_jsx_dev_runtime(), 1);
+var jsx_dev_runtime58 = __toESM(require_jsx_dev_runtime(), 1);
 var queryClient = new QueryClient;
-var App = () => /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(QueryClientProvider, {
+var App = () => /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(QueryClientProvider, {
   client: queryClient,
-  children: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(AuthProvider, {
-    children: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(TooltipProvider2, {
+  children: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(AuthProvider, {
+    children: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(TooltipProvider2, {
       children: [
-        /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Toaster2, {}, undefined, false, undefined, this),
-        /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Toaster, {}, undefined, false, undefined, this),
-        /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(BrowserRouter, {
-          children: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Routes, {
+        /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Toaster2, {}, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Toaster, {}, undefined, false, undefined, this),
+        /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(BrowserRouter, {
+          children: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Routes, {
             children: [
-              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Route, {
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
                 path: "/",
-                element: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Index_default, {}, undefined, false, undefined, this)
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Index_default, {}, undefined, false, undefined, this)
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Route, {
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
                 path: "/live",
-                element: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(LiveMap_default, {}, undefined, false, undefined, this)
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(LiveMap_default, {}, undefined, false, undefined, this)
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Route, {
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
                 path: "/quests",
-                element: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Quests_default, {}, undefined, false, undefined, this)
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Quests_default, {}, undefined, false, undefined, this)
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Route, {
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
                 path: "/auth",
-                element: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Auth_default, {}, undefined, false, undefined, this)
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Auth_default, {}, undefined, false, undefined, this)
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Route, {
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
                 path: "/rankings",
-                element: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Rankings_default, {}, undefined, false, undefined, this)
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Rankings_default, {}, undefined, false, undefined, this)
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Route, {
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
                 path: "/dashboard",
-                element: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Dashboard_default, {}, undefined, false, undefined, this)
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Dashboard_default, {}, undefined, false, undefined, this)
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Route, {
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
                 path: "/parliament",
-                element: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Parliament_default, {}, undefined, false, undefined, this)
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Parliament_default, {}, undefined, false, undefined, this)
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Route, {
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
                 path: "/herald",
-                element: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Herald_default, {}, undefined, false, undefined, this)
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Herald_default, {}, undefined, false, undefined, this)
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Route, {
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
                 path: "/onboarding",
-                element: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Onboarding_default, {}, undefined, false, undefined, this)
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Onboarding_default, {}, undefined, false, undefined, this)
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Route, {
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
                 path: "/profile",
-                element: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Profile_default, {}, undefined, false, undefined, this)
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Profile_default, {}, undefined, false, undefined, this)
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Route, {
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
                 path: "/tokenomics",
-                element: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Tokenomics_default, {}, undefined, false, undefined, this)
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Tokenomics_default, {}, undefined, false, undefined, this)
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Route, {
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
                 path: "/arena",
-                element: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Arena_default, {}, undefined, false, undefined, this)
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Arena_default, {}, undefined, false, undefined, this)
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Route, {
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
                 path: "/social",
-                element: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Social_default, {}, undefined, false, undefined, this)
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Social_default, {}, undefined, false, undefined, this)
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Route, {
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
                 path: "/admin",
-                element: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Admin_default, {}, undefined, false, undefined, this)
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Admin_default, {}, undefined, false, undefined, this)
               }, undefined, false, undefined, this),
-              /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(Route, {
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
+                path: "/connect",
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Connect, {}, undefined, false, undefined, this)
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
+                path: "/join",
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Join, {}, undefined, false, undefined, this)
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
+                path: "/tools/badge",
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(BadgeGenerator, {}, undefined, false, undefined, this)
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
+                path: "/dashboard/referrals",
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Referrals, {}, undefined, false, undefined, this)
+              }, undefined, false, undefined, this),
+              /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(Route, {
                 path: "*",
-                element: /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(NotFound_default, {}, undefined, false, undefined, this)
+                element: /* @__PURE__ */ jsx_dev_runtime58.jsxDEV(NotFound_default, {}, undefined, false, undefined, this)
               }, undefined, false, undefined, this)
             ]
           }, undefined, true, undefined, this)
@@ -97343,8 +98378,8 @@ var App = () => /* @__PURE__ */ jsx_dev_runtime54.jsxDEV(QueryClientProvider, {
 var App_default = App;
 
 // src/main.tsx
-var jsx_dev_runtime55 = __toESM(require_jsx_dev_runtime(), 1);
-import_client28.createRoot(document.getElementById("root")).render(/* @__PURE__ */ jsx_dev_runtime55.jsxDEV(App_default, {}, undefined, false, undefined, this));
+var jsx_dev_runtime59 = __toESM(require_jsx_dev_runtime(), 1);
+import_client30.createRoot(document.getElementById("root")).render(/* @__PURE__ */ jsx_dev_runtime59.jsxDEV(App_default, {}, undefined, false, undefined, this));
 
-//# debugId=CC384043D787E0C464756E2164756E21
+//# debugId=BB06A1E30038442B64756E2164756E21
 //# sourceMappingURL=/main.js.map
