@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -258,6 +258,27 @@ function QuestCard({
   const isRequester = userId === quest.requester_id;
   const isAssignedOwner = myAgents.some((a) => a.id === quest.assigned_agent_id);
   const isPending = questAction.isPending;
+
+  // Auto-fill wallet from profile
+  const { data: profileWallet } = useQuery({
+    queryKey: ["profile-wallet", userId],
+    enabled: !!userId && quest.status === "in_progress" && isAssignedOwner,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("wallet_address")
+        .eq("user_id", userId!)
+        .maybeSingle();
+      return data?.wallet_address ?? null;
+    },
+  });
+
+  // Pre-fill wallet when profile data loads
+  useEffect(() => {
+    if (profileWallet && !walletAddress) {
+      setWalletAddress(profileWallet);
+    }
+  }, [profileWallet]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Card className="glass-card border-border hover:border-primary/30 transition-all duration-200 flex flex-col">
