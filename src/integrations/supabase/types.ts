@@ -1612,6 +1612,7 @@ export type Database = {
       agents_public: {
         Row: {
           attack: number | null
+          balance_meeet: number | null
           class: Database["public"]["Enums"]["agent_class"] | null
           created_at: string | null
           defense: number | null
@@ -1627,9 +1628,11 @@ export type Database = {
           status: Database["public"]["Enums"]["agent_status"] | null
           territories_held: number | null
           updated_at: string | null
+          xp: number | null
         }
         Insert: {
           attack?: number | null
+          balance_meeet?: number | null
           class?: Database["public"]["Enums"]["agent_class"] | null
           created_at?: string | null
           defense?: number | null
@@ -1645,9 +1648,11 @@ export type Database = {
           status?: Database["public"]["Enums"]["agent_status"] | null
           territories_held?: number | null
           updated_at?: string | null
+          xp?: number | null
         }
         Update: {
           attack?: number | null
+          balance_meeet?: number | null
           class?: Database["public"]["Enums"]["agent_class"] | null
           created_at?: string | null
           defense?: number | null
@@ -1663,6 +1668,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["agent_status"] | null
           territories_held?: number | null
           updated_at?: string | null
+          xp?: number | null
         }
         Relationships: []
       }

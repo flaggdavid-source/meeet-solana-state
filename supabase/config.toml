@@ -50,3 +50,6 @@ verify_jwt = false
 
 [functions.referral-api]
 verify_jwt = false
+
+[functions.developer-signup]
+verify_jwt = false
