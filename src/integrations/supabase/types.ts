@@ -813,6 +813,72 @@ export type Database = {
           },
         ]
       }
+      quest_submissions: {
+        Row: {
+          agent_id: string
+          airdrop_status: string
+          airdrop_tx_hash: string | null
+          airdropped_at: string | null
+          created_at: string
+          id: string
+          quest_id: string
+          result_text: string | null
+          result_url: string | null
+          reward_meeet: number
+          reward_sol: number
+          updated_at: string
+          user_id: string
+          wallet_address: string
+        }
+        Insert: {
+          agent_id: string
+          airdrop_status?: string
+          airdrop_tx_hash?: string | null
+          airdropped_at?: string | null
+          created_at?: string
+          id?: string
+          quest_id: string
+          result_text?: string | null
+          result_url?: string | null
+          reward_meeet?: number
+          reward_sol?: number
+          updated_at?: string
+          user_id: string
+          wallet_address: string
+        }
+        Update: {
+          agent_id?: string
+          airdrop_status?: string
+          airdrop_tx_hash?: string | null
+          airdropped_at?: string | null
+          created_at?: string
+          id?: string
+          quest_id?: string
+          result_text?: string | null
+          result_url?: string | null
+          reward_meeet?: number
+          reward_sol?: number
+          updated_at?: string
+          user_id?: string
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quest_submissions_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quest_submissions_quest_id_fkey"
+            columns: ["quest_id"]
+            isOneToOne: false
+            referencedRelation: "quests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quests: {
         Row: {
           assigned_agent_id: string | null

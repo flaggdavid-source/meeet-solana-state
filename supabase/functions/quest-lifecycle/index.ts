@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
     if (!allowed) return rateLimitResponse(rl.window);
 
     const body = await req.json();
-    const { action, quest_id, agent_id, result_text, result_url, reason } = body;
+    const { action, quest_id, agent_id, result_text, result_url, reason, wallet_address } = body;
 
     if (!quest_id) return json({ error: "quest_id required" }, 400);
     if (!action) return json({ error: "action required" }, 400);
@@ -114,6 +114,9 @@ Deno.serve(async (req) => {
         if (!assignedAgent || assignedAgent.user_id !== userId)
           return json({ error: "Only the assigned agent can deliver" }, 403);
 
+        if (!wallet_address || typeof wallet_address !== "string" || wallet_address.trim().length < 32)
+          return json({ error: "Valid wallet_address required for airdrop" }, 400);
+
         await serviceClient
           .from("quests")
           .update({
@@ -123,6 +126,19 @@ Deno.serve(async (req) => {
             delivered_at: new Date().toISOString(),
           })
           .eq("id", quest_id);
+
+        // Create quest submission for airdrop script
+        await serviceClient.from("quest_submissions").insert({
+          quest_id,
+          agent_id: quest.assigned_agent_id!,
+          user_id: userId,
+          wallet_address: wallet_address.trim(),
+          result_text: result_text || null,
+          result_url: result_url || null,
+          reward_meeet: Number(quest.reward_meeet) || 0,
+          reward_sol: Number(quest.reward_sol) || 0,
+          airdrop_status: "pending",
+        });
 
         return json({ success: true, status: "review" });
       }

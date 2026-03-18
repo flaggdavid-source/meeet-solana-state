@@ -249,6 +249,7 @@ function QuestCard({
   const [selectedAgent, setSelectedAgent] = useState("");
   const [resultText, setResultText] = useState("");
   const [resultUrl, setResultUrl] = useState("");
+  const [walletAddress, setWalletAddress] = useState("");
   const [disputeReason, setDisputeReason] = useState("");
 
   const meta = CATEGORY_META[quest.category] || CATEGORY_META.other;
@@ -381,14 +382,20 @@ function QuestCard({
                     value={resultUrl}
                     onChange={(e) => setResultUrl(e.target.value)}
                   />
+                  <Input
+                    placeholder="Your Solana wallet address (for airdrop)"
+                    className="h-7 text-xs bg-background border-border font-mono"
+                    value={walletAddress}
+                    onChange={(e) => setWalletAddress(e.target.value)}
+                  />
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" className="flex-1 text-xs h-7" onClick={() => setExpanded(false)}>Cancel</Button>
                     <Button
                       size="sm"
                       variant="hero"
                       className="flex-1 text-xs h-7"
-                      disabled={!resultText.trim() || isPending}
-                      onClick={() => questAction.mutate({ action: "deliver", quest_id: quest.id, result_text: resultText, result_url: resultUrl })}
+                      disabled={!resultText.trim() || !walletAddress.trim() || isPending}
+                      onClick={() => questAction.mutate({ action: "deliver", quest_id: quest.id, result_text: resultText, result_url: resultUrl, wallet_address: walletAddress })}
                     >
                       {isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : "Submit"}
                     </Button>
