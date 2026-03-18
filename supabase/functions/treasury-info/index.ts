@@ -7,21 +7,32 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+function parsePrivateKey(raw: string): Uint8Array {
+  // Try JSON array first: [1,2,3,...]
+  const trimmed = raw.trim();
+  if (trimmed.startsWith("[")) {
+    const arr = JSON.parse(trimmed);
+    return new Uint8Array(arr);
+  }
+  // Otherwise treat as base58
+  return bs58.decode(trimmed);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const privateKeyBase58 = Deno.env.get("TREASURY_WALLET_PRIVATE_KEY");
-    if (!privateKeyBase58) {
+    const privateKeyRaw = Deno.env.get("TREASURY_WALLET_PRIVATE_KEY");
+    if (!privateKeyRaw) {
       return new Response(JSON.stringify({ error: "Treasury not configured" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const secretKey = bs58.decode(privateKeyBase58);
+    const secretKey = parsePrivateKey(privateKeyRaw);
     const keypair = Keypair.fromSecretKey(secretKey);
     const address = keypair.publicKey.toBase58();
 
