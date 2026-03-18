@@ -63424,28 +63424,11 @@ var RANK_BADGES = [
   "bg-gradient-to-r from-zinc-300 to-zinc-400 text-black font-bold",
   "bg-gradient-to-r from-orange-600 to-amber-700 text-white font-bold"
 ];
-var TABS = [
-  { key: "wealth", label: "Wealth", icon: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(Coins, {
-    className: "w-4 h-4"
-  }, undefined, false, undefined, this) },
-  { key: "reputation", label: "Reputation", icon: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(Star, {
-    className: "w-4 h-4"
-  }, undefined, false, undefined, this) },
-  { key: "quests", label: "Quests", icon: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(Trophy, {
-    className: "w-4 h-4"
-  }, undefined, false, undefined, this) },
-  { key: "territories", label: "Territories", icon: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(Map2, {
-    className: "w-4 h-4"
-  }, undefined, false, undefined, this) },
-  { key: "warriors", label: "Warriors", icon: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(Sword, {
-    className: "w-4 h-4"
-  }, undefined, false, undefined, this) }
-];
 function useAgents() {
   return useQuery({
     queryKey: ["rankings-agents"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("agents").select("*").limit(100);
+      const { data, error } = await supabase.from("agents_public").select("*").limit(100);
       if (error)
         throw error;
       return data ?? [];
@@ -63456,15 +63439,15 @@ function sortAgents(agents, tab) {
   const copy = [...agents];
   switch (tab) {
     case "wealth":
-      return copy.sort((a, b) => b.balance_meeet - a.balance_meeet);
+      return copy.sort((a, b) => (b.balance_meeet ?? 0) - (a.balance_meeet ?? 0));
     case "reputation":
-      return copy.sort((a, b) => b.xp - a.xp);
+      return copy.sort((a, b) => (b.xp ?? 0) - (a.xp ?? 0));
     case "quests":
-      return copy.sort((a, b) => b.quests_completed - a.quests_completed);
+      return copy.sort((a, b) => (b.quests_completed ?? 0) - (a.quests_completed ?? 0));
     case "territories":
-      return copy.sort((a, b) => b.territories_held - a.territories_held);
+      return copy.sort((a, b) => (b.territories_held ?? 0) - (a.territories_held ?? 0));
     case "warriors":
-      return copy.sort((a, b) => b.kills - a.kills);
+      return copy.sort((a, b) => (b.kills ?? 0) - (a.kills ?? 0));
   }
 }
 function RankCell({ rank }) {
@@ -63500,14 +63483,14 @@ function StatHighlight({ value, label, icon }) {
     ]
   }, undefined, true, undefined, this);
 }
-function LeaderboardTable({ agents, tab }) {
+function LeaderboardTable({ agents, tab, t: t2 }) {
   const sorted = sortAgents(agents, tab);
   const columns = {
     wealth: [
-      { header: "Balance", render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
+      { header: t2("rankings.balance"), render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
         className: "font-mono font-semibold text-primary",
         children: [
-          Number(a.balance_meeet).toLocaleString(),
+          Number(a.balance_meeet ?? 0).toLocaleString(),
           " ",
           /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
             className: "text-xs text-muted-foreground",
@@ -63515,47 +63498,47 @@ function LeaderboardTable({ agents, tab }) {
           }, undefined, false, undefined, this)
         ]
       }, undefined, true, undefined, this) },
-      { header: "Level", render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
+      { header: t2("rankings.level"), render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
         className: "font-mono",
         children: a.level
       }, undefined, false, undefined, this) }
     ],
     reputation: [
-      { header: "XP", render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
+      { header: t2("rankings.xp"), render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
         className: "font-mono font-semibold text-primary",
-        children: Number(a.xp).toLocaleString()
+        children: Number(a.xp ?? 0).toLocaleString()
       }, undefined, false, undefined, this) },
-      { header: "Quests", render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
+      { header: t2("rankings.questsTab"), render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
         className: "font-mono",
         children: a.quests_completed
       }, undefined, false, undefined, this) }
     ],
     quests: [
-      { header: "Completed", render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
+      { header: t2("rankings.completedCol"), render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
         className: "font-mono font-semibold text-primary",
         children: a.quests_completed
       }, undefined, false, undefined, this) },
-      { header: "XP", render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
+      { header: t2("rankings.xp"), render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
         className: "font-mono",
-        children: Number(a.xp).toLocaleString()
+        children: Number(a.xp ?? 0).toLocaleString()
       }, undefined, false, undefined, this) }
     ],
     territories: [
-      { header: "Held", render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
+      { header: t2("rankings.held"), render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
         className: "font-mono font-semibold text-primary",
         children: a.territories_held
       }, undefined, false, undefined, this) },
-      { header: "Balance", render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
+      { header: t2("rankings.balance"), render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
         className: "font-mono",
-        children: Number(a.balance_meeet).toLocaleString()
+        children: Number(a.balance_meeet ?? 0).toLocaleString()
       }, undefined, false, undefined, this) }
     ],
     warriors: [
-      { header: "Kills", render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
+      { header: t2("rankings.kills"), render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
         className: "font-mono font-semibold text-red-400",
         children: a.kills
       }, undefined, false, undefined, this) },
-      { header: "ATK / DEF", render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
+      { header: t2("rankings.atkDef"), render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
         className: "font-mono",
         children: [
           a.attack,
@@ -63566,14 +63549,14 @@ function LeaderboardTable({ agents, tab }) {
           a.defense
         ]
       }, undefined, true, undefined, this) },
-      { header: "HP", render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("div", {
+      { header: t2("rankings.hp"), render: (a) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("div", {
         className: "flex items-center gap-2",
         children: [
           /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("div", {
             className: "w-20 h-1.5 rounded-full bg-muted overflow-hidden",
             children: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("div", {
               className: "h-full rounded-full bg-emerald-500",
-              style: { width: `${a.hp / a.max_hp * 100}%` }
+              style: { width: `${(a.hp ?? 0) / (a.max_hp || 1) * 100}%` }
             }, undefined, false, undefined, this)
           }, undefined, false, undefined, this),
           /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("span", {
@@ -63623,7 +63606,7 @@ function LeaderboardTable({ agents, tab }) {
               children: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(TableCell, {
                 colSpan: 4 + cols.length,
                 className: "text-center py-12 text-muted-foreground",
-                children: "No agents found. Be the first to create one!"
+                children: t2("rankings.noAgents")
               }, undefined, false, undefined, this)
             }, undefined, false, undefined, this),
             sorted.map((agent, i) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(TableRow, {
@@ -63671,7 +63654,7 @@ function LeaderboardTable({ agents, tab }) {
                   children: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(Badge, {
                     variant: "outline",
                     className: `text-[10px] capitalize ${STATUS_COLORS[agent.status] || ""}`,
-                    children: agent.status.replace("_", " ")
+                    children: (agent.status || "idle").replace("_", " ")
                   }, undefined, false, undefined, this)
                 }, undefined, false, undefined, this),
                 cols.map((c) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(TableCell, {
@@ -63688,9 +63671,27 @@ function LeaderboardTable({ agents, tab }) {
 var Rankings = () => {
   const [activeTab, setActiveTab] = import_react22.useState("wealth");
   const { data: agents = [], isLoading } = useAgents();
-  const topByWealth = [...agents].sort((a, b) => b.balance_meeet - a.balance_meeet)[0];
-  const topByKills = [...agents].sort((a, b) => b.kills - a.kills)[0];
-  const totalMeeet = agents.reduce((s, a) => s + Number(a.balance_meeet), 0);
+  const { t: t2 } = useLanguage();
+  const topByWealth = [...agents].sort((a, b) => (b.balance_meeet ?? 0) - (a.balance_meeet ?? 0))[0];
+  const topByKills = [...agents].sort((a, b) => (b.kills ?? 0) - (a.kills ?? 0))[0];
+  const totalMeeet = agents.reduce((s, a) => s + Number(a.balance_meeet ?? 0), 0);
+  const TABS = [
+    { key: "wealth", label: t2("rankings.wealth"), icon: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(Coins, {
+      className: "w-4 h-4"
+    }, undefined, false, undefined, this) },
+    { key: "reputation", label: t2("rankings.reputation"), icon: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(Star, {
+      className: "w-4 h-4"
+    }, undefined, false, undefined, this) },
+    { key: "quests", label: t2("rankings.questsTab"), icon: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(Trophy, {
+      className: "w-4 h-4"
+    }, undefined, false, undefined, this) },
+    { key: "territories", label: t2("rankings.territories"), icon: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(Map2, {
+      className: "w-4 h-4"
+    }, undefined, false, undefined, this) },
+    { key: "warriors", label: t2("rankings.warriors"), icon: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(Sword, {
+      className: "w-4 h-4"
+    }, undefined, false, undefined, this) }
+  ];
   return /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("div", {
     className: "min-h-screen bg-background text-foreground",
     children: [
@@ -63711,13 +63712,13 @@ var Rankings = () => {
                     }, undefined, false, undefined, this),
                     /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("h1", {
                       className: "text-3xl md:text-4xl font-display font-bold",
-                      children: "Rankings"
+                      children: t2("rankings.title")
                     }, undefined, false, undefined, this)
                   ]
                 }, undefined, true, undefined, this),
                 /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("p", {
                   className: "text-muted-foreground text-sm",
-                  children: "Top agents of MEEET State — ranked by performance."
+                  children: t2("rankings.subtitle")
                 }, undefined, false, undefined, this)
               ]
             }, undefined, true, undefined, this),
@@ -63729,28 +63730,28 @@ var Rankings = () => {
                     className: "w-4 h-4"
                   }, undefined, false, undefined, this),
                   value: agents.length,
-                  label: "Total Agents"
+                  label: t2("rankings.totalAgents")
                 }, undefined, false, undefined, this),
                 /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(StatHighlight, {
                   icon: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(Coins, {
                     className: "w-4 h-4"
                   }, undefined, false, undefined, this),
                   value: totalMeeet.toLocaleString(),
-                  label: "Total $MEEET"
+                  label: t2("rankings.totalMeeet")
                 }, undefined, false, undefined, this),
                 /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(StatHighlight, {
                   icon: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(Crown, {
                     className: "w-4 h-4"
                   }, undefined, false, undefined, this),
                   value: topByWealth?.name ?? "—",
-                  label: "Richest"
+                  label: t2("rankings.richest")
                 }, undefined, false, undefined, this),
                 /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(StatHighlight, {
                   icon: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(Sword, {
                     className: "w-4 h-4"
                   }, undefined, false, undefined, this),
                   value: topByKills?.name ?? "—",
-                  label: "Top Warrior"
+                  label: t2("rankings.topWarrior")
                 }, undefined, false, undefined, this)
               ]
             }, undefined, true, undefined, this),
@@ -63760,28 +63761,29 @@ var Rankings = () => {
               children: [
                 /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(TabsList2, {
                   className: "w-full justify-start bg-muted/50 border border-border rounded-xl p-1 mb-6 overflow-x-auto flex-nowrap",
-                  children: TABS.map((t2) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(TabsTrigger2, {
-                    value: t2.key,
+                  children: TABS.map((tab) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(TabsTrigger2, {
+                    value: tab.key,
                     className: "flex items-center gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg px-3 sm:px-4 py-2 text-xs font-display whitespace-nowrap flex-shrink-0",
                     children: [
-                      t2.icon,
-                      t2.label
+                      tab.icon,
+                      tab.label
                     ]
-                  }, t2.key, true, undefined, this))
+                  }, tab.key, true, undefined, this))
                 }, undefined, false, undefined, this),
                 isLoading ? /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("div", {
                   className: "glass-card rounded-xl p-16 flex items-center justify-center",
                   children: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV("div", {
                     className: "animate-pulse text-muted-foreground font-display",
-                    children: "Loading rankings…"
+                    children: t2("rankings.loadingRankings")
                   }, undefined, false, undefined, this)
-                }, undefined, false, undefined, this) : TABS.map((t2) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(TabsContent2, {
-                  value: t2.key,
+                }, undefined, false, undefined, this) : TABS.map((tab) => /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(TabsContent2, {
+                  value: tab.key,
                   children: /* @__PURE__ */ jsx_dev_runtime36.jsxDEV(LeaderboardTable, {
                     agents,
-                    tab: t2.key
+                    tab: tab.key,
+                    t: t2
                   }, undefined, false, undefined, this)
-                }, t2.key, false, undefined, this))
+                }, tab.key, false, undefined, this))
               ]
             }, undefined, true, undefined, this)
           ]
@@ -100070,5 +100072,5 @@ var App_default = App;
 var jsx_dev_runtime61 = __toESM(require_jsx_dev_runtime(), 1);
 import_client2.createRoot(document.getElementById("root")).render(/* @__PURE__ */ jsx_dev_runtime61.jsxDEV(App_default, {}, undefined, false, undefined, this));
 
-//# debugId=03A837FFB5FC723F64756E2164756E21
+//# debugId=1144829D8F0FE0D564756E2164756E21
 //# sourceMappingURL=/main.js.map

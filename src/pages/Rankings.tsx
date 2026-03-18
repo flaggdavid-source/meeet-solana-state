@@ -6,7 +6,8 @@ import Footer from "@/components/Footer";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Coins, Star, Map, Sword, TrendingUp, Crown, Shield, Zap, Eye } from "lucide-react";
+import { Trophy, Coins, Star, Map, Sword, Crown, Eye } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const CLASS_ICONS: Record<string, string> = {
   warrior: "⚔️", trader: "💰", scout: "🔍", diplomat: "🤝", builder: "🏗️", hacker: "💻",
@@ -29,19 +30,12 @@ const RANK_BADGES = [
 
 type TabKey = "wealth" | "reputation" | "quests" | "territories" | "warriors";
 
-const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
-  { key: "wealth", label: "Wealth", icon: <Coins className="w-4 h-4" /> },
-  { key: "reputation", label: "Reputation", icon: <Star className="w-4 h-4" /> },
-  { key: "quests", label: "Quests", icon: <Trophy className="w-4 h-4" /> },
-  { key: "territories", label: "Territories", icon: <Map className="w-4 h-4" /> },
-  { key: "warriors", label: "Warriors", icon: <Sword className="w-4 h-4" /> },
-];
-
 function useAgents() {
   return useQuery({
     queryKey: ["rankings-agents"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("agents").select("*").limit(100);
+      // Use agents_public view (no RLS, publicly readable) for leaderboard
+      const { data, error } = await supabase.from("agents_public").select("*").limit(100);
       if (error) throw error;
       return data ?? [];
     },
@@ -51,11 +45,11 @@ function useAgents() {
 function sortAgents(agents: any[], tab: TabKey) {
   const copy = [...agents];
   switch (tab) {
-    case "wealth": return copy.sort((a, b) => b.balance_meeet - a.balance_meeet);
-    case "reputation": return copy.sort((a, b) => b.xp - a.xp);
-    case "quests": return copy.sort((a, b) => b.quests_completed - a.quests_completed);
-    case "territories": return copy.sort((a, b) => b.territories_held - a.territories_held);
-    case "warriors": return copy.sort((a, b) => b.kills - a.kills);
+    case "wealth": return copy.sort((a, b) => (b.balance_meeet ?? 0) - (a.balance_meeet ?? 0));
+    case "reputation": return copy.sort((a, b) => (b.xp ?? 0) - (a.xp ?? 0));
+    case "quests": return copy.sort((a, b) => (b.quests_completed ?? 0) - (a.quests_completed ?? 0));
+    case "territories": return copy.sort((a, b) => (b.territories_held ?? 0) - (a.territories_held ?? 0));
+    case "warriors": return copy.sort((a, b) => (b.kills ?? 0) - (a.kills ?? 0));
   }
 }
 
@@ -80,33 +74,33 @@ function StatHighlight({ value, label, icon }: { value: string | number; label: 
   );
 }
 
-function LeaderboardTable({ agents, tab }: { agents: any[]; tab: TabKey }) {
+function LeaderboardTable({ agents, tab, t }: { agents: any[]; tab: TabKey; t: (path: string) => any }) {
   const sorted = sortAgents(agents, tab);
 
   const columns: Record<TabKey, { header: string; render: (a: any) => React.ReactNode }[]> = {
     wealth: [
-      { header: "Balance", render: (a) => <span className="font-mono font-semibold text-primary">{Number(a.balance_meeet).toLocaleString()} <span className="text-xs text-muted-foreground">$MEEET</span></span> },
-      { header: "Level", render: (a) => <span className="font-mono">{a.level}</span> },
+      { header: t("rankings.balance"), render: (a) => <span className="font-mono font-semibold text-primary">{Number(a.balance_meeet ?? 0).toLocaleString()} <span className="text-xs text-muted-foreground">$MEEET</span></span> },
+      { header: t("rankings.level"), render: (a) => <span className="font-mono">{a.level}</span> },
     ],
     reputation: [
-      { header: "XP", render: (a) => <span className="font-mono font-semibold text-primary">{Number(a.xp).toLocaleString()}</span> },
-      { header: "Quests", render: (a) => <span className="font-mono">{a.quests_completed}</span> },
+      { header: t("rankings.xp"), render: (a) => <span className="font-mono font-semibold text-primary">{Number(a.xp ?? 0).toLocaleString()}</span> },
+      { header: t("rankings.questsTab"), render: (a) => <span className="font-mono">{a.quests_completed}</span> },
     ],
     quests: [
-      { header: "Completed", render: (a) => <span className="font-mono font-semibold text-primary">{a.quests_completed}</span> },
-      { header: "XP", render: (a) => <span className="font-mono">{Number(a.xp).toLocaleString()}</span> },
+      { header: t("rankings.completedCol"), render: (a) => <span className="font-mono font-semibold text-primary">{a.quests_completed}</span> },
+      { header: t("rankings.xp"), render: (a) => <span className="font-mono">{Number(a.xp ?? 0).toLocaleString()}</span> },
     ],
     territories: [
-      { header: "Held", render: (a) => <span className="font-mono font-semibold text-primary">{a.territories_held}</span> },
-      { header: "Balance", render: (a) => <span className="font-mono">{Number(a.balance_meeet).toLocaleString()}</span> },
+      { header: t("rankings.held"), render: (a) => <span className="font-mono font-semibold text-primary">{a.territories_held}</span> },
+      { header: t("rankings.balance"), render: (a) => <span className="font-mono">{Number(a.balance_meeet ?? 0).toLocaleString()}</span> },
     ],
     warriors: [
-      { header: "Kills", render: (a) => <span className="font-mono font-semibold text-red-400">{a.kills}</span> },
-      { header: "ATK / DEF", render: (a) => <span className="font-mono">{a.attack}<span className="text-muted-foreground">/</span>{a.defense}</span> },
-      { header: "HP", render: (a) => (
+      { header: t("rankings.kills"), render: (a) => <span className="font-mono font-semibold text-red-400">{a.kills}</span> },
+      { header: t("rankings.atkDef"), render: (a) => <span className="font-mono">{a.attack}<span className="text-muted-foreground">/</span>{a.defense}</span> },
+      { header: t("rankings.hp"), render: (a) => (
         <div className="flex items-center gap-2">
           <div className="w-20 h-1.5 rounded-full bg-muted overflow-hidden">
-            <div className="h-full rounded-full bg-emerald-500" style={{ width: `${(a.hp / a.max_hp) * 100}%` }} />
+            <div className="h-full rounded-full bg-emerald-500" style={{ width: `${((a.hp ?? 0) / (a.max_hp || 1)) * 100}%` }} />
           </div>
           <span className="text-xs font-mono text-muted-foreground">{a.hp}/{a.max_hp}</span>
         </div>
@@ -132,7 +126,7 @@ function LeaderboardTable({ agents, tab }: { agents: any[]; tab: TabKey }) {
           {sorted.length === 0 && (
             <TableRow>
               <TableCell colSpan={4 + cols.length} className="text-center py-12 text-muted-foreground">
-                No agents found. Be the first to create one!
+                {t("rankings.noAgents")}
               </TableCell>
             </TableRow>
           )}
@@ -155,7 +149,7 @@ function LeaderboardTable({ agents, tab }: { agents: any[]; tab: TabKey }) {
               </TableCell>
               <TableCell>
                 <Badge variant="outline" className={`text-[10px] capitalize ${STATUS_COLORS[agent.status] || ""}`}>
-                  {agent.status.replace("_", " ")}
+                  {(agent.status || "idle").replace("_", " ")}
                 </Badge>
               </TableCell>
               {cols.map((c) => <TableCell key={c.header}>{c.render(agent)}</TableCell>)}
@@ -170,56 +164,62 @@ function LeaderboardTable({ agents, tab }: { agents: any[]; tab: TabKey }) {
 const Rankings = () => {
   const [activeTab, setActiveTab] = useState<TabKey>("wealth");
   const { data: agents = [], isLoading } = useAgents();
+  const { t } = useLanguage();
 
-  const topByWealth = [...agents].sort((a, b) => b.balance_meeet - a.balance_meeet)[0];
-  const topByKills = [...agents].sort((a, b) => b.kills - a.kills)[0];
-  const totalMeeet = agents.reduce((s, a) => s + Number(a.balance_meeet), 0);
+  const topByWealth = [...agents].sort((a, b) => (b.balance_meeet ?? 0) - (a.balance_meeet ?? 0))[0];
+  const topByKills = [...agents].sort((a, b) => (b.kills ?? 0) - (a.kills ?? 0))[0];
+  const totalMeeet = agents.reduce((s, a) => s + Number(a.balance_meeet ?? 0), 0);
+
+  const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
+    { key: "wealth", label: t("rankings.wealth"), icon: <Coins className="w-4 h-4" /> },
+    { key: "reputation", label: t("rankings.reputation"), icon: <Star className="w-4 h-4" /> },
+    { key: "quests", label: t("rankings.questsTab"), icon: <Trophy className="w-4 h-4" /> },
+    { key: "territories", label: t("rankings.territories"), icon: <Map className="w-4 h-4" /> },
+    { key: "warriors", label: t("rankings.warriors"), icon: <Sword className="w-4 h-4" /> },
+  ];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <main className="pt-24 pb-16">
         <div className="container max-w-5xl mx-auto px-4">
-          {/* Header */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
               <Trophy className="w-7 h-7 text-primary" />
-              <h1 className="text-3xl md:text-4xl font-display font-bold">Rankings</h1>
+              <h1 className="text-3xl md:text-4xl font-display font-bold">{t("rankings.title")}</h1>
             </div>
-            <p className="text-muted-foreground text-sm">Top agents of MEEET State — ranked by performance.</p>
+            <p className="text-muted-foreground text-sm">{t("rankings.subtitle")}</p>
           </div>
 
-          {/* Stats row */}
           <div className="flex gap-3 overflow-x-auto pb-4 mb-6 scrollbar-hide">
-            <StatHighlight icon={<Eye className="w-4 h-4" />} value={agents.length} label="Total Agents" />
-            <StatHighlight icon={<Coins className="w-4 h-4" />} value={totalMeeet.toLocaleString()} label="Total $MEEET" />
-            <StatHighlight icon={<Crown className="w-4 h-4" />} value={topByWealth?.name ?? "—"} label="Richest" />
-            <StatHighlight icon={<Sword className="w-4 h-4" />} value={topByKills?.name ?? "—"} label="Top Warrior" />
+            <StatHighlight icon={<Eye className="w-4 h-4" />} value={agents.length} label={t("rankings.totalAgents")} />
+            <StatHighlight icon={<Coins className="w-4 h-4" />} value={totalMeeet.toLocaleString()} label={t("rankings.totalMeeet")} />
+            <StatHighlight icon={<Crown className="w-4 h-4" />} value={topByWealth?.name ?? "—"} label={t("rankings.richest")} />
+            <StatHighlight icon={<Sword className="w-4 h-4" />} value={topByKills?.name ?? "—"} label={t("rankings.topWarrior")} />
           </div>
 
-          {/* Tabs */}
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabKey)}>
             <TabsList className="w-full justify-start bg-muted/50 border border-border rounded-xl p-1 mb-6 overflow-x-auto flex-nowrap">
-              {TABS.map((t) => (
+              {TABS.map((tab) => (
                 <TabsTrigger
-                  key={t.key}
-                  value={t.key}
+                  key={tab.key}
+                  value={tab.key}
                   className="flex items-center gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg px-3 sm:px-4 py-2 text-xs font-display whitespace-nowrap flex-shrink-0"
                 >
-                  {t.icon}
-                  {t.label}
+                  {tab.icon}
+                  {tab.label}
                 </TabsTrigger>
               ))}
             </TabsList>
 
             {isLoading ? (
               <div className="glass-card rounded-xl p-16 flex items-center justify-center">
-                <div className="animate-pulse text-muted-foreground font-display">Loading rankings…</div>
+                <div className="animate-pulse text-muted-foreground font-display">{t("rankings.loadingRankings")}</div>
               </div>
             ) : (
-              TABS.map((t) => (
-                <TabsContent key={t.key} value={t.key}>
-                  <LeaderboardTable agents={agents} tab={t.key} />
+              TABS.map((tab) => (
+                <TabsContent key={tab.key} value={tab.key}>
+                  <LeaderboardTable agents={agents} tab={tab.key} t={t} />
                 </TabsContent>
               ))
             )}
