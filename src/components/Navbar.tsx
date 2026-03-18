@@ -158,7 +158,7 @@ const Navbar = () => {
               </Link>
               <button
                 onClick={signOut}
-                className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-display text-muted-foreground hover:text-foreground transition-colors duration-150"
+                className="hidden lg:flex items-center gap-1.5 px-3 py-2 text-sm font-display text-muted-foreground hover:text-foreground transition-colors duration-150"
               >
                 <LogOut className="w-4 h-4" />
               </button>
