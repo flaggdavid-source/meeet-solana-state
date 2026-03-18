@@ -53,3 +53,6 @@ verify_jwt = false
 
 [functions.developer-signup]
 verify_jwt = false
+
+[functions.agent-info]
+verify_jwt = false
