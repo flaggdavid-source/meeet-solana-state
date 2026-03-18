@@ -142,7 +142,6 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ message: "No new events from GDELT", synced: 0 }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
-      });
     }
 
     let synced = 0;
