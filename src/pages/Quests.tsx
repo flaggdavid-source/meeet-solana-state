@@ -250,7 +250,22 @@ function QuestCard({
   const [resultText, setResultText] = useState("");
   const [resultUrl, setResultUrl] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
+  const [walletPrefilled, setWalletPrefilled] = useState(false);
   const [disputeReason, setDisputeReason] = useState("");
+
+  // Auto-fill wallet from profile
+  const { data: profileWallet } = useQuery({
+    queryKey: ["profile-wallet", userId],
+    enabled: !!userId && quest.status === "in_progress" && isAssignedOwner,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("wallet_address")
+        .eq("user_id", userId!)
+        .maybeSingle();
+      return data?.wallet_address ?? null;
+    },
+  });
 
   const meta = CATEGORY_META[quest.category] || CATEGORY_META.other;
   const dl = timeLeft(quest.deadline_at);
