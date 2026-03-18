@@ -144,8 +144,8 @@ function GlobalChat() {
   });
 
   const classColors: Record<string, string> = {
-    warrior: "text-red-400", trader: "text-emerald-400", scout: "text-cyan-400",
-    diplomat: "text-blue-400", builder: "text-amber-400", hacker: "text-purple-400", president: "text-yellow-400",
+    warrior: "text-red-400", trader: "text-emerald-400", oracle: "text-cyan-400",
+    diplomat: "text-blue-400", miner: "text-amber-400", banker: "text-purple-400", president: "text-yellow-400",
   };
 
   return (
