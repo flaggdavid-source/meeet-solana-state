@@ -4,7 +4,7 @@ import { checkRateLimit, RATE_LIMITS, rateLimitResponse } from "../_shared/rate-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+    "authorization, x-client-info, apikey, content-type, x-api-key, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 function json(body: Record<string, unknown>, status = 200) {
@@ -12,6 +12,80 @@ function json(body: Record<string, unknown>, status = 200) {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
+}
+
+async function hashKey(key: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(key);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * Resolve caller identity from API key, JWT, or agent_id fallback.
+ */
+async function resolveUser(
+  req: Request,
+  supabaseUrl: string,
+  anonKey: string,
+  serviceClient: ReturnType<typeof createClient>,
+  bodyAgentId?: string,
+): Promise<{ userId: string | null; error: string | null }> {
+  // 1. API key
+  const apiKey = req.headers.get("X-API-Key") || req.headers.get("x-api-key");
+  if (apiKey && apiKey.startsWith("mst_")) {
+    const keyHash = await hashKey(apiKey);
+    const { data: userId } = await serviceClient.rpc("validate_api_key", { _key_hash: keyHash });
+    if (userId) {
+      await serviceClient.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("key_hash", keyHash);
+      return { userId, error: null };
+    }
+    return { userId: null, error: "Invalid or inactive API key" };
+  }
+
+  // 2. JWT Bearer
+  const authHeader = req.headers.get("Authorization") ?? "";
+  if (authHeader.startsWith("Bearer ")) {
+    const token = authHeader.replace("Bearer ", "");
+    const authClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: claimsData, error: claimsErr } = await authClient.auth.getClaims(token);
+    if (!claimsErr && claimsData?.claims?.sub) {
+      return { userId: claimsData.claims.sub as string, error: null };
+    }
+  }
+
+  // 3. Fallback: resolve via agent_id (for unauthenticated SDK testing)
+  if (bodyAgentId) {
+    const { data: agent } = await serviceClient
+      .from("agents")
+      .select("user_id")
+      .eq("id", bodyAgentId)
+      .single();
+    if (agent) {
+      return { userId: agent.user_id, error: null };
+    }
+  }
+
+  return { userId: null, error: "Authentication required. Use X-API-Key, Bearer JWT, or provide agent_id." };
+}
+
+/**
+ * Fire webhook if agent has a webhook_url (stored in agent metadata or as a parameter).
+ */
+async function fireWebhook(webhookUrl: string | undefined, payload: Record<string, unknown>) {
+  if (!webhookUrl) return;
+  try {
+    await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch (e) {
+    console.error("Webhook fire failed:", e);
+  }
 }
 
 Deno.serve(async (req) => {
@@ -23,34 +97,19 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-
-    const authHeader = req.headers.get("Authorization") ?? "";
-    if (!authHeader.startsWith("Bearer ")) {
-      return json({ error: "Authorization required" }, 401);
-    }
-
-    const token = authHeader.replace("Bearer ", "");
-    const authClient = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-
-    // Validate JWT using getClaims for Lovable Cloud compatibility
-    const { data: claimsData, error: claimsErr } = await authClient.auth.getClaims(token);
-    if (claimsErr || !claimsData?.claims?.sub) {
-      console.error("Auth error:", claimsErr);
-      return json({ error: "Unauthorized" }, 401);
-    }
-    const userId = claimsData.claims.sub as string;
-
     const serviceClient = createClient(supabaseUrl, serviceRoleKey);
+
+    const body = await req.json();
+    const { action, quest_id, agent_id, result_text, result_url, reason, wallet_address, webhook_url } = body;
+
+    // Resolve user (supports API key, JWT, or agent_id fallback)
+    const { userId, error: authError } = await resolveUser(req, supabaseUrl, anonKey, serviceClient, agent_id);
+    if (!userId) return json({ error: authError }, 401);
 
     // Rate limit
     const rl = RATE_LIMITS.quest_lifecycle;
     const { allowed } = await checkRateLimit(serviceClient, `quest:${userId}`, rl.max, rl.window);
     if (!allowed) return rateLimitResponse(rl.window);
-
-    const body = await req.json();
-    const { action, quest_id, agent_id, result_text, result_url, reason, wallet_address } = body;
 
     if (!quest_id) return json({ error: "quest_id required" }, 400);
     if (!action) return json({ error: "action required" }, 400);
@@ -64,12 +123,11 @@ Deno.serve(async (req) => {
     if (qErr || !quest) return json({ error: "Quest not found" }, 404);
 
     switch (action) {
-      // ── ACCEPT: agent takes the quest ──────────────────────────
+      // ── ACCEPT ─────────────────────────────────────────────────
       case "accept": {
         if (quest.status !== "open") return json({ error: "Quest is not open" }, 400);
         if (!agent_id) return json({ error: "agent_id required" }, 400);
 
-        // Verify agent belongs to user
         const { data: agent } = await serviceClient
           .from("agents")
           .select("id, user_id")
@@ -78,7 +136,6 @@ Deno.serve(async (req) => {
         if (!agent || agent.user_id !== userId)
           return json({ error: "Agent not found or not yours" }, 403);
 
-        // Cannot accept own quest
         if (quest.requester_id === userId)
           return json({ error: "Cannot accept your own quest" }, 400);
 
@@ -91,7 +148,6 @@ Deno.serve(async (req) => {
           })
           .eq("id", quest_id);
 
-        // Update agent status
         await serviceClient
           .from("agents")
           .update({ status: "exploring" })
@@ -100,12 +156,11 @@ Deno.serve(async (req) => {
         return json({ success: true, status: "in_progress" });
       }
 
-      // ── DELIVER: agent submits result ──────────────────────────
+      // ── DELIVER ────────────────────────────────────────────────
       case "deliver": {
         if (quest.status !== "in_progress")
           return json({ error: "Quest is not in progress" }, 400);
 
-        // Only assigned agent's owner can deliver
         const { data: assignedAgent } = await serviceClient
           .from("agents")
           .select("user_id")
@@ -127,7 +182,6 @@ Deno.serve(async (req) => {
           })
           .eq("id", quest_id);
 
-        // Create quest submission for airdrop script
         await serviceClient.from("quest_submissions").insert({
           quest_id,
           agent_id: quest.assigned_agent_id!,
@@ -143,7 +197,7 @@ Deno.serve(async (req) => {
         return json({ success: true, status: "review" });
       }
 
-      // ── APPROVE: requester approves delivery → pays reward ─────
+      // ── APPROVE ────────────────────────────────────────────────
       case "approve": {
         if (quest.status !== "review")
           return json({ error: "Quest is not in review" }, 400);
@@ -153,18 +207,14 @@ Deno.serve(async (req) => {
         const rewardMeeet = Number(quest.reward_meeet) || 0;
         const rewardSol = Number(quest.reward_sol) || 0;
 
-        // Mark quest completed
         await serviceClient
           .from("quests")
-          .update({
-            status: "completed",
-            completed_at: new Date().toISOString(),
-          })
+          .update({ status: "completed", completed_at: new Date().toISOString() })
           .eq("id", quest_id);
 
         let solPaymentResult: Record<string, unknown> | null = null;
 
-        // ── SOL Payout: send real SOL to executor's wallet ──
+        // SOL Payout
         if (rewardSol > 0 && quest.assigned_agent_id) {
           const { data: executorAgent } = await serviceClient
             .from("agents")
@@ -199,24 +249,19 @@ Deno.serve(async (req) => {
                   }
                 );
                 solPaymentResult = await payResponse.json();
-                if (!payResponse.ok) {
-                  console.error("SOL payment failed:", solPaymentResult);
-                }
               } catch (e) {
                 console.error("SOL payment error:", e.message);
                 solPaymentResult = { error: e.message };
               }
-            } else {
-              solPaymentResult = { error: "Executor has no wallet address linked" };
             }
           }
         }
 
-        // Process $MEEET reward directly (skip process-transaction for reliability)
-        if (rewardMeeet > 0 && quest.assigned_agent_id) {
+        // $MEEET reward + stats update
+        if (quest.assigned_agent_id) {
           const { data: agentData } = await serviceClient
             .from("agents")
-            .select("balance_meeet, xp, quests_completed")
+            .select("balance_meeet, xp, quests_completed, name")
             .eq("id", quest.assigned_agent_id)
             .single();
 
@@ -224,7 +269,7 @@ Deno.serve(async (req) => {
             await serviceClient
               .from("agents")
               .update({
-                balance_meeet: Number(agentData.balance_meeet) + rewardMeeet,
+                balance_meeet: rewardMeeet > 0 ? Number(agentData.balance_meeet) + rewardMeeet : agentData.balance_meeet,
                 xp: agentData.xp + 50,
                 quests_completed: agentData.quests_completed + 1,
                 status: "idle",
@@ -232,75 +277,54 @@ Deno.serve(async (req) => {
               .eq("id", quest.assigned_agent_id);
 
             // Record transaction
-            await serviceClient.from("transactions").insert({
-              type: "quest_reward",
-              to_agent_id: quest.assigned_agent_id,
-              amount_meeet: rewardMeeet,
-              amount_sol: rewardSol,
+            if (rewardMeeet > 0 || rewardSol > 0) {
+              await serviceClient.from("transactions").insert({
+                type: "quest_reward",
+                to_agent_id: quest.assigned_agent_id,
+                amount_meeet: rewardMeeet || null,
+                amount_sol: rewardSol || null,
+                quest_id,
+                description: `Quest reward: ${quest.title}`,
+              });
+            }
+
+            // Reputation
+            await serviceClient.from("reputation_log").insert({
+              agent_id: quest.assigned_agent_id,
               quest_id,
-              description: `Quest reward: ${quest.title}`,
+              delta: 10,
+              reason: "Quest completed successfully",
+            });
+
+            // Activity feed
+            const solNote = solPaymentResult && (solPaymentResult as any).success
+              ? ` + ${rewardSol} SOL sent` : rewardSol > 0 ? ` (SOL payout pending)` : "";
+            await serviceClient.from("activity_feed").insert({
+              agent_id: quest.assigned_agent_id,
+              event_type: "quest_complete",
+              title: `${agentData.name || "Agent"} completed quest "${quest.title}"`,
+              description: `Earned ${rewardMeeet.toLocaleString()} $MEEET${solNote}`,
+              meeet_amount: rewardMeeet,
+            });
+
+            // 🔔 Fire webhook callback if provided
+            await fireWebhook(webhook_url, {
+              event: "quest_completed",
+              quest_id,
+              agent_id: quest.assigned_agent_id,
+              agent_name: agentData.name,
+              reward_meeet: rewardMeeet,
+              reward_sol: rewardSol,
+              sol_payment: solPaymentResult,
+              timestamp: new Date().toISOString(),
             });
           }
-        } else if (quest.assigned_agent_id) {
-          // No MEEET but still update agent stats
-          const { data: agentData } = await serviceClient
-            .from("agents")
-            .select("xp, quests_completed")
-            .eq("id", quest.assigned_agent_id)
-            .single();
-
-          if (agentData) {
-            await serviceClient
-              .from("agents")
-              .update({
-                xp: agentData.xp + 50,
-                quests_completed: agentData.quests_completed + 1,
-                status: "idle",
-              })
-              .eq("id", quest.assigned_agent_id);
-          }
-
-          // Record SOL-only transaction
-          if (rewardSol > 0) {
-            await serviceClient.from("transactions").insert({
-              type: "quest_reward",
-              to_agent_id: quest.assigned_agent_id,
-              amount_sol: rewardSol,
-              quest_id,
-              description: `Quest reward: ${quest.title}`,
-            });
-          }
-        }
-
-        // Add reputation
-        if (quest.assigned_agent_id) {
-          await serviceClient.from("reputation_log").insert({
-            agent_id: quest.assigned_agent_id,
-            quest_id,
-            delta: 10,
-            reason: "Quest completed successfully",
-          });
-
-          const { data: completedAgent } = await serviceClient
-            .from("agents").select("name").eq("id", quest.assigned_agent_id).single();
-
-          const solNote = solPaymentResult && (solPaymentResult as any).success
-            ? ` + ${rewardSol} SOL sent`
-            : rewardSol > 0 ? ` (SOL payout pending)` : "";
-
-          await serviceClient.from("activity_feed").insert({
-            agent_id: quest.assigned_agent_id,
-            event_type: "quest_complete",
-            title: `${completedAgent?.name || "Agent"} completed quest "${quest.title}"`,
-            description: `Earned ${Number(quest.reward_meeet || 0).toLocaleString()} $MEEET${solNote}`,
-            meeet_amount: Number(quest.reward_meeet) || 0,
-          });
         }
 
         return json({ success: true, status: "completed", sol_payment: solPaymentResult });
       }
 
-      // ── DISPUTE: requester disputes delivery ───────────────────
+      // ── DISPUTE ────────────────────────────────────────────────
       case "dispute": {
         if (quest.status !== "review")
           return json({ error: "Quest is not in review" }, 400);
@@ -323,7 +347,7 @@ Deno.serve(async (req) => {
         return json({ success: true, status: "disputed" });
       }
 
-      // ── CANCEL: requester cancels open quest ───────────────────
+      // ── CANCEL ─────────────────────────────────────────────────
       case "cancel": {
         if (quest.status !== "open")
           return json({ error: "Can only cancel open quests" }, 400);

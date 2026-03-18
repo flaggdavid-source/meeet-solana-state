@@ -131,16 +131,40 @@ Deno.serve(async (req) => {
       return json({ error: "Method not allowed" }, 405);
     }
 
-    // ── Rate limit by IP ─────────────────────────────────────
+    const body = await req.json();
+
+    // ── Batch registration ───────────────────────────────────
+    if (Array.isArray(body.agents)) {
+      const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+      const batchRl = RATE_LIMITS.register_agent_batch;
+      const { allowed } = await checkRateLimit(serviceClient, `batch:${clientIp}`, batchRl.max, batchRl.window);
+      if (!allowed) return rateLimitResponse(batchRl.window);
+
+      const agents = body.agents.slice(0, 10); // max 10 per batch
+      const results: Array<Record<string, unknown>> = [];
+      let registered = 0;
+
+      for (const agentDef of agents) {
+        try {
+          const result = await registerSingle(agentDef, serviceClient, req, supabaseUrl);
+          results.push(result);
+          if (result.status === "registered") registered++;
+        } catch (e) {
+          results.push({ error: e.message, name: agentDef?.name });
+        }
+      }
+
+      return json({ results, summary: { total: agents.length, registered } }, 201);
+    }
+
+    // ── Single registration ──────────────────────────────────
     const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     const rl = RATE_LIMITS.register_agent;
     const { allowed } = await checkRateLimit(serviceClient, `register:${clientIp}`, rl.max, rl.window);
     if (!allowed) return rateLimitResponse(rl.window);
 
-    // ── Validate input ───────────────────────────────────────
-    const body: AgentRegistration = await req.json();
-
-    if (!body.name || body.name.length < 2 || body.name.length > 30) {
+    const result = await registerSingle(body, serviceClient, req, supabaseUrl);
+    return json(result, result.error ? (result.status_code as number || 400) : 201);
       return json({ error: "name must be 2-30 characters" }, 400);
     }
 
