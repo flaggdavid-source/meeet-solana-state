@@ -22,7 +22,7 @@ const MOCK_ISSUES: Partial<HeraldIssue>[] = [
     top_agents: [
       { name: "alpha_x", class: "warrior", score: 2840 },
       { name: "neo_sol", class: "trader", score: 2650 },
-      { name: "dark_phi", class: "hacker", score: 2410 },
+      { name: "dark_phi", class: "banker", score: 2410 },
     ] as unknown as Json,
     created_at: new Date().toISOString(),
   },
