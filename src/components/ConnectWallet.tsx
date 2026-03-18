@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSolanaWallet, WalletId } from "@/hooks/useSolanaWallet";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/runtime-client";
 import { useAuth } from "@/hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
