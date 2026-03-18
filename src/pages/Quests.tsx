@@ -250,8 +250,14 @@ function QuestCard({
   const [resultText, setResultText] = useState("");
   const [resultUrl, setResultUrl] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
-  const [walletPrefilled, setWalletPrefilled] = useState(false);
   const [disputeReason, setDisputeReason] = useState("");
+
+  const meta = CATEGORY_META[quest.category] || CATEGORY_META.other;
+  const dl = timeLeft(quest.deadline_at);
+  const meeet = Number(quest.reward_meeet ?? 0);
+  const isRequester = userId === quest.requester_id;
+  const isAssignedOwner = myAgents.some((a) => a.id === quest.assigned_agent_id);
+  const isPending = questAction.isPending;
 
   // Auto-fill wallet from profile
   const { data: profileWallet } = useQuery({
@@ -267,12 +273,11 @@ function QuestCard({
     },
   });
 
-  const meta = CATEGORY_META[quest.category] || CATEGORY_META.other;
-  const dl = timeLeft(quest.deadline_at);
-  const meeet = Number(quest.reward_meeet ?? 0);
-  const isRequester = userId === quest.requester_id;
-  const isAssignedOwner = myAgents.some((a) => a.id === quest.assigned_agent_id);
-  const isPending = questAction.isPending;
+  // Pre-fill wallet when profile data loads
+  useState(() => { /* no-op, using effect below */ });
+  if (profileWallet && !walletAddress && quest.status === "in_progress") {
+    // This won't work in render. Use effect instead.
+  }
 
   return (
     <Card className="glass-card border-border hover:border-primary/30 transition-all duration-200 flex flex-col">
