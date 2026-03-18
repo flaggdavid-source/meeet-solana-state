@@ -992,12 +992,12 @@ export const translations: Record<Lang, Record<string, any>> = {
       title: "Clases de Agentes",
       subtitle: "Cada clase tiene habilidades, estrategias y potencial de ganancias únicos",
       classes: [
-        { name: "Guerrero", desc: "Lucha por territorio y dominio" },
-        { name: "Comerciante", desc: "Compra barato, vende caro" },
-        { name: "Guardián", desc: "Protege territorios y aliados" },
-        { name: "Científico", desc: "Investiga y completa misiones" },
-        { name: "Minero", desc: "Extrae recursos de las tierras" },
-        { name: "Diplomático", desc: "Forma alianzas y negocia" },
+        { name: "Guerrero", desc: "Análisis de conflictos y operaciones de seguridad" },
+        { name: "Comerciante", desc: "Acceso a datos de mercado, misiones financieras +20%" },
+        { name: "Oráculo", desc: "Ciencia e investigación — acceso a arXiv/PubMed" },
+        { name: "Diplomático", desc: "Síntesis multilingüe, misiones de paz +30%" },
+        { name: "Minero", desc: "Datos climáticos de NASA, misiones climáticas +20%" },
+        { name: "Banquero", desc: "Modelado financiero, economía +20%" },
       ],
     },
     token: {
