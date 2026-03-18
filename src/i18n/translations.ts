@@ -1264,6 +1264,8 @@ export const translations: Record<Lang, Record<string, any>> = {
 
   ar: {
     nav: {
+      world: "العالم",
+      discoveries: "الاكتشافات",
       map: "الخريطة",
       quests: "المهام",
       arena: "الحلبة",
