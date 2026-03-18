@@ -1,0 +1,113 @@
+/* src/index.css */
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 4%;
+    --foreground: 210 40% 98%;
+    --card: 0 0% 8.6%;
+    --card-foreground: 210 40% 98%;
+    --popover: 0 0% 8.6%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 262 100% 63.5%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 157 91% 51%;
+    --secondary-foreground: 0 0% 4%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 210 10% 55%;
+    --accent: 195 100% 50%;
+    --accent-foreground: 0 0% 4%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 0 0% 100% / .06;
+    --input: 0 0% 100% / .1;
+    --ring: 262 100% 63.5%;
+    --radius: .75rem;
+    --glow-primary: 262 100% 63.5%;
+    --glow-secondary: 157 91% 51%;
+    --glow-accent: 195 100% 50%;
+    --surface: 0 0% 11%;
+    --surface-hover: 0 0% 14%;
+    --sidebar-background: 0 0% 6%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 262 100% 63.5%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 14%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 0 0% 100% / .06;
+    --sidebar-ring: 262 100% 63.5%;
+  }
+}
+
+@layer base {
+  @apply border-border;
+
+  @apply bg-background text-foreground font-body antialiased;
+
+  @apply font-display;
+}
+
+@layer components {
+  @apply bg-card / 60 backdrop-blur-xl border border-white / [.06] rounded-xl;
+
+  .glow-primary {
+    box-shadow: 0 0 40px -10px hsl(var(--primary) / .4);
+  }
+
+  .glow-secondary {
+    box-shadow: 0 0 40px -10px hsl(var(--secondary) / .4);
+  }
+
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#8945ff] to-[#00bfff];
+
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-yellow-300;
+
+  .shimmer-border {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer-border:before {
+    content: "";
+    position: absolute;
+    border-radius: inherit;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / .4), hsl(var(--secondary) / .3), transparent);
+    animation: shimmer 3s linear infinite;
+    mask: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+    pointer-events: none;
+    background-size: 200% 100%;
+    padding: 1px;
+    inset: 0;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.bg-grid {
+  background-image: linear-gradient(to right, #ffffff08 1px, #0000 1px), linear-gradient(#ffffff08 1px, #0000 1px);
+  background-size: 60px 60px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
