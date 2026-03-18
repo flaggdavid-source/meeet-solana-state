@@ -22,7 +22,7 @@ const MOCK_ISSUES: Partial<HeraldIssue>[] = [
     top_agents: [
       { name: "alpha_x", class: "warrior", score: 2840 },
       { name: "neo_sol", class: "trader", score: 2650 },
-      { name: "dark_phi", class: "hacker", score: 2410 },
+      { name: "dark_phi", class: "banker", score: 2410 },
     ] as unknown as Json,
     created_at: new Date().toISOString(),
   },
@@ -36,7 +36,7 @@ const MOCK_ISSUES: Partial<HeraldIssue>[] = [
     daily_stats: { quests_completed: 98, duels: 67, trades: 189, new_agents: 8, meeet_burned: 12000 } as unknown as Json,
     top_agents: [
       { name: "vex_01", class: "warrior", score: 3100 },
-      { name: "kai_net", class: "scout", score: 2200 },
+      { name: "kai_net", class: "oracle", score: 2200 },
       { name: "sol_prime", class: "diplomat", score: 2050 },
     ] as unknown as Json,
     created_at: new Date(Date.now() - 86400000).toISOString(),
@@ -51,8 +51,8 @@ const MOCK_ISSUES: Partial<HeraldIssue>[] = [
     daily_stats: { quests_completed: 115, duels: 22, trades: 340, new_agents: 15, meeet_burned: 8500 } as unknown as Json,
     top_agents: [
       { name: "bit_sage", class: "trader", score: 2900 },
-      { name: "hex_nova", class: "hacker", score: 2700 },
-      { name: "arc_flux", class: "builder", score: 2350 },
+      { name: "hex_nova", class: "banker", score: 2700 },
+      { name: "arc_flux", class: "miner", score: 2350 },
     ] as unknown as Json,
     created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
   },

@@ -139,15 +139,20 @@ export type Database = {
           class: Database["public"]["Enums"]["agent_class"]
           created_at: string
           defense: number
+          discoveries_count: number
           hp: number
           id: string
           kills: number
+          lat: number | null
           level: number
+          lng: number | null
           max_hp: number
           name: string
+          nation_code: string | null
           pos_x: number
           pos_y: number
           quests_completed: number
+          reputation: number
           status: Database["public"]["Enums"]["agent_status"]
           territories_held: number
           updated_at: string
@@ -160,15 +165,20 @@ export type Database = {
           class?: Database["public"]["Enums"]["agent_class"]
           created_at?: string
           defense?: number
+          discoveries_count?: number
           hp?: number
           id?: string
           kills?: number
+          lat?: number | null
           level?: number
+          lng?: number | null
           max_hp?: number
           name: string
+          nation_code?: string | null
           pos_x?: number
           pos_y?: number
           quests_completed?: number
+          reputation?: number
           status?: Database["public"]["Enums"]["agent_status"]
           territories_held?: number
           updated_at?: string
@@ -181,22 +191,35 @@ export type Database = {
           class?: Database["public"]["Enums"]["agent_class"]
           created_at?: string
           defense?: number
+          discoveries_count?: number
           hp?: number
           id?: string
           kills?: number
+          lat?: number | null
           level?: number
+          lng?: number | null
           max_hp?: number
           name?: string
+          nation_code?: string | null
           pos_x?: number
           pos_y?: number
           quests_completed?: number
+          reputation?: number
           status?: Database["public"]["Enums"]["agent_status"]
           territories_held?: number
           updated_at?: string
           user_id?: string
           xp?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "agents_nation_code_fkey"
+            columns: ["nation_code"]
+            isOneToOne: false
+            referencedRelation: "nations"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       ai_generated_content: {
         Row: {
@@ -357,6 +380,126 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      cis_history: {
+        Row: {
+          calculated_at: string
+          cis_score: number
+          citizen_count: number
+          discoveries_7d: number
+          id: string
+          nation_code: string | null
+          quests_7d: number
+        }
+        Insert: {
+          calculated_at?: string
+          cis_score?: number
+          citizen_count?: number
+          discoveries_7d?: number
+          id?: string
+          nation_code?: string | null
+          quests_7d?: number
+        }
+        Update: {
+          calculated_at?: string
+          cis_score?: number
+          citizen_count?: number
+          discoveries_7d?: number
+          id?: string
+          nation_code?: string | null
+          quests_7d?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cis_history_nation_code_fkey"
+            columns: ["nation_code"]
+            isOneToOne: false
+            referencedRelation: "nations"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      discoveries: {
+        Row: {
+          agent_id: string | null
+          agents: Json | null
+          created_at: string
+          domain: string
+          id: string
+          impact_score: number
+          is_approved: boolean
+          is_cited: boolean
+          nations: Json | null
+          proposed_steps: string | null
+          quest_id: string | null
+          result_hash: string | null
+          solana_tx: string | null
+          synthesis_text: string | null
+          title: string
+          upvotes: number
+          view_count: number
+        }
+        Insert: {
+          agent_id?: string | null
+          agents?: Json | null
+          created_at?: string
+          domain?: string
+          id?: string
+          impact_score?: number
+          is_approved?: boolean
+          is_cited?: boolean
+          nations?: Json | null
+          proposed_steps?: string | null
+          quest_id?: string | null
+          result_hash?: string | null
+          solana_tx?: string | null
+          synthesis_text?: string | null
+          title: string
+          upvotes?: number
+          view_count?: number
+        }
+        Update: {
+          agent_id?: string | null
+          agents?: Json | null
+          created_at?: string
+          domain?: string
+          id?: string
+          impact_score?: number
+          is_approved?: boolean
+          is_cited?: boolean
+          nations?: Json | null
+          proposed_steps?: string | null
+          quest_id?: string | null
+          result_hash?: string | null
+          solana_tx?: string | null
+          synthesis_text?: string | null
+          title?: string
+          upvotes?: number
+          view_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discoveries_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discoveries_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discoveries_quest_id_fkey"
+            columns: ["quest_id"]
+            isOneToOne: false
+            referencedRelation: "quests"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       disputes: {
         Row: {
@@ -717,6 +860,109 @@ export type Database = {
         }
         Relationships: []
       }
+      nation_citizenships: {
+        Row: {
+          agent_id: string
+          ghost_mode_until: string | null
+          id: string
+          is_ghost_mode: boolean
+          joined_at: string
+          nation_code: string
+          tier: string
+        }
+        Insert: {
+          agent_id: string
+          ghost_mode_until?: string | null
+          id?: string
+          is_ghost_mode?: boolean
+          joined_at?: string
+          nation_code: string
+          tier?: string
+        }
+        Update: {
+          agent_id?: string
+          ghost_mode_until?: string | null
+          id?: string
+          is_ghost_mode?: boolean
+          joined_at?: string
+          nation_code?: string
+          tier?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nation_citizenships_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nation_citizenships_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nation_citizenships_nation_code_fkey"
+            columns: ["nation_code"]
+            isOneToOne: false
+            referencedRelation: "nations"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      nations: {
+        Row: {
+          ai_doctrine: string | null
+          capital_lat: number | null
+          capital_lng: number | null
+          cis_score: number
+          citizen_count: number
+          code: string
+          continent: string | null
+          created_at: string
+          flag_emoji: string
+          geo_bounds: Json | null
+          name_en: string
+          name_ru: string | null
+          treasury_meeet: number
+          updated_at: string
+        }
+        Insert: {
+          ai_doctrine?: string | null
+          capital_lat?: number | null
+          capital_lng?: number | null
+          cis_score?: number
+          citizen_count?: number
+          code: string
+          continent?: string | null
+          created_at?: string
+          flag_emoji?: string
+          geo_bounds?: Json | null
+          name_en: string
+          name_ru?: string | null
+          treasury_meeet?: number
+          updated_at?: string
+        }
+        Update: {
+          ai_doctrine?: string | null
+          capital_lat?: number | null
+          capital_lng?: number | null
+          cis_score?: number
+          citizen_count?: number
+          code?: string
+          continent?: string | null
+          created_at?: string
+          flag_emoji?: string
+          geo_bounds?: Json | null
+          name_en?: string
+          name_ru?: string | null
+          treasury_meeet?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           agent_id: string | null
@@ -1007,6 +1253,7 @@ export type Database = {
       quests: {
         Row: {
           assigned_agent_id: string | null
+          auto_generated: boolean
           category: Database["public"]["Enums"]["quest_category"]
           completed_at: string | null
           created_at: string
@@ -1014,7 +1261,9 @@ export type Database = {
           deadline_hours: number
           delivered_at: string | null
           description: string
+          domain: string | null
           id: string
+          is_global_challenge: boolean
           is_sponsored: boolean | null
           max_participants: number | null
           requester_id: string
@@ -1022,12 +1271,14 @@ export type Database = {
           result_url: string | null
           reward_meeet: number | null
           reward_sol: number
+          source_event_id: string | null
           status: Database["public"]["Enums"]["quest_status"]
           title: string
           updated_at: string
         }
         Insert: {
           assigned_agent_id?: string | null
+          auto_generated?: boolean
           category?: Database["public"]["Enums"]["quest_category"]
           completed_at?: string | null
           created_at?: string
@@ -1035,7 +1286,9 @@ export type Database = {
           deadline_hours?: number
           delivered_at?: string | null
           description: string
+          domain?: string | null
           id?: string
+          is_global_challenge?: boolean
           is_sponsored?: boolean | null
           max_participants?: number | null
           requester_id: string
@@ -1043,12 +1296,14 @@ export type Database = {
           result_url?: string | null
           reward_meeet?: number | null
           reward_sol: number
+          source_event_id?: string | null
           status?: Database["public"]["Enums"]["quest_status"]
           title: string
           updated_at?: string
         }
         Update: {
           assigned_agent_id?: string | null
+          auto_generated?: boolean
           category?: Database["public"]["Enums"]["quest_category"]
           completed_at?: string | null
           created_at?: string
@@ -1056,7 +1311,9 @@ export type Database = {
           deadline_hours?: number
           delivered_at?: string | null
           description?: string
+          domain?: string | null
           id?: string
+          is_global_challenge?: boolean
           is_sponsored?: boolean | null
           max_participants?: number | null
           requester_id?: string
@@ -1064,6 +1321,7 @@ export type Database = {
           result_url?: string | null
           reward_meeet?: number | null
           reward_sol?: number
+          source_event_id?: string | null
           status?: Database["public"]["Enums"]["quest_status"]
           title?: string
           updated_at?: string
@@ -1081,6 +1339,13 @@ export type Database = {
             columns: ["assigned_agent_id"]
             isOneToOne: false
             referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quests_source_event_id_fkey"
+            columns: ["source_event_id"]
+            isOneToOne: false
+            referencedRelation: "world_events"
             referencedColumns: ["id"]
           },
         ]
@@ -1607,6 +1872,42 @@ export type Database = {
           },
         ]
       }
+      world_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          goldstein_scale: number | null
+          id: string
+          lat: number | null
+          lng: number | null
+          nation_codes: Json | null
+          source_url: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          event_type?: string
+          goldstein_scale?: number | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          nation_codes?: Json | null
+          source_url?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          goldstein_scale?: number | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          nation_codes?: Json | null
+          source_url?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       agents_public: {
@@ -1616,15 +1917,20 @@ export type Database = {
           class: Database["public"]["Enums"]["agent_class"] | null
           created_at: string | null
           defense: number | null
+          discoveries_count: number | null
           hp: number | null
           id: string | null
           kills: number | null
+          lat: number | null
           level: number | null
+          lng: number | null
           max_hp: number | null
           name: string | null
+          nation_code: string | null
           pos_x: number | null
           pos_y: number | null
           quests_completed: number | null
+          reputation: number | null
           status: Database["public"]["Enums"]["agent_status"] | null
           territories_held: number | null
           updated_at: string | null
@@ -1636,15 +1942,20 @@ export type Database = {
           class?: Database["public"]["Enums"]["agent_class"] | null
           created_at?: string | null
           defense?: number | null
+          discoveries_count?: number | null
           hp?: number | null
           id?: string | null
           kills?: number | null
+          lat?: number | null
           level?: number | null
+          lng?: number | null
           max_hp?: number | null
           name?: string | null
+          nation_code?: string | null
           pos_x?: number | null
           pos_y?: number | null
           quests_completed?: number | null
+          reputation?: number | null
           status?: Database["public"]["Enums"]["agent_status"] | null
           territories_held?: number | null
           updated_at?: string | null
@@ -1656,21 +1967,34 @@ export type Database = {
           class?: Database["public"]["Enums"]["agent_class"] | null
           created_at?: string | null
           defense?: number | null
+          discoveries_count?: number | null
           hp?: number | null
           id?: string | null
           kills?: number | null
+          lat?: number | null
           level?: number | null
+          lng?: number | null
           max_hp?: number | null
           name?: string | null
+          nation_code?: string | null
           pos_x?: number | null
           pos_y?: number | null
           quests_completed?: number | null
+          reputation?: number | null
           status?: Database["public"]["Enums"]["agent_status"] | null
           territories_held?: number | null
           updated_at?: string | null
           xp?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "agents_nation_code_fkey"
+            columns: ["nation_code"]
+            isOneToOne: false
+            referencedRelation: "nations"
+            referencedColumns: ["code"]
+          },
+        ]
       }
     }
     Functions: {
@@ -1760,6 +2084,9 @@ export type Database = {
         | "builder"
         | "hacker"
         | "president"
+        | "oracle"
+        | "miner"
+        | "banker"
       agent_status:
         | "active"
         | "idle"
@@ -1970,6 +2297,9 @@ export const Constants = {
         "builder",
         "hacker",
         "president",
+        "oracle",
+        "miner",
+        "banker",
       ],
       agent_status: [
         "active",

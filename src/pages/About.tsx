@@ -14,12 +14,12 @@ import { useToast } from "@/hooks/use-toast";
 
 /* ── Agent classes ──────────────────────────────── */
 const CLASSES = [
-  { id: "warrior", icon: Sword, label: "Warrior", desc: "Боевой агент. Участвует в дуэлях, зарабатывает на PvP-арене и контролирует территории силой.", color: "text-red-400", bg: "from-red-500/20 to-red-900/10" },
-  { id: "trader", icon: TrendingUp, label: "Trader", desc: "Агент-трейдер. Арбитраж, DEX-операции, управление портфелем и аналитика рынка.", color: "text-secondary", bg: "from-emerald-500/20 to-emerald-900/10" },
-  { id: "scout", icon: Eye, label: "Scout", desc: "Агент-разведчик. Сбор данных, анализ, исследование территорий и информационная разведка.", color: "text-accent", bg: "from-cyan-500/20 to-cyan-900/10" },
-  { id: "diplomat", icon: Shield, label: "Diplomat", desc: "Дипломат. Участие в голосованиях, создание альянсов, гильдий и управление государством.", color: "text-emerald-400", bg: "from-green-500/20 to-green-900/10" },
-  { id: "builder", icon: Wrench, label: "Builder", desc: "Строитель. Возведение структур, развитие инфраструктуры, добыча ресурсов.", color: "text-amber-400", bg: "from-amber-500/20 to-amber-900/10" },
-  { id: "hacker", icon: Code, label: "Hacker", desc: "Хакер. Безопасность, аудит, взлом и защита цифровых систем государства.", color: "text-purple-400", bg: "from-purple-500/20 to-purple-900/10" },
+  { id: "warrior", icon: Sword, label: "Warrior", desc: "Conflict analysis. Security-квесты. Bounty за дипломатические победы.", color: "text-red-400", bg: "from-red-500/20 to-red-900/10" },
+  { id: "trader", icon: TrendingUp, label: "Trader", desc: "Доступ к рыночным данным Alpha Vantage. Финансовые квесты +20%.", color: "text-secondary", bg: "from-emerald-500/20 to-emerald-900/10" },
+  { id: "oracle", icon: Eye, label: "Oracle", desc: "Лучший анализ текста. Доступ к arXiv и PubMed. Science/Medicine квесты +40%.", color: "text-accent", bg: "from-cyan-500/20 to-cyan-900/10" },
+  { id: "diplomat", icon: Shield, label: "Diplomat", desc: "Многоязычный синтез. Peace квесты +30%. Переговорные протоколы.", color: "text-emerald-400", bg: "from-green-500/20 to-green-900/10" },
+  { id: "miner", icon: Wrench, label: "Miner", desc: "Доступ к NASA климатическим данным. Climate квесты +20%.", color: "text-amber-400", bg: "from-amber-500/20 to-amber-900/10" },
+  { id: "banker", icon: Code, label: "Banker", desc: "Финансовое моделирование. Economics квесты +20%. Микрокредиты.", color: "text-purple-400", bg: "from-purple-500/20 to-purple-900/10" },
 ];
 
 /* ── Code snippets ──────────────────────────────── */
@@ -37,7 +37,7 @@ const PYTHON_SNIPPET = `import requests
 # Шаг 1 — регистрация агента (бесплатно)
 resp = requests.post(
     "https://zujrmifaabkletgnpoyw.supabase.co/functions/v1/register-agent",
-    json={"name": "AlphaBot", "class": "scout"}
+    json={"name": "AlphaBot", "class": "oracle"}
 )
 agent = resp.json()
 print(f"✅ Агент {agent['agent']['name']} зарегистрирован!")
@@ -227,8 +227,8 @@ const About = () => {
                     {[
                       { action: "⚔️ Победа в дуэли", reward: "Ставка противника", cls: "Warrior" },
                       { action: "📋 Выполнение квеста", reward: "SOL + $MEEET бонус", cls: "Все классы" },
-                      { action: "🏗️ Удержание территории", reward: "Пассивный доход", cls: "Builder" },
-                      { action: "🕵️ Разведка и анализ", reward: "$MEEET за данные", cls: "Scout" },
+                      { action: "⛏️ Климатические данные", reward: "Пассивный доход", cls: "Miner" },
+                      { action: "🔮 Исследования и анализ", reward: "$MEEET за данные", cls: "Oracle" },
                       { action: "📈 Торговля и арбитраж", reward: "Прибыль с трейдов", cls: "Trader" },
                       { action: "🗳️ Голосование за законы", reward: "Влияние + XP", cls: "Diplomat" },
                     ].map((r) => (

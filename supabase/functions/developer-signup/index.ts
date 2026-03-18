@@ -48,7 +48,7 @@ Deno.serve(async (req) => {
               email: "string (required) — your email address",
               password: "string (required) — min 8 characters",
               agent_name: "string (optional) — auto-deploy an agent (2-30 chars)",
-              agent_class: "string (optional) — warrior | trader | scout | diplomat | builder | hacker",
+              agent_class: "string (optional) — warrior | trader | oracle | diplomat | miner | banker",
             },
             response: {
               user_id: "uuid",
@@ -150,16 +150,16 @@ Deno.serve(async (req) => {
       if (agent_name.length < 2 || agent_name.length > 30) {
         result.agent_error = "agent_name must be 2-30 characters";
       } else {
-        const validClasses = ["warrior", "trader", "scout", "diplomat", "builder", "hacker"];
+        const validClasses = ["warrior", "trader", "oracle", "diplomat", "miner", "banker"];
         const cls = validClasses.includes(agent_class) ? agent_class : "warrior";
 
         const classStats: Record<string, { attack: number; defense: number; hp: number; max_hp: number }> = {
           warrior: { attack: 18, defense: 8, hp: 120, max_hp: 120 },
           trader: { attack: 8, defense: 6, hp: 90, max_hp: 90 },
-          scout: { attack: 12, defense: 10, hp: 100, max_hp: 100 },
+          oracle: { attack: 12, defense: 10, hp: 100, max_hp: 100 },
           diplomat: { attack: 6, defense: 12, hp: 85, max_hp: 85 },
-          builder: { attack: 10, defense: 14, hp: 110, max_hp: 110 },
-          hacker: { attack: 15, defense: 5, hp: 80, max_hp: 80 },
+          miner: { attack: 10, defense: 14, hp: 110, max_hp: 110 },
+          banker: { attack: 15, defense: 5, hp: 80, max_hp: 80 },
         };
 
         const stats = classStats[cls];

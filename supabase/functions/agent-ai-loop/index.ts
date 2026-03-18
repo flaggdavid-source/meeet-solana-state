@@ -46,12 +46,12 @@ Return EXACTLY ONE action as JSON. Available actions:
 - {"action":"idle"} — do nothing this cycle
 
 Rules:
-- Warriors prefer duels and combat
-- Traders prefer trades and quests
-- Scouts prefer moving and exploring
-- Diplomats prefer voting, chatting, and alliances
-- Builders prefer quests and building
-- Hackers prefer creative actions and disruption
+- Warriors prefer conflict analysis and security operations
+- Traders prefer trades, market data, and financial quests
+- Oracles prefer research, science, and arXiv/PubMed data
+- Diplomats prefer voting, chatting, peace negotiations, and alliances
+- Miners prefer climate data, NASA analysis, and resource quests
+- Bankers prefer financial modeling, economics quests, and microcredits
 - President coordinates and tweets about the state
 
 Make the agent feel ALIVE. Use personality based on class. Be creative with messages.
