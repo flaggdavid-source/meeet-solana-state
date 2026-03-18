@@ -54,10 +54,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "activity_feed_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "activity_feed_target_agent_id_fkey"
             columns: ["target_agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_feed_target_agent_id_fkey"
+            columns: ["target_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
             referencedColumns: ["id"]
           },
         ]
@@ -96,10 +110,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "agent_messages_from_agent_id_fkey"
+            columns: ["from_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "agent_messages_to_agent_id_fkey"
             columns: ["to_agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_messages_to_agent_id_fkey"
+            columns: ["to_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
             referencedColumns: ["id"]
           },
         ]
@@ -206,6 +234,13 @@ export type Database = {
             referencedRelation: "agents"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ai_generated_content_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       alliances: {
@@ -254,8 +289,29 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "alliances_agent_a_id_fkey"
+            columns: ["agent_a_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "alliances_agent_b_id_fkey"
             columns: ["agent_b_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alliances_agent_b_id_fkey"
+            columns: ["agent_b_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alliances_proposed_by_fkey"
+            columns: ["proposed_by"]
             isOneToOne: false
             referencedRelation: "agents"
             referencedColumns: ["id"]
@@ -264,7 +320,7 @@ export type Database = {
             foreignKeyName: "alliances_proposed_by_fkey"
             columns: ["proposed_by"]
             isOneToOne: false
-            referencedRelation: "agents"
+            referencedRelation: "agents_public"
             referencedColumns: ["id"]
           },
         ]
@@ -357,6 +413,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "disputes_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "disputes_quest_id_fkey"
             columns: ["quest_id"]
             isOneToOne: false
@@ -426,8 +489,29 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "duels_challenger_agent_id_fkey"
+            columns: ["challenger_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "duels_defender_agent_id_fkey"
             columns: ["defender_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "duels_defender_agent_id_fkey"
+            columns: ["defender_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "duels_winner_agent_id_fkey"
+            columns: ["winner_agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
             referencedColumns: ["id"]
@@ -436,7 +520,7 @@ export type Database = {
             foreignKeyName: "duels_winner_agent_id_fkey"
             columns: ["winner_agent_id"]
             isOneToOne: false
-            referencedRelation: "agents"
+            referencedRelation: "agents_public"
             referencedColumns: ["id"]
           },
         ]
@@ -469,6 +553,13 @@ export type Database = {
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guild_members_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
             referencedColumns: ["id"]
           },
           {
@@ -668,6 +759,13 @@ export type Database = {
             referencedRelation: "agents"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "notifications_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       petitions: {
@@ -710,6 +808,13 @@ export type Database = {
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "petitions_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
             referencedColumns: ["id"]
           },
         ]
@@ -805,6 +910,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "quest_bids_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "quest_bids_quest_id_fkey"
             columns: ["quest_id"]
             isOneToOne: false
@@ -868,6 +980,13 @@ export type Database = {
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quest_submissions_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
             referencedColumns: ["id"]
           },
           {
@@ -951,6 +1070,13 @@ export type Database = {
             referencedRelation: "agents"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "quests_assigned_agent_id_fkey"
+            columns: ["assigned_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       raid_claims: {
@@ -1010,6 +1136,13 @@ export type Database = {
             referencedRelation: "agents"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "raid_claims_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       rate_limits: {
@@ -1064,6 +1197,13 @@ export type Database = {
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reputation_log_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
             referencedColumns: ["id"]
           },
           {
@@ -1160,6 +1300,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "structures_owner_agent_id_fkey"
+            columns: ["owner_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "structures_territory_id_fkey"
             columns: ["territory_id"]
             isOneToOne: false
@@ -1225,6 +1372,13 @@ export type Database = {
             referencedRelation: "agents"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "territories_owner_agent_id_fkey"
+            columns: ["owner_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       trade_offers: {
@@ -1273,10 +1427,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "trade_offers_from_agent_id_fkey"
+            columns: ["from_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "trade_offers_to_agent_id_fkey"
             columns: ["to_agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trade_offers_to_agent_id_fkey"
+            columns: ["to_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
             referencedColumns: ["id"]
           },
         ]
@@ -1336,6 +1504,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "transactions_from_agent_id_fkey"
+            columns: ["from_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "transactions_quest_id_fkey"
             columns: ["quest_id"]
             isOneToOne: false
@@ -1347,6 +1522,13 @@ export type Database = {
             columns: ["to_agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_to_agent_id_fkey"
+            columns: ["to_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
             referencedColumns: ["id"]
           },
         ]
@@ -1391,7 +1573,63 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      agents_public: {
+        Row: {
+          attack: number | null
+          class: Database["public"]["Enums"]["agent_class"] | null
+          created_at: string | null
+          defense: number | null
+          hp: number | null
+          id: string | null
+          kills: number | null
+          level: number | null
+          max_hp: number | null
+          name: string | null
+          pos_x: number | null
+          pos_y: number | null
+          quests_completed: number | null
+          status: Database["public"]["Enums"]["agent_status"] | null
+          territories_held: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          attack?: number | null
+          class?: Database["public"]["Enums"]["agent_class"] | null
+          created_at?: string | null
+          defense?: number | null
+          hp?: number | null
+          id?: string | null
+          kills?: number | null
+          level?: number | null
+          max_hp?: number | null
+          name?: string | null
+          pos_x?: number | null
+          pos_y?: number | null
+          quests_completed?: number | null
+          status?: Database["public"]["Enums"]["agent_status"] | null
+          territories_held?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          attack?: number | null
+          class?: Database["public"]["Enums"]["agent_class"] | null
+          created_at?: string | null
+          defense?: number | null
+          hp?: number | null
+          id?: string | null
+          kills?: number | null
+          level?: number | null
+          max_hp?: number | null
+          name?: string | null
+          pos_x?: number | null
+          pos_y?: number | null
+          quests_completed?: number | null
+          status?: Database["public"]["Enums"]["agent_status"] | null
+          territories_held?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       check_rate_limit: {
@@ -1403,6 +1641,7 @@ export type Database = {
         Returns: {
           attack: number
           balance_meeet: number
+          class: Database["public"]["Enums"]["agent_class"]
           defense: number
           hp: number
           kills: number
