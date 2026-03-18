@@ -6,23 +6,26 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/runtime-client";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-const NAV_LINKS = [
-  { href: "/live", label: "Map" },
-  { href: "/quests", label: "Quests" },
-  { href: "/arena", label: "Arena" },
-  { href: "/social", label: "Social" },
-  { href: "/rankings", label: "Rankings" },
-  { href: "/parliament", label: "Parliament" },
-  { href: "/herald", label: "Herald" },
-  { href: "/tokenomics", label: "$MEEET" },
-  { href: "/#petition", label: "Petition" },
-];
+import { useLanguage } from "@/i18n/LanguageContext";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const { user, signOut } = useAuth();
   const queryClient = useQueryClient();
+  const { t } = useLanguage();
+
+  const NAV_LINKS = [
+    { href: "/live", label: t("nav.map") },
+    { href: "/quests", label: t("nav.quests") },
+    { href: "/arena", label: t("nav.arena") },
+    { href: "/social", label: t("nav.social") },
+    { href: "/rankings", label: t("nav.rankings") },
+    { href: "/parliament", label: t("nav.parliament") },
+    { href: "/herald", label: t("nav.herald") },
+    { href: "/tokenomics", label: t("nav.meeet") },
+    { href: "/#petition", label: t("nav.petition") },
+  ];
 
   const { data: notifications = [] } = useQuery({
     queryKey: ["notifications", user?.id],
@@ -41,7 +44,6 @@ const Navbar = () => {
 
   const unreadCount = notifications.filter((n: any) => !n.is_read).length;
 
-  // Realtime notifications
   useEffect(() => {
     if (!user) return;
     const channel = supabase
@@ -82,13 +84,15 @@ const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-8 font-body text-sm text-muted-foreground">
           {NAV_LINKS.map((l) => (
-            <Link key={l.label} to={l.href} className="hover:text-foreground transition-colors duration-150">
+            <Link key={l.href} to={l.href} className="hover:text-foreground transition-colors duration-150">
               {l.label}
             </Link>
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+
           {user && (
             <Popover>
               <PopoverTrigger asChild>
@@ -103,16 +107,16 @@ const Navbar = () => {
               </PopoverTrigger>
               <PopoverContent className="w-80 p-0" align="end">
                 <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-                  <span className="text-sm font-display font-bold">Notifications</span>
+                  <span className="text-sm font-display font-bold">{t("nav.notifications")}</span>
                   {unreadCount > 0 && (
                     <button onClick={markAllRead} className="text-[10px] text-primary hover:underline font-body">
-                      Mark all read
+                      {t("nav.markAllRead")}
                     </button>
                   )}
                 </div>
                 <ScrollArea className="max-h-64">
                   {notifications.length === 0 ? (
-                    <p className="text-center text-muted-foreground text-xs py-6">No notifications</p>
+                    <p className="text-center text-muted-foreground text-xs py-6">{t("nav.noNotifications")}</p>
                   ) : (
                     <div className="divide-y divide-border">
                       {notifications.map((n: any) => (
@@ -152,7 +156,7 @@ const Navbar = () => {
                 to="/dashboard"
                 className="hidden md:block px-4 py-2 text-sm font-display font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors duration-150"
               >
-                Dashboard
+                {t("nav.dashboard")}
               </Link>
               <button
                 onClick={signOut}
@@ -166,7 +170,7 @@ const Navbar = () => {
               to="/auth"
               className="hidden md:block px-4 py-2 text-sm font-display font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors duration-150"
             >
-              Sign In
+              {t("nav.signIn")}
             </Link>
           )}
           <button
@@ -184,7 +188,7 @@ const Navbar = () => {
           <div className="container max-w-6xl mx-auto px-4 py-4 flex flex-col gap-3">
             {NAV_LINKS.map((l) => (
               <Link
-                key={l.label}
+                key={l.href}
                 to={l.href}
                 onClick={() => setOpen(false)}
                 className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors py-2 border-b border-border last:border-0"
@@ -199,13 +203,13 @@ const Navbar = () => {
                   onClick={() => setOpen(false)}
                   className="mt-2 w-full px-4 py-2.5 text-sm font-display font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors duration-150 text-center block"
                 >
-                  Dashboard
+                  {t("nav.dashboard")}
                 </Link>
                 <button
                   onClick={() => { signOut(); setOpen(false); }}
                   className="w-full px-4 py-2.5 text-sm font-display font-semibold border border-border text-muted-foreground rounded-lg hover:text-foreground transition-colors duration-150"
                 >
-                  Sign Out
+                  {t("nav.signOut")}
                 </button>
               </>
             ) : (
@@ -214,7 +218,7 @@ const Navbar = () => {
                 onClick={() => setOpen(false)}
                 className="mt-2 w-full px-4 py-2.5 text-sm font-display font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors duration-150 text-center block"
               >
-                Sign In
+                {t("nav.signIn")}
               </Link>
             )}
           </div>

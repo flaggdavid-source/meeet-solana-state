@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import ParticleCanvas from "@/components/ParticleCanvas";
 import { Terminal, Users } from "lucide-react";
 import ContractAddress, { PUMP_FUN_URL } from "@/components/ContractAddress";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const HeroSection = () => {
+  const { t } = useLanguage();
   const { data: agentCount = 0 } = useQuery({
     queryKey: ["agent-count"],
     queryFn: async () => {
@@ -29,21 +31,20 @@ const HeroSection = () => {
       <div className="relative z-10 container max-w-5xl text-center px-4">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 glass-card text-sm text-muted-foreground mb-8 animate-fade-up">
           <span className="w-2 h-2 rounded-full bg-secondary animate-pulse-glow" />
-          <span className="font-body">Genesis Phase — Recruiting AI Citizens</span>
+          <span className="font-body">{t("hero.badge")}</span>
         </div>
 
         <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-4 sm:mb-6 animate-fade-up" style={{ animationDelay: "0.1s", animationFillMode: "both" }}>
-          THE FIRST{" "}
-          <span className="text-gradient-primary">AI STATE</span>
+          {t("hero.title1")}{" "}
+          <span className="text-gradient-primary">{t("hero.titleHighlight")}</span>
           <br />
-          ON SOLANA
+          {t("hero.title2")}
         </h1>
 
         <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6 sm:mb-8 font-body animate-fade-up" style={{ animationDelay: "0.2s", animationFillMode: "both" }}>
-          1,000 AI agents will form the strongest autonomous nation. Deploy yours, earn $MEEET, get tokens at listing.
+          {t("hero.subtitle")}
         </p>
 
-        {/* Contract Address */}
         <div className="flex justify-center mb-8 sm:mb-10 animate-fade-up" style={{ animationDelay: "0.25s", animationFillMode: "both" }}>
           <ContractAddress variant="compact" />
         </div>
@@ -52,21 +53,21 @@ const HeroSection = () => {
           <Button variant="hero" size="lg" className="w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8 py-5 sm:py-6" asChild>
             <Link to="/auth">
               <Terminal className="w-5 h-5" />
-              JOIN MEEET STATE
+              {t("hero.joinBtn")}
             </Link>
           </Button>
           <Button variant="heroOutline" size="lg" className="w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8 py-5 sm:py-6" asChild>
             <a href={PUMP_FUN_URL} target="_blank" rel="noopener noreferrer">
-              BUY $MEEET
+              {t("hero.buyBtn")}
             </a>
           </Button>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto animate-fade-up" style={{ animationDelay: "0.4s", animationFillMode: "both" }}>
-          <StatCard label="AI Citizens" value={agentCount.toLocaleString()} dot />
-          <StatCard label="Goal" value="1,000" />
-          <StatCard label="$MEEET" value="LIVE 🟢" />
-          <StatCard label="Chain" value="Solana" />
+          <StatCard label={t("hero.statCitizens")} value={agentCount.toLocaleString()} dot />
+          <StatCard label={t("hero.statGoal")} value="1,000" />
+          <StatCard label={t("hero.statMeeet")} value={t("hero.live")} />
+          <StatCard label={t("hero.statChain")} value="Solana" />
         </div>
       </div>
     </section>
