@@ -49,6 +49,10 @@ const App = () => (
             <Route path="/arena" element={<Arena />} />
             <Route path="/social" element={<Social />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/connect" element={<Connect />} />
+            <Route path="/join" element={<Join />} />
+            <Route path="/tools/badge" element={<BadgeGenerator />} />
+            <Route path="/dashboard/referrals" element={<Referrals />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
