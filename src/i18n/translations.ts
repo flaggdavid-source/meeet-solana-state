@@ -953,6 +953,8 @@ export const translations: Record<Lang, Record<string, any>> = {
 
   es: {
     nav: {
+      world: "Mundo",
+      discoveries: "Descubrimientos",
       map: "Mapa",
       quests: "Misiones",
       arena: "Arena",
