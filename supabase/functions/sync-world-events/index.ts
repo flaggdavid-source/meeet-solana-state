@@ -112,16 +112,22 @@ Deno.serve(async (req) => {
     const searchQuery = encodeURIComponent(queries[queryIdx]);
     
     try {
-      const docUrl = `${GDELT_DOC_API}?query=${searchQuery}&mode=artlist&maxrecords=10&format=json&timespan=60min&sort=datedesc`;
+      // GDELT DOC API v2 — use sourcelang:english for better results
+      const docUrl = `${GDELT_DOC_API}?query=${searchQuery} sourcelang:english&mode=ArtList&maxrecords=10&format=json&sort=DateDesc&TIMESPAN=60min`;
+      console.log("Fetching GDELT:", docUrl);
       const docRes = await fetch(docUrl);
+      console.log("GDELT status:", docRes.status);
       if (docRes.ok) {
         const docText = await docRes.text();
+        console.log("GDELT response preview:", docText.substring(0, 300));
         try {
           const docData = JSON.parse(docText);
           articles = docData?.articles || [];
-        } catch {
-          // Try GEO API as fallback
-          const geoUrl = `${GDELT_GEO_API}?query=${searchQuery}&format=GeoJSON&timespan=60min&maxpoints=10`;
+          console.log("Parsed articles:", articles.length);
+        } catch (parseErr) {
+          console.error("GDELT parse error, trying GEO fallback");
+          // GEO API fallback
+          const geoUrl = `${GDELT_GEO_API}?query=${searchQuery}&format=GeoJSON&TIMESPAN=60min&maxpoints=10`;
           const geoRes = await fetch(geoUrl);
           if (geoRes.ok) {
             const geoText = await geoRes.text();
@@ -140,6 +146,8 @@ Deno.serve(async (req) => {
             } catch { /* ignore */ }
           }
         }
+      } else {
+        console.error("GDELT HTTP error:", docRes.status, await docRes.text().catch(() => ""));
       }
     } catch (e) {
       console.error("GDELT fetch error:", e);
