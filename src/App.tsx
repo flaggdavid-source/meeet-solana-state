@@ -24,6 +24,7 @@ import Connect from "./pages/Connect.tsx";
 import Join from "./pages/Join.tsx";
 import BadgeGenerator from "./pages/BadgeGenerator.tsx";
 import Referrals from "./pages/Referrals.tsx";
+import About from "./pages/About.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
