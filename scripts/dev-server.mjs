@@ -58,6 +58,19 @@ const html = `<!doctype html>
   </body>
 </html>`;
 
+// Collect VITE_ env vars for --define flags
+const envDefines = [];
+for (const [key, value] of Object.entries(process.env)) {
+  if (key.startsWith("VITE_")) {
+    envDefines.push("--define", `import.meta.env.${key}="${value}"`);
+  }
+}
+envDefines.push("--define", `import.meta.env.DEV=true`);
+envDefines.push("--define", `import.meta.env.PROD=false`);
+envDefines.push("--define", `import.meta.env.MODE="development"`);
+envDefines.push("--define", `import.meta.env.SSR=false`);
+envDefines.push("--define", `import.meta.env.BASE_URL="/"`);
+
 const buildProcess = spawn(
   "bun",
   [
@@ -73,6 +86,7 @@ const buildProcess = spawn(
     "--sourcemap",
     "--public-path",
     "/",
+    ...envDefines,
     "--watch",
   ],
   {

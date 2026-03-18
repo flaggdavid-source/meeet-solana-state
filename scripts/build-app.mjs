@@ -20,6 +20,19 @@ const isProd = mode === "production";
 await fs.rm(distDir, { recursive: true, force: true });
 await fs.mkdir(distDir, { recursive: true });
 
+// Collect VITE_ env vars for --define flags
+const envDefines = [];
+for (const [key, value] of Object.entries(process.env)) {
+  if (key.startsWith("VITE_")) {
+    envDefines.push("--define", `import.meta.env.${key}="${value}"`);
+  }
+}
+envDefines.push("--define", `import.meta.env.DEV=false`);
+envDefines.push("--define", `import.meta.env.PROD=true`);
+envDefines.push("--define", `import.meta.env.MODE="production"`);
+envDefines.push("--define", `import.meta.env.SSR=false`);
+envDefines.push("--define", `import.meta.env.BASE_URL="/"`);
+
 const buildArgs = [
   "build",
   "src/main.tsx",
@@ -34,6 +47,7 @@ const buildArgs = [
   "/",
   "--define",
   `process.env.NODE_ENV=\"${isProd ? "production" : "development"}\"`,
+  ...envDefines,
 ];
 
 if (!isProd) {
