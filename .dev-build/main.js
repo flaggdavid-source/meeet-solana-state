@@ -50616,9 +50616,10 @@ function shouldShowDeprecationWarning() {
 if (shouldShowDeprecationWarning())
   console.warn("⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217");
 
-// src/integrations/supabase/client.ts
-var SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-var SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+// src/integrations/supabase/runtime-client.ts
+var runtimeEnv = globalThis.__APP_ENV__;
+var SUPABASE_URL = runtimeEnv?.VITE_SUPABASE_URL ?? "https://zujrmifaabkletgnpoyw.supabase.co";
+var SUPABASE_PUBLISHABLE_KEY = runtimeEnv?.VITE_SUPABASE_PUBLISHABLE_KEY ?? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1anJtaWZhYWJrbGV0Z25wb3l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3MzI5NDcsImV4cCI6MjA4OTMwODk0N30.LBtODIT4DzfQKAcTWI9uvOXOksJPegjUxZmT4D56OQs";
 var supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     storage: localStorage,
@@ -60964,6 +60965,17 @@ function createLovableAuth(config = {}) {
   return createAuth(config);
 }
 
+// src/integrations/supabase/client.ts
+var SUPABASE_URL2 = import.meta.env.VITE_SUPABASE_URL;
+var SUPABASE_PUBLISHABLE_KEY2 = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+var supabase2 = createClient(SUPABASE_URL2, SUPABASE_PUBLISHABLE_KEY2, {
+  auth: {
+    storage: localStorage,
+    persistSession: true,
+    autoRefreshToken: true
+  }
+});
+
 // src/integrations/lovable/index.ts
 var lovableAuth = createLovableAuth();
 var lovable = {
@@ -60982,7 +60994,7 @@ var lovable = {
         return result;
       }
       try {
-        const authClient = supabase.auth;
+        const authClient = supabase2.auth;
         await authClient.setSession(result.tokens);
       } catch (e) {
         return { error: e instanceof Error ? e : new Error(String(e)) };
@@ -97786,7 +97798,7 @@ function BadgeGenerator() {
   const [handle, setHandle] = import_react92.useState("");
   const [selectedType, setSelectedType] = import_react92.useState("status");
   const [copiedId, setCopiedId] = import_react92.useState(null);
-  const baseUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/badge`;
+  const baseUrl = `${SUPABASE_URL}/functions/v1/badge`;
   const getUrl = (type) => {
     if (type === "total-agents" || type === "total-quests") {
       return `${baseUrl}/${type}.svg`;
@@ -98381,5 +98393,5 @@ var App_default = App;
 var jsx_dev_runtime59 = __toESM(require_jsx_dev_runtime(), 1);
 import_client30.createRoot(document.getElementById("root")).render(/* @__PURE__ */ jsx_dev_runtime59.jsxDEV(App_default, {}, undefined, false, undefined, this));
 
-//# debugId=BB06A1E30038442B64756E2164756E21
+//# debugId=C7DC8468FF85689F64756E2164756E21
 //# sourceMappingURL=/main.js.map
