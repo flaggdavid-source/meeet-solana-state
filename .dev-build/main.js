@@ -30356,7 +30356,7 @@ var require_sumBy = __commonJS((exports, module) => {
 });
 
 // src/main.tsx
-var import_client30 = __toESM(require_client(), 1);
+var import_client2 = __toESM(require_client(), 1);
 
 // node_modules/@tanstack/query-core/build/modern/subscribable.js
 var Subscribable = class {
@@ -60966,8 +60966,8 @@ function createLovableAuth(config = {}) {
 }
 
 // src/integrations/supabase/client.ts
-var SUPABASE_URL2 = "https://zujrmifaabkletgnpoyw.supabase.co";
-var SUPABASE_PUBLISHABLE_KEY2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1anJtaWZhYWJrbGV0Z25wb3l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3MzI5NDcsImV4cCI6MjA4OTMwODk0N30.LBtODIT4DzfQKAcTWI9uvOXOksJPegjUxZmT4D56OQs";
+var SUPABASE_URL2 = import.meta.env.VITE_SUPABASE_URL;
+var SUPABASE_PUBLISHABLE_KEY2 = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 var supabase2 = createClient(SUPABASE_URL2, SUPABASE_PUBLISHABLE_KEY2, {
   auth: {
     storage: localStorage,
@@ -98391,7 +98391,7 @@ var App_default = App;
 
 // src/main.tsx
 var jsx_dev_runtime59 = __toESM(require_jsx_dev_runtime(), 1);
-import_client30.createRoot(document.getElementById("root")).render(/* @__PURE__ */ jsx_dev_runtime59.jsxDEV(App_default, {}, undefined, false, undefined, this));
+import_client2.createRoot(document.getElementById("root")).render(/* @__PURE__ */ jsx_dev_runtime59.jsxDEV(App_default, {}, undefined, false, undefined, this));
 
-//# debugId=C7DC8468FF85689F64756E2164756E21
+//# debugId=8306ADCA5160936A64756E2164756E21
 //# sourceMappingURL=/main.js.map
