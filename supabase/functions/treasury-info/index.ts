@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const secretKey = decodeBase58(privateKeyBase58);
+    const secretKey = bs58.decode(privateKeyBase58);
     const keypair = Keypair.fromSecretKey(secretKey);
     const address = keypair.publicKey.toBase58();
 
