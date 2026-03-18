@@ -25,6 +25,10 @@ import Join from "./pages/Join.tsx";
 import BadgeGenerator from "./pages/BadgeGenerator.tsx";
 import Referrals from "./pages/Referrals.tsx";
 import About from "./pages/About.tsx";
+import World from "./pages/World.tsx";
+import WorldRankings from "./pages/WorldRankings.tsx";
+import CountryPage from "./pages/CountryPage.tsx";
+import Discoveries from "./pages/Discoveries.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
