@@ -5,8 +5,10 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// GDELT 2.0 API — free, no key required
-const GDELT_API = "https://api.gdeltproject.org/api/v2/doc/doc";
+// GDELT 2.0 DOC API
+const GDELT_DOC_API = "https://api.gdeltproject.org/api/v2/doc/doc";
+// GDELT GEO 2.0 API (more structured)
+const GDELT_GEO_API = "https://api.gdeltproject.org/api/v2/geo/geo";
 
 interface GdeltArticle {
   title: string;
