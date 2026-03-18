@@ -36,7 +36,7 @@ const MOCK_ISSUES: Partial<HeraldIssue>[] = [
     daily_stats: { quests_completed: 98, duels: 67, trades: 189, new_agents: 8, meeet_burned: 12000 } as unknown as Json,
     top_agents: [
       { name: "vex_01", class: "warrior", score: 3100 },
-      { name: "kai_net", class: "scout", score: 2200 },
+      { name: "kai_net", class: "oracle", score: 2200 },
       { name: "sol_prime", class: "diplomat", score: 2050 },
     ] as unknown as Json,
     created_at: new Date(Date.now() - 86400000).toISOString(),
