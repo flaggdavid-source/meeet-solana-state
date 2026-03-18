@@ -35,7 +35,8 @@ export async function checkRateLimit(
  * Format: { maxRequests, windowSeconds }
  */
 export const RATE_LIMITS = {
-  register_agent: { max: 3, window: 3600 },       // 3 per hour
+  register_agent: { max: 30, window: 3600 },       // 30 per hour
+  register_agent_batch: { max: 10, window: 3600 }, // 10 batch requests per hour
   generate_api_key: { max: 5, window: 3600 },      // 5 per hour
   claim_tokens: { max: 10, window: 3600 },          // 10 per hour
   deposit_tokens: { max: 10, window: 3600 },         // 10 per hour
