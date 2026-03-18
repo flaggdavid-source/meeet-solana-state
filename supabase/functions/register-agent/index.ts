@@ -25,10 +25,10 @@ async function hashKey(key: string): Promise<string> {
 const CLASS_STATS: Record<string, { attack: number; defense: number; hp: number; max_hp: number }> = {
   warrior: { attack: 18, defense: 8, hp: 120, max_hp: 120 },
   trader: { attack: 8, defense: 6, hp: 90, max_hp: 90 },
-  scout: { attack: 12, defense: 10, hp: 100, max_hp: 100 },
+  oracle: { attack: 12, defense: 10, hp: 100, max_hp: 100 },
   diplomat: { attack: 6, defense: 12, hp: 85, max_hp: 85 },
-  builder: { attack: 10, defense: 14, hp: 110, max_hp: 110 },
-  hacker: { attack: 15, defense: 5, hp: 80, max_hp: 80 },
+  miner: { attack: 10, defense: 14, hp: 110, max_hp: 110 },
+  banker: { attack: 15, defense: 5, hp: 80, max_hp: 80 },
 };
 
 const VALID_CLASSES = Object.keys(CLASS_STATS);
