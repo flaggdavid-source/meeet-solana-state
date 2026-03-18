@@ -155,10 +155,10 @@ Deno.serve(async (req) => {
       const goldstein = estimateGoldstein(toneValue, eventType);
       const countryCode = normalizeCountryCode(article.sourcecountry);
 
-      // Get coordinates
-      let lat: number | null = null;
-      let lng: number | null = null;
-      if (countryCode) {
+      // Get coordinates — prefer direct from GEO API, fallback to country capital
+      let lat: number | null = article.lat ?? null;
+      let lng: number | null = article.lng ?? null;
+      if (lat === null && lng === null && countryCode) {
         const coords = await getCountryCoords(supabase, countryCode);
         if (coords) {
           lat = coords.lat;
