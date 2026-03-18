@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "bunx vite --port 8080",
+    "dev": "node node_modules/vite/bin/vite.js --port 8080",
     "build": "bunx vite build",
     "build:dev": "bunx vite build --mode development",
     "lint": "eslint .",
