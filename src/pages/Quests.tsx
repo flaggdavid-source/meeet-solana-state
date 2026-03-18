@@ -567,14 +567,13 @@ function CreateQuestDialog({ userId }: { userId: string }) {
               <Input type="number" value={deadlineHours} onChange={(e) => setDeadlineHours(e.target.value)} className="bg-background border-border" />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label className="font-body">Reward SOL</Label>
-              <Input type="number" step="0.01" min="0.01" value={rewardSol} onChange={(e) => setRewardSol(e.target.value)} className="bg-background border-border" />
-            </div>
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="font-body">Reward $MEEET</Label>
-              <Input type="number" value={rewardMeeet} onChange={(e) => setRewardMeeet(e.target.value)} className="bg-background border-border" />
+              <Input type="number" min="100" step="100" value={rewardMeeet} onChange={(e) => setRewardMeeet(e.target.value)} className="bg-background border-border" />
+              {meeetNum > 0 && (
+                <p className="text-[10px] text-muted-foreground">≈ {solEquivalent.toFixed(6)} SOL</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label className="font-body">Max Agents</Label>
