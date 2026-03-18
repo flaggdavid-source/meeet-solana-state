@@ -38,7 +38,8 @@ Deno.serve(async (req) => {
   }
 
   const url = new URL(req.url);
-  const path = url.pathname.replace(/^\/badge\/?/, "").replace(/\.svg$/, "");
+  // Strip function prefix — handles both /badge/ and /functions/v1/badge/
+  const path = url.pathname.replace(/^.*\/badge\/?/, "").replace(/\.svg$/, "");
   const segments = path.split("/").filter(Boolean);
 
   const supabase = createClient(
