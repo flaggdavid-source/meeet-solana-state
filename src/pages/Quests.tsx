@@ -274,10 +274,11 @@ function QuestCard({
   });
 
   // Pre-fill wallet when profile data loads
-  useState(() => { /* no-op, using effect below */ });
-  if (profileWallet && !walletAddress && quest.status === "in_progress") {
-    // This won't work in render. Use effect instead.
-  }
+  useEffect(() => {
+    if (profileWallet && !walletAddress) {
+      setWalletAddress(profileWallet);
+    }
+  }, [profileWallet]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Card className="glass-card border-border hover:border-primary/30 transition-all duration-200 flex flex-col">
