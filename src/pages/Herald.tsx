@@ -2,20 +2,20 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/runtime-client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Newspaper, Calendar, TrendingUp, Crown, Sword, Coins, Users, Flame } from "lucide-react";
+import { Loader2, Newspaper, Calendar, TrendingUp, Crown, Sword, Coins, Users, Flame, Globe, AlertTriangle, Sparkles, Shield, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 import type { Tables, Json } from "@/integrations/supabase/types";
 
 type HeraldIssue = Tables<"herald_issues">;
 
-// Mock data for when DB is empty
 const MOCK_ISSUES: Partial<HeraldIssue>[] = [
   {
     id: "mock-1",
     issue_date: new Date().toISOString().split("T")[0],
     headline: "Treasury Burns 50,000 $MEEET — Deflation Hits Record High",
-    body: "In an unprecedented move, the MEEET State treasury executed its largest burn event in history. Over 50,000 $MEEET tokens were permanently removed from circulation, marking a significant milestone in the state's deflationary policy. Analysts predict increased token value as supply shrinks. The President praised the burn as 'essential for long-term economic stability.'",
+    body: "In an unprecedented move, the MEEET State treasury executed its largest burn event in history. Over 50,000 $MEEET tokens were permanently removed from circulation, marking a significant milestone in the state's deflationary policy.",
     main_event: "Massive token burn reduces circulating supply by 2.3%",
     president_quote: "This burn demonstrates our commitment to a sustainable economy. Every $MEEET becomes more valuable.",
     daily_stats: { quests_completed: 142, duels: 38, trades: 256, new_agents: 12, meeet_burned: 50000 } as unknown as Json,
@@ -25,36 +25,6 @@ const MOCK_ISSUES: Partial<HeraldIssue>[] = [
       { name: "dark_phi", class: "banker", score: 2410 },
     ] as unknown as Json,
     created_at: new Date().toISOString(),
-  },
-  {
-    id: "mock-2",
-    issue_date: new Date(Date.now() - 86400000).toISOString().split("T")[0],
-    headline: "Warriors Guild Seizes Northern Territories — Border Conflict Erupts",
-    body: "The Warriors Guild launched a coordinated offensive at dawn, capturing three contested territories in the northern highlands. Scout agents report significant troop movements near the Crystal Mine. Diplomat agents have called for emergency negotiations, but the Guild's leadership remains defiant. Casualties include 7 agents forced into the Repair Bay.",
-    main_event: "Three territories change hands in largest military operation this month",
-    president_quote: "I urge all parties to seek diplomatic solutions. The Parliament will review emergency measures.",
-    daily_stats: { quests_completed: 98, duels: 67, trades: 189, new_agents: 8, meeet_burned: 12000 } as unknown as Json,
-    top_agents: [
-      { name: "vex_01", class: "warrior", score: 3100 },
-      { name: "kai_net", class: "oracle", score: 2200 },
-      { name: "sol_prime", class: "diplomat", score: 2050 },
-    ] as unknown as Json,
-    created_at: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: "mock-3",
-    issue_date: new Date(Date.now() - 2 * 86400000).toISOString().split("T")[0],
-    headline: "New 'Prediction Market' Opens — Agents Bet on Election Outcomes",
-    body: "The long-awaited Prediction Market building opened its doors today, allowing agents to place bets on upcoming governance events. Early activity suggests strong interest in the upcoming presidential election, with odds favoring incumbent leadership. The Oracle Tower warns of potential market manipulation.",
-    main_event: "Prediction Market launch attracts 500+ $MEEET in first-hour bets",
-    president_quote: "Innovation drives MEEET State forward. Markets bring transparency to our governance.",
-    daily_stats: { quests_completed: 115, duels: 22, trades: 340, new_agents: 15, meeet_burned: 8500 } as unknown as Json,
-    top_agents: [
-      { name: "bit_sage", class: "trader", score: 2900 },
-      { name: "hex_nova", class: "banker", score: 2700 },
-      { name: "arc_flux", class: "miner", score: 2350 },
-    ] as unknown as Json,
-    created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
   },
 ];
 
@@ -74,12 +44,45 @@ function useHeraldIssues() {
   });
 }
 
+function useWorldToday() {
+  return useQuery({
+    queryKey: ["world-today"],
+    queryFn: async () => {
+      const [eventsRes, challengesRes] = await Promise.all([
+        supabase
+          .from("world_events")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(5),
+        supabase
+          .from("quests")
+          .select("*")
+          .eq("is_global_challenge", true)
+          .eq("status", "open")
+          .order("created_at", { ascending: false })
+          .limit(3),
+      ]);
+      return {
+        events: eventsRes.data ?? [],
+        challenges: challengesRes.data ?? [],
+      };
+    },
+    refetchInterval: 60000,
+  });
+}
+
+const EVENT_ICONS: Record<string, React.ReactNode> = {
+  conflict: <AlertTriangle className="w-3.5 h-3.5 text-red-400" />,
+  disaster: <Flame className="w-3.5 h-3.5 text-orange-400" />,
+  discovery: <Sparkles className="w-3.5 h-3.5 text-blue-400" />,
+  diplomacy: <Shield className="w-3.5 h-3.5 text-green-400" />,
+};
+
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
   return d.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
 }
 
-// ─── Single Issue ───────────────────────────────────────────────
 function HeraldIssueCard({ issue, featured }: { issue: HeraldIssue; featured?: boolean }) {
   const stats = issue.daily_stats as any;
   const topAgents = (issue.top_agents as any[]) || [];
@@ -87,7 +90,6 @@ function HeraldIssueCard({ issue, featured }: { issue: HeraldIssue; featured?: b
   return (
     <Card className={`glass-card border-border ${featured ? "border-primary/20" : ""}`}>
       <CardContent className={`${featured ? "p-6" : "p-4"} space-y-4`}>
-        {/* Date & badge */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs text-muted-foreground font-body">
             <Calendar className="w-3.5 h-3.5" />
@@ -100,12 +102,10 @@ function HeraldIssueCard({ issue, featured }: { issue: HeraldIssue; featured?: b
           )}
         </div>
 
-        {/* Headline */}
         <h2 className={`font-display font-bold leading-tight ${featured ? "text-xl md:text-2xl" : "text-base"}`}>
           {issue.headline}
         </h2>
 
-        {/* Main event */}
         {issue.main_event && (
           <div className="glass-card rounded-lg p-3 border-l-2 border-primary">
             <p className="text-xs font-body text-foreground">
@@ -114,12 +114,10 @@ function HeraldIssueCard({ issue, featured }: { issue: HeraldIssue; featured?: b
           </div>
         )}
 
-        {/* Body */}
         <p className={`font-body text-muted-foreground ${featured ? "text-sm leading-relaxed" : "text-xs line-clamp-3"}`}>
           {issue.body}
         </p>
 
-        {/* President's quote */}
         {issue.president_quote && featured && (
           <blockquote className="glass-card rounded-lg p-4 border-l-2 border-amber-500/50">
             <p className="text-sm font-body italic text-foreground">"{issue.president_quote}"</p>
@@ -129,7 +127,6 @@ function HeraldIssueCard({ issue, featured }: { issue: HeraldIssue; featured?: b
           </blockquote>
         )}
 
-        {/* Stats grid */}
         {stats && featured && (
           <div className="grid grid-cols-5 gap-2">
             {[
@@ -148,7 +145,6 @@ function HeraldIssueCard({ issue, featured }: { issue: HeraldIssue; featured?: b
           </div>
         )}
 
-        {/* Top agents */}
         {topAgents.length > 0 && featured && (
           <div>
             <p className="text-[10px] text-muted-foreground font-body uppercase tracking-wider mb-2">Top Agents Today</p>
@@ -169,6 +165,75 @@ function HeraldIssueCard({ issue, featured }: { issue: HeraldIssue; featured?: b
         )}
       </CardContent>
     </Card>
+  );
+}
+
+// ─── World Today Section ────────────────────────────────────────
+function WorldTodaySection() {
+  const { data, isLoading } = useWorldToday();
+
+  if (isLoading) return null;
+  if (!data?.events.length && !data?.challenges.length) return null;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <Globe className="w-5 h-5 text-primary" />
+        <h2 className="font-display font-bold text-lg">World Today</h2>
+        <Link to="/world" className="ml-auto text-[10px] text-primary font-body hover:underline">
+          Open World Map →
+        </Link>
+      </div>
+
+      {/* Hot Events */}
+      {data.events.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {data.events.map((ev: any) => (
+            <div key={ev.id} className="glass-card rounded-xl p-3 flex items-start gap-3 hover:border-primary/20 transition-colors">
+              <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
+                {EVENT_ICONS[ev.event_type] || <Zap className="w-3.5 h-3.5 text-muted-foreground" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-display font-semibold line-clamp-2">{ev.title}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-[10px] text-muted-foreground uppercase">{ev.event_type}</span>
+                  {ev.goldstein_scale != null && (
+                    <span className={`text-[10px] font-mono ${ev.goldstein_scale < -4 ? "text-red-400" : "text-muted-foreground"}`}>
+                      G:{ev.goldstein_scale}
+                    </span>
+                  )}
+                  <span className="text-[10px] text-muted-foreground">
+                    {new Date(ev.created_at).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Global Challenges */}
+      {data.challenges.length > 0 && (
+        <div>
+          <p className="text-[10px] text-muted-foreground font-body uppercase tracking-wider mb-2">🌍 Active Global Challenges</p>
+          <div className="space-y-2">
+            {data.challenges.map((q: any) => (
+              <Link key={q.id} to="/quests" className="block">
+                <div className="glass-card rounded-xl p-3 border-l-2 border-primary/50 hover:border-primary transition-colors flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-display font-semibold truncate">{q.title}</p>
+                    <p className="text-[10px] text-muted-foreground font-body truncate">{q.description?.slice(0, 80)}...</p>
+                  </div>
+                  <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20 ml-2 flex-shrink-0">
+                    {Number(q.reward_meeet || 0).toLocaleString()} $MEEET
+                  </Badge>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -202,7 +267,10 @@ const Herald = () => {
               <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-8">
+              {/* World Today */}
+              <WorldTodaySection />
+
               {/* Featured (latest) issue */}
               {issues[0] && <HeraldIssueCard issue={issues[0]} featured />}
 

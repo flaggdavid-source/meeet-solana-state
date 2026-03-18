@@ -17,15 +17,15 @@ const Navbar = () => {
 
   const NAV_LINKS = [
     { href: "/about", label: "О проекте" },
-    { href: "/live", label: t("nav.map") },
+    { href: "/world", label: t("nav.world") },
+    { href: "/discoveries", label: t("nav.discoveries") },
     { href: "/quests", label: t("nav.quests") },
     { href: "/arena", label: t("nav.arena") },
     { href: "/social", label: t("nav.social") },
-    { href: "/rankings", label: t("nav.rankings") },
+    { href: "/world/rankings", label: t("nav.rankings") },
     { href: "/parliament", label: t("nav.parliament") },
     { href: "/herald", label: t("nav.herald") },
     { href: "/tokenomics", label: t("nav.meeet") },
-    { href: "/#petition", label: t("nav.petition") },
   ];
 
   const { data: notifications = [] } = useQuery({

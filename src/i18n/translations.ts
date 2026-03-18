@@ -20,6 +20,8 @@ export const LANG_FLAGS: Record<Lang, string> = {
 export const translations: Record<Lang, Record<string, any>> = {
   en: {
     nav: {
+      world: "World",
+      discoveries: "Discoveries",
       map: "Map",
       quests: "Quests",
       arena: "Arena",
@@ -329,6 +331,8 @@ export const translations: Record<Lang, Record<string, any>> = {
 
   ru: {
     nav: {
+      world: "Мир",
+      discoveries: "Открытия",
       map: "Карта",
       quests: "Квесты",
       arena: "Арена",
@@ -638,6 +642,8 @@ export const translations: Record<Lang, Record<string, any>> = {
 
   zh: {
     nav: {
+      world: "世界",
+      discoveries: "发现",
       map: "地图",
       quests: "任务",
       arena: "竞技场",
@@ -947,6 +953,8 @@ export const translations: Record<Lang, Record<string, any>> = {
 
   es: {
     nav: {
+      world: "Mundo",
+      discoveries: "Descubrimientos",
       map: "Mapa",
       quests: "Misiones",
       arena: "Arena",
@@ -1256,6 +1264,8 @@ export const translations: Record<Lang, Record<string, any>> = {
 
   ar: {
     nav: {
+      world: "العالم",
+      discoveries: "الاكتشافات",
       map: "الخريطة",
       quests: "المهام",
       arena: "الحلبة",

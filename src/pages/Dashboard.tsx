@@ -477,6 +477,57 @@ function TransactionLog({ transactions, agentId }: { transactions: Transaction[]
   );
 }
 
+// ─── Nation Card ─────────────────────────────────────────────────
+function NationCard({ nationCode }: { nationCode: string }) {
+  const { data: nation } = useQuery({
+    queryKey: ["nation-card", nationCode],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("nations")
+        .select("*")
+        .eq("code", nationCode)
+        .single();
+      return data;
+    },
+  });
+
+  if (!nation) return null;
+
+  return (
+    <Card className="glass-card border-border overflow-hidden relative">
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/50 via-accent to-primary/50" />
+      <CardContent className="p-4">
+        <div className="flex items-center gap-3 mb-3">
+          <span className="text-3xl">{nation.flag_emoji}</span>
+          <div className="flex-1 min-w-0">
+            <p className="font-display font-bold text-sm truncate">{nation.name_en}</p>
+            <p className="text-[10px] text-muted-foreground font-body uppercase">{nation.continent || "World"}</p>
+          </div>
+          <Link to={`/country/${nationCode}`}>
+            <Button variant="ghost" size="sm" className="text-[10px] gap-1 text-primary">
+              View <ChevronRight className="w-3 h-3" />
+            </Button>
+          </Link>
+        </div>
+        <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="glass-card rounded-lg py-2">
+            <p className="text-sm font-display font-bold">{nation.cis_score.toFixed(1)}</p>
+            <p className="text-[9px] text-muted-foreground">CIS Score</p>
+          </div>
+          <div className="glass-card rounded-lg py-2">
+            <p className="text-sm font-display font-bold">{nation.citizen_count}</p>
+            <p className="text-[9px] text-muted-foreground">Citizens</p>
+          </div>
+          <div className="glass-card rounded-lg py-2">
+            <p className="text-sm font-display font-bold">{Number(nation.treasury_meeet).toLocaleString()}</p>
+            <p className="text-[9px] text-muted-foreground">$MEEET</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Main Dashboard ─────────────────────────────────────────────
 const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -751,13 +802,16 @@ const Dashboard = () => {
                 </div>
               </div>
 
+              {/* Country Card */}
+              {agent.nation_code && <NationCard nationCode={agent.nation_code} />}
+
               {/* Quick Actions */}
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
                 <QuickAction icon={<Scroll className="w-5 h-5" />} label="Quests" to="/quests" badge="New" />
-                <QuickAction icon={<Globe className="w-5 h-5" />} label="Live Map" to="/live" />
+                <QuickAction icon={<Globe className="w-5 h-5" />} label="World" to="/world" />
                 <QuickAction icon={<Crown className="w-5 h-5" />} label="Parliament" to="/parliament" />
-                <QuickAction icon={<BarChart3 className="w-5 h-5" />} label="Rankings" to="/rankings" />
-                <QuickAction icon={<Scroll className="w-5 h-5" />} label="Herald" to="/herald" />
+                <QuickAction icon={<BarChart3 className="w-5 h-5" />} label="Rankings" to="/world/rankings" />
+                <QuickAction icon={<Sparkles className="w-5 h-5" />} label="Discoveries" to="/discoveries" />
                 <QuickAction icon={<Users className="w-5 h-5" />} label="Profile" to="/profile" />
               </div>
 
