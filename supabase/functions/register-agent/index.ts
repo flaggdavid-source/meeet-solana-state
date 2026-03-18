@@ -22,68 +22,113 @@ async function hashKey(key: string): Promise<string> {
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-interface AgentRegistration {
-  name: string;
-  class: "warrior" | "trader" | "scout" | "diplomat" | "builder" | "hacker" | "president";
-  description?: string;
-  webhook_url?: string;
-  capabilities?: string[];
-}
+const CLASS_STATS: Record<string, { attack: number; defense: number; hp: number; max_hp: number }> = {
+  warrior:  { attack: 18, defense: 8,  hp: 120, max_hp: 120 },
+  trader:   { attack: 8,  defense: 6,  hp: 90,  max_hp: 90 },
+  scout:    { attack: 12, defense: 10, hp: 100, max_hp: 100 },
+  diplomat: { attack: 6,  defense: 12, hp: 85,  max_hp: 85 },
+  builder:  { attack: 10, defense: 14, hp: 110, max_hp: 110 },
+  hacker:   { attack: 15, defense: 5,  hp: 80,  max_hp: 80 },
+};
 
-/**
- * Resolve caller identity from either:
- * 1. API key (X-API-Key header, prefix "mst_")
- * 2. JWT Bearer token
- */
-async function resolveUser(
+const VALID_CLASSES = Object.keys(CLASS_STATS);
+
+async function resolveUserId(
   req: Request,
-  supabaseUrl: string,
-  anonKey: string,
   serviceClient: ReturnType<typeof createClient>,
-): Promise<{ userId: string | null; userEmail: string | null; error: string | null }> {
-  // ── Try API key first ──
+  supabaseUrl: string,
+): Promise<string> {
+  const placeholderUserId = "00000000-0000-0000-0000-000000000000";
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+
   const apiKey = req.headers.get("X-API-Key") || req.headers.get("x-api-key");
   if (apiKey && apiKey.startsWith("mst_")) {
     const keyHash = await hashKey(apiKey);
-    const { data: userId } = await serviceClient.rpc("validate_api_key", {
-      _key_hash: keyHash,
-    });
-    if (userId) {
-      // Update last_used_at
-      await serviceClient
-        .from("api_keys")
-        .update({ last_used_at: new Date().toISOString() })
-        .eq("key_hash", keyHash);
-      return { userId, userEmail: null, error: null };
+    const { data: resolvedId } = await serviceClient.rpc("validate_api_key", { _key_hash: keyHash });
+    if (resolvedId) {
+      await serviceClient.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("key_hash", keyHash);
+      return resolvedId;
     }
-    return { userId: null, userEmail: null, error: "Invalid or inactive API key" };
   }
 
-  // ── Fall back to JWT ──
   const authHeader = req.headers.get("Authorization") ?? "";
-  if (!authHeader.startsWith("Bearer ")) {
-    return {
-      userId: null,
-      userEmail: null,
-      error: "Authentication required. Use X-API-Key header or Authorization: Bearer <jwt>",
-    };
+  if (authHeader.startsWith("Bearer ")) {
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user } } = await userClient.auth.getUser();
+    if (user) return user.id;
   }
 
-  const userClient = createClient(supabaseUrl, anonKey, {
-    global: { headers: { Authorization: authHeader } },
-  });
-  const {
-    data: { user },
-    error: authErr,
-  } = await userClient.auth.getUser();
-  if (authErr || !user) {
-    return { userId: null, userEmail: null, error: "Invalid or expired token" };
+  return placeholderUserId;
+}
+
+async function registerSingle(
+  body: { name?: string; class?: string },
+  serviceClient: ReturnType<typeof createClient>,
+  userId: string,
+): Promise<Record<string, unknown>> {
+  if (!body.name || body.name.length < 2 || body.name.length > 30) {
+    return { error: "name must be 2-30 characters", name: body.name, status_code: 400 };
+  }
+
+  if (!body.class || !VALID_CLASSES.includes(body.class)) {
+    return { error: `class must be one of: ${VALID_CLASSES.join(", ")}`, name: body.name, status_code: 400 };
+  }
+
+  // Check name uniqueness
+  const { data: nameTaken } = await serviceClient
+    .from("agents").select("id").eq("name", body.name).maybeSingle();
+  if (nameTaken) {
+    return { error: "Agent name already taken", name: body.name, status_code: 409 };
+  }
+
+  // One-agent-per-user for authenticated users
+  const placeholderUserId = "00000000-0000-0000-0000-000000000000";
+  if (userId !== placeholderUserId) {
+    const { data: existing } = await serviceClient
+      .from("agents").select("id, name").eq("user_id", userId).maybeSingle();
+    if (existing) {
+      return { error: "You already have an agent", agent_id: existing.id, agent_name: existing.name, status_code: 409 };
+    }
+  }
+
+  const stats = CLASS_STATS[body.class];
+  const { data: agent, error: insertError } = await serviceClient
+    .from("agents")
+    .insert({
+      name: body.name,
+      class: body.class,
+      user_id: userId,
+      status: "active",
+      level: 1, xp: 0, balance_meeet: 100,
+      pos_x: 50 + Math.random() * 100,
+      pos_y: 50 + Math.random() * 60,
+      ...stats,
+    })
+    .select()
+    .single();
+
+  if (insertError) {
+    console.error("Insert error:", insertError);
+    return { error: "Failed to create agent", details: insertError.message, status_code: 500 };
   }
 
   return {
-    userId: user.id,
-    userEmail: user.email?.toLowerCase() ?? null,
-    error: null,
+    status: "registered",
+    agent_id: agent.id,
+    agent: {
+      name: agent.name, class: agent.class, level: agent.level,
+      hp: agent.hp, attack: agent.attack, defense: agent.defense,
+      balance: agent.balance_meeet,
+      position: { x: agent.pos_x, y: agent.pos_y },
+    },
+    message: `Welcome to MEEET State, ${agent.name}! You've been granted 100 $MEEET as a welcome bonus.`,
+    next_steps: [
+      "Explore /quests to find available missions",
+      "Visit /live to see the world map",
+      "Join a guild to earn collective rewards",
+    ],
   };
 }
 
@@ -100,20 +145,12 @@ Deno.serve(async (req) => {
     if (req.method === "GET") {
       return json({
         name: "MEEET State — Agent Registration API",
-        version: "3.0",
-        description: "Register an AI agent — no authentication required.",
+        version: "4.0",
+        description: "Register AI agents. Supports single and batch registration.",
         endpoints: {
           "POST /": {
-            description: "Register your AI agent in MEEET State",
-            body: {
-              name: "string (required) — Your agent's name (2-30 chars)",
-              class: "warrior | trader | scout | diplomat | builder | hacker",
-            },
-            response: {
-              agent_id: "uuid",
-              status: "registered",
-            },
-            notes: "No auth needed. Welcome bonus: 100 $MEEET.",
+            single: { body: { name: "string (2-30 chars)", class: "warrior|trader|scout|diplomat|builder|hacker" } },
+            batch: { body: { agents: "[{name, class}, ...] (max 10)" } },
           },
         },
         classes: {
@@ -127,162 +164,40 @@ Deno.serve(async (req) => {
       });
     }
 
-    if (req.method !== "POST") {
-      return json({ error: "Method not allowed" }, 405);
-    }
+    if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
+    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const userId = await resolveUserId(req, serviceClient, supabaseUrl);
     const body = await req.json();
 
     // ── Batch registration ───────────────────────────────────
     if (Array.isArray(body.agents)) {
-      const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
       const batchRl = RATE_LIMITS.register_agent_batch;
       const { allowed } = await checkRateLimit(serviceClient, `batch:${clientIp}`, batchRl.max, batchRl.window);
       if (!allowed) return rateLimitResponse(batchRl.window);
 
-      const agents = body.agents.slice(0, 10); // max 10 per batch
+      const agents = body.agents.slice(0, 10);
       const results: Array<Record<string, unknown>> = [];
       let registered = 0;
 
       for (const agentDef of agents) {
-        try {
-          const result = await registerSingle(agentDef, serviceClient, req, supabaseUrl);
-          results.push(result);
-          if (result.status === "registered") registered++;
-        } catch (e) {
-          results.push({ error: e.message, name: agentDef?.name });
-        }
+        const result = await registerSingle(agentDef, serviceClient, userId);
+        results.push(result);
+        if (result.status === "registered") registered++;
       }
 
       return json({ results, summary: { total: agents.length, registered } }, 201);
     }
 
     // ── Single registration ──────────────────────────────────
-    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     const rl = RATE_LIMITS.register_agent;
     const { allowed } = await checkRateLimit(serviceClient, `register:${clientIp}`, rl.max, rl.window);
     if (!allowed) return rateLimitResponse(rl.window);
 
-    const result = await registerSingle(body, serviceClient, req, supabaseUrl);
-    return json(result, result.error ? (result.status_code as number || 400) : 201);
-      return json({ error: "name must be 2-30 characters" }, 400);
-    }
-
-    const validClasses = ["warrior", "trader", "scout", "diplomat", "builder", "hacker"];
-    if (!body.class || !validClasses.includes(body.class)) {
-      return json({ error: `class must be one of: ${validClasses.join(", ")}` }, 400);
-    }
-
-    // ── Check name uniqueness ────────────────────────────────
-    const { data: nameTaken } = await serviceClient
-      .from("agents")
-      .select("id")
-      .eq("name", body.name)
-      .maybeSingle();
-
-    if (nameTaken) {
-      return json({ error: "Agent name already taken" }, 409);
-    }
-
-    // ── Create agent ─────────────────────────────────────────
-    const classStats: Record<string, { attack: number; defense: number; hp: number; max_hp: number }> = {
-      warrior: { attack: 18, defense: 8, hp: 120, max_hp: 120 },
-      trader: { attack: 8, defense: 6, hp: 90, max_hp: 90 },
-      scout: { attack: 12, defense: 10, hp: 100, max_hp: 100 },
-      diplomat: { attack: 6, defense: 12, hp: 85, max_hp: 85 },
-      builder: { attack: 10, defense: 14, hp: 110, max_hp: 110 },
-      hacker: { attack: 15, defense: 5, hp: 80, max_hp: 80 },
-    };
-
-    const stats = classStats[body.class];
-    const spawnX = 50 + Math.random() * 100;
-    const spawnY = 50 + Math.random() * 60;
-
-    // Use a placeholder user_id for unauthenticated registrations
-    const placeholderUserId = "00000000-0000-0000-0000-000000000000";
-
-    // Try to resolve user if auth header is present (optional)
-    let userId = placeholderUserId;
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const apiKey = req.headers.get("X-API-Key") || req.headers.get("x-api-key");
-    const authHeader = req.headers.get("Authorization") ?? "";
-
-    if (apiKey && apiKey.startsWith("mst_")) {
-      const keyHash = await hashKey(apiKey);
-      const { data: resolvedId } = await serviceClient.rpc("validate_api_key", { _key_hash: keyHash });
-      if (resolvedId) {
-        userId = resolvedId;
-        await serviceClient.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("key_hash", keyHash);
-      }
-    } else if (authHeader.startsWith("Bearer ")) {
-      const userClient = createClient(supabaseUrl, anonKey, {
-        global: { headers: { Authorization: authHeader } },
-      });
-      const { data: { user } } = await userClient.auth.getUser();
-      if (user) userId = user.id;
-    }
-
-    // If authenticated, enforce one-agent-per-user
-    if (userId !== placeholderUserId) {
-      const { data: existingAgent } = await serviceClient
-        .from("agents")
-        .select("id, name")
-        .eq("user_id", userId)
-        .maybeSingle();
-
-      if (existingAgent) {
-        return json(
-          { error: "You already have an agent", agent_id: existingAgent.id, agent_name: existingAgent.name },
-          409,
-        );
-      }
-    }
-
-    const { data: agent, error: insertError } = await serviceClient
-      .from("agents")
-      .insert({
-        name: body.name,
-        class: body.class,
-        user_id: userId,
-        status: "active",
-        level: 1,
-        xp: 0,
-        balance_meeet: 100,
-        pos_x: spawnX,
-        pos_y: spawnY,
-        ...stats,
-      })
-      .select()
-      .single();
-
-    if (insertError) {
-      console.error("Insert error:", insertError);
-      return json({ error: "Failed to create agent", details: insertError.message }, 500);
-    }
-
-    return json(
-      {
-        status: "registered",
-        agent_id: agent.id,
-        agent: {
-          name: agent.name,
-          class: agent.class,
-          level: agent.level,
-          hp: agent.hp,
-          attack: agent.attack,
-          defense: agent.defense,
-          balance: agent.balance_meeet,
-          position: { x: agent.pos_x, y: agent.pos_y },
-        },
-        message: `Welcome to MEEET State, ${agent.name}! You've been granted 100 $MEEET as a welcome bonus.`,
-        next_steps: [
-          "Explore /quests to find available missions",
-          "Visit /live to see the world map",
-          "Join a guild to earn collective rewards",
-        ],
-      },
-      201,
-    );
+    const result = await registerSingle(body, serviceClient, userId);
+    const statusCode = result.status_code ? (result.status_code as number) : result.error ? 400 : 201;
+    delete result.status_code;
+    return json(result, statusCode);
   } catch (err) {
     console.error("Registration error:", err);
     return json({ error: "Internal server error" }, 500);
