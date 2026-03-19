@@ -59,9 +59,15 @@ const Guilds = () => {
       toast({ title: "Sign in required", description: "Please sign in to join a guild.", variant: "destructive" });
       return;
     }
+    // Get user's agent
+    const { data: agent } = await supabase.from("agents").select("id").eq("user_id", user.id).limit(1).maybeSingle();
+    if (!agent) {
+      toast({ title: "Agent required", description: "Create an agent first to join a guild.", variant: "destructive" });
+      return;
+    }
     const { error } = await supabase.from("guild_members").insert({
       guild_id: guildId,
-      user_id: user.id,
+      agent_id: agent.id,
     });
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
