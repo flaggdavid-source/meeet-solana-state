@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, X, ZoomIn, ZoomOut, Eye, Moon, Sun, Search, Crosshair, FastForward, Play, Pause, Activity, Globe } from "lucide-react";
 import { supabase } from "@/integrations/supabase/runtime-client";
+import LiveStatsBanner from "@/components/LiveStatsBanner";
 
 // ─── Types ──────────────────────────────────────────────────────
 interface Agent {
