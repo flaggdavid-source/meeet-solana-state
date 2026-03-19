@@ -218,15 +218,14 @@ Deno.serve(async (req) => {
       console.error("GDELT fetch error:", e);
     }
     
-    if (articles.length === 0) {
-      return new Response(JSON.stringify({ message: "No new events from GDELT", synced: 0 }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
+    // Even with no new articles, continue to backfill existing events
     let synced = 0;
     let challengesCreated = 0;
     let geoEnriched = 0;
+
+    if (articles.length === 0) {
+      // Skip article processing, jump to backfill
+    } else {
 
     for (const article of articles.slice(0, 15)) {
       const toneValue = article.tone ? parseFloat(article.tone.split(",")[0]) : 0;
