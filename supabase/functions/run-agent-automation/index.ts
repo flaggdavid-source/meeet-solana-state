@@ -1,71 +1,99 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-api-key",
-};
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const TELEGRAM_BOT = "8765053225:AAHfNtVbKJoFp8u1Ht4bkoeS5yD0vW-WNoQ";
+const TELEGRAM_CHANNEL = "@meeetworld";
 
-function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+
+async function sendTelegram(text: string) {
+  try {
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: TELEGRAM_CHANNEL, text, parse_mode: "HTML" }),
+    });
+  } catch (e) {
+    console.error("Telegram send failed:", e);
+  }
 }
 
-Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-
+Deno.serve(async (_req) => {
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, serviceKey);
-
-    // Get all running deployed agents
-    const { data: running, error: runErr } = await supabase
+    // Fetch all running deployed agents with their agent info
+    const { data: deployedAgents, error: daError } = await supabase
       .from("deployed_agents")
-      .select("id, agent_id, plan_id, strategy_id, quests_completed, total_earned_meeet")
+      .select("*, agents(*)")
       .eq("status", "running");
 
-    if (runErr) return json({ error: runErr.message }, 500);
-    if (!running || running.length === 0) return json({ message: "No running agents", processed: 0 });
-
-    let processed = 0;
-
-    for (const da of running) {
-      // Increment quests_completed and total_earned by a simulated amount
-      const questReward = Math.floor(Math.random() * 300) + 100;
-      await supabase
-        .from("deployed_agents")
-        .update({
-          quests_completed: (da.quests_completed || 0) + 1,
-          total_earned_meeet: (da.total_earned_meeet || 0) + questReward,
-        })
-        .eq("id", da.id);
-
-      // Also update the agent's balance
-      if (da.agent_id) {
-        const { data: agent } = await supabase
-          .from("agents")
-          .select("balance_meeet, quests_completed")
-          .eq("id", da.agent_id)
-          .single();
-
-        if (agent) {
-          await supabase
-            .from("agents")
-            .update({
-              balance_meeet: (agent.balance_meeet || 0) + questReward,
-              quests_completed: (agent.quests_completed || 0) + 1,
-            })
-            .eq("id", da.agent_id);
-        }
-      }
-
-      processed++;
+    if (daError) throw daError;
+    if (!deployedAgents || deployedAgents.length === 0) {
+      return Response.json({ processed: 0, total_earned: 0 });
     }
 
-    return json({ message: "Automation cycle complete", processed });
-  } catch (err) {
-    return json({ error: String(err) }, 500);
+    // Fetch open quests
+    const { data: quests, error: qError } = await supabase
+      .from("quests")
+      .select("*")
+      .eq("status", "open")
+      .limit(50);
+
+    if (qError) throw qError;
+
+    let processed = 0;
+    let totalEarned = 0;
+
+    for (const da of deployedAgents) {
+      const agent = da.agents;
+      if (!agent) continue;
+
+      // Pick a quest for this agent (cycle through available quests)
+      const quest = quests && quests.length > 0
+        ? quests[processed % quests.length]
+        : null;
+
+      const earnings = quest?.reward_meeet ?? 45;
+
+      // Record in agent_earnings
+      const { error: earningError } = await supabase.from("agent_earnings").insert({
+        agent_id: agent.id,
+        deployed_agent_id: da.id,
+        quest_id: quest?.id ?? null,
+        amount_meeet: earnings,
+        source: quest ? "quest" : "passive",
+        earned_at: new Date().toISOString(),
+      });
+
+      if (earningError) {
+        console.error(`Earning insert failed for agent ${agent.id}:`, earningError.message);
+        continue;
+      }
+
+      // Update agent balance
+      const newBalance = Number(agent.balance_meeet ?? 0) + Number(earnings);
+      await supabase
+        .from("agents")
+        .update({ balance_meeet: newBalance })
+        .eq("id", agent.id);
+
+      totalEarned += Number(earnings);
+      processed++;
+
+      // Send Telegram notification for large earnings
+      if (Number(earnings) > 100) {
+        await sendTelegram(
+          `🤖 <b>Agent Earning Alert</b>\n` +
+          `Agent <b>${agent.name}</b> (${agent.class}) earned <b>${earnings} MEEET</b>` +
+          (quest ? ` on quest: ${quest.title ?? quest.id}` : " via passive income") +
+          `\nNew balance: ${newBalance.toFixed(2)} MEEET`
+        );
+      }
+    }
+
+    return Response.json({ processed, total_earned: totalEarned });
+  } catch (err: any) {
+    console.error("run-agent-automation error:", err);
+    return Response.json({ error: err.message }, { status: 500 });
   }
 });
