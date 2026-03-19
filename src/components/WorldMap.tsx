@@ -400,7 +400,7 @@ const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, o
     }
 
     mapRef.current = map;
-    return () => { map.remove(); mapRef.current = null; };
+    return () => { resizeObserver.disconnect(); map.remove(); mapRef.current = null; };
   }, [interactive, onEventClick]);
 
   // Fetch data
