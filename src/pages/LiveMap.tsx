@@ -23,6 +23,8 @@ interface Ripple { x: number; y: number; radius: number; maxRadius: number; colo
 interface DataStream { x1: number; y1: number; x2: number; y2: number; color: string; progress: number; speed: number; }
 interface Road { x1: number; y1: number; x2: number; y2: number; }
 interface GameEvent { id: number; text: string; time: string; color: string; }
+interface Star { x: number; y: number; size: number; twinkleSpeed: number; phase: number; brightness: number; }
+interface AgentTrail { x: number; y: number; age: number; color: string; }
 
 // ─── Constants ──────────────────────────────────────────────────
 const TILE = 32;
