@@ -552,7 +552,7 @@ const Dashboard = () => {
   const xpProgress = agent ? Math.min(100, (agent.xp / (agent.level * 500)) * 100) : 0;
   const hpProgress = agent ? (agent.hp / agent.max_hp) * 100 : 0;
 
-  if (isLoading) {
+  if (isLoading || !user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
