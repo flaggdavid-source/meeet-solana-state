@@ -964,7 +964,9 @@ const LiveMap = () => {
   const handleZoom = (d: number) => { const nz = Math.max(0.2, Math.min(4, zoomRef.current + d)); zoomRef.current = nz; setZoom(nz); terrainCacheRef.current = null; };
 
   return (
-    <div className="fixed inset-0 bg-[#020510] overflow-hidden cursor-crosshair">
+    <div className="fixed inset-0 bg-[#020510] overflow-hidden cursor-crosshair flex flex-col">
+      <LiveStatsBanner />
+      <div className="relative flex-1">
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 
       {/* ═══ BLOOMBERG TICKER — Top ═══ */}
