@@ -126,7 +126,10 @@ const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, o
       interactive,
     });
 
+    requestAnimationFrame(() => map.resize());
+
     map.on("load", () => {
+      map.resize();
       setMapLoaded(true);
 
       map.addSource("agents", {
