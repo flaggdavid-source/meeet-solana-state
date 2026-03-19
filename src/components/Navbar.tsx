@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, LogOut, Bell } from "lucide-react";
+import { Menu, X, LogOut, Bell, ChevronDown } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/runtime-client";
@@ -11,6 +11,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const { user, signOut } = useAuth();
   const queryClient = useQueryClient();
   const { t } = useLanguage();
@@ -18,18 +19,21 @@ const Navbar = () => {
   const NAV_LINKS = [
     { href: "/about", label: "О проекте" },
     { href: "/world", label: t("nav.world") },
-    { href: "/discoveries", label: t("nav.discoveries") },
     { href: "/quests", label: t("nav.quests") },
-    { href: "/arena", label: t("nav.arena") },
     { href: "/oracle", label: "🔮 Oracle" },
     { href: "/warnings", label: "⚠️ Warnings" },
     { href: "/deploy", label: "🚀 Deploy" },
-    { href: "/strategies", label: "⚡ Strategies" },
-    { href: "/marketplace", label: "🏪 Marketplace" },
     { href: "/world/rankings", label: t("nav.rankings") },
-    { href: "/parliament", label: t("nav.parliament") },
     { href: "/tokenomics", label: t("nav.meeet") },
   ];
+
+  const MORE_LINKS = [
+    { href: "/discoveries", label: t("nav.discoveries") },
+    { href: "/arena", label: t("nav.arena") },
+    { href: "/parliament", label: t("nav.parliament") },
+  ];
+
+  const ALL_LINKS = [...NAV_LINKS, ...MORE_LINKS];
 
   const { data: notifications = [] } = useQuery({
     queryKey: ["notifications", user?.id],
@@ -92,6 +96,25 @@ const Navbar = () => {
               {l.label}
             </Link>
           ))}
+          <Popover open={moreOpen} onOpenChange={setMoreOpen}>
+            <PopoverTrigger asChild>
+              <button className="flex items-center gap-1 hover:text-foreground transition-colors duration-150">
+                More <ChevronDown className="w-3 h-3" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-44 p-1" align="start">
+              {MORE_LINKS.map((l) => (
+                <Link
+                  key={l.href}
+                  to={l.href}
+                  onClick={() => setMoreOpen(false)}
+                  className="block px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </PopoverContent>
+          </Popover>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
