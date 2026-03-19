@@ -91,6 +91,13 @@ const Deploy = () => {
   const [payModal, setPayModal] = useState<{ plan: AgentPlan; method: "sol" | "meeet" } | null>(null);
   const [txSignature, setTxSignature] = useState("");
   const [activating, setActivating] = useState(false);
+  // Agent config form state (shown after payment)
+  const [showAgentForm, setShowAgentForm] = useState(false);
+  const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
+  const [agentName, setAgentName] = useState("");
+  const [agentClass, setAgentClass] = useState("warrior");
+  const [agentStrategy, setAgentStrategy] = useState("passive");
+  const [deploying, setDeploying] = useState(false);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -129,13 +136,42 @@ const Deploy = () => {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      toast.success("Subscription activated! 🎉");
+      toast.success("Subscription activated! 🎉 Now configure your agent.");
+      setSubscriptionId(data?.subscription_id || null);
       setPayModal(null);
       setTxSignature("");
+      setShowAgentForm(true);
     } catch (e: any) {
       toast.error(e.message || "Failed to activate subscription");
     } finally {
       setActivating(false);
+    }
+  };
+
+  const handleDeployAgent = async () => {
+    if (!agentName.trim()) {
+      toast.error("Please enter an agent name");
+      return;
+    }
+    setDeploying(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("deploy-agent", {
+        body: {
+          subscription_id: subscriptionId,
+          agent_name: agentName.trim(),
+          agent_class: agentClass,
+          strategy: agentStrategy,
+        },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast.success(`Agent "${agentName}" deployed! 🚀`);
+      setShowAgentForm(false);
+      setAgentName("");
+    } catch (e: any) {
+      toast.error(e.message || "Failed to deploy agent");
+    } finally {
+      setDeploying(false);
     }
   };
 
