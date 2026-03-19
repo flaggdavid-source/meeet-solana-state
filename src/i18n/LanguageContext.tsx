@@ -64,10 +64,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   );
 }
 
+const defaultContext: LanguageContextType = {
+  lang: "en",
+  setLang: () => {},
+  t: (path: string) => path,
+};
+
 export function useLanguage() {
   const ctx = useContext(LanguageContext);
-  if (!ctx) throw new Error("useLanguage must be used within LanguageProvider");
-  return ctx;
+  return ctx ?? defaultContext;
 }
 
 export { LANG_LABELS, LANG_FLAGS };
