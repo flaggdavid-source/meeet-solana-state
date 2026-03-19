@@ -8,6 +8,7 @@ import TokenSection from "@/components/TokenSection";
 import CTASection from "@/components/CTASection";
 import PetitionForm from "@/components/PetitionForm";
 import Footer from "@/components/Footer";
+import AnimatedSection from "@/components/AnimatedSection";
 
 const Index = () => {
   return (
@@ -15,16 +16,22 @@ const Index = () => {
       <Navbar />
       <main className="pt-16">
         <HeroSection />
-        <MilestoneTracker />
+        <AnimatedSection animation="fade-up" delay={100}>
+          <MilestoneTracker />
+        </AnimatedSection>
         <AgentClassesSection />
-        <AgentAPISection />
+        <AnimatedSection animation="fade-up" delay={100}>
+          <AgentAPISection />
+        </AnimatedSection>
         <HowItWorksSection />
         <TokenSection />
-        <section id="petition" className="py-24 relative">
-          <div className="container max-w-lg mx-auto px-4">
-            <PetitionForm />
-          </div>
-        </section>
+        <AnimatedSection animation="scale" delay={200}>
+          <section id="petition" className="py-24 relative">
+            <div className="container max-w-lg mx-auto px-4">
+              <PetitionForm />
+            </div>
+          </section>
+        </AnimatedSection>
         <CTASection />
       </main>
       <Footer />
