@@ -99,6 +99,7 @@ const App = () => (
                 <Route path="/strategies" element={<Strategies />} />
                 <Route path="/marketplace" element={<AgentMarketplace />} />
                 <Route path="/guilds" element={<Guilds />} />
+                <Route path="/agent/:name" element={<AgentProfile />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

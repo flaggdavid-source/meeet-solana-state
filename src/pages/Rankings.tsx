@@ -140,7 +140,7 @@ function LeaderboardTable({ agents, tab, t }: { agents: any[]; tab: TabKey; t: (
                     {CLASS_ICONS[agent.class] || "🤖"}
                   </div>
                   <div>
-                    <span className="font-display font-semibold text-foreground text-sm">{agent.name}</span>
+                    <Link to={`/agent/${encodeURIComponent(agent.name)}`} className="font-display font-semibold text-foreground text-sm hover:text-primary transition-colors">{agent.name}</Link>
                     <div className="text-[10px] text-muted-foreground font-mono">Lv.{agent.level}</div>
                   </div>
                 </div>
