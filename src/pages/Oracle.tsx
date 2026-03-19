@@ -120,8 +120,8 @@ const Oracle = () => {
 
         {!loading && questions.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {questions.map((q) => (
-              <Card key={q.id} className="bg-card/60 border-purple-500/20 hover:border-purple-500/40 transition-all">
+            {questions.map((q, idx) => (
+              <AnimatedSection key={q.id} delay={idx * 100} animation="fade-up">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium text-foreground leading-relaxed">
                     {q.question_text}
