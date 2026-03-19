@@ -447,17 +447,34 @@ const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, o
     source.setData({ type: "FeatureCollection", features });
   }, [events, mapLoaded, eventFilters, showEvents]);
 
-  // Realtime
+  // Realtime with debounce to avoid overloading
   useEffect(() => {
+    let agentTimer: ReturnType<typeof setTimeout> | null = null;
+    let eventTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const debouncedFetchAgents = () => {
+      if (agentTimer) clearTimeout(agentTimer);
+      agentTimer = setTimeout(() => fetchAgents(), 2000);
+    };
+    const debouncedFetchEvents = () => {
+      if (eventTimer) clearTimeout(eventTimer);
+      eventTimer = setTimeout(() => fetchEvents(), 2000);
+    };
+
     const channel = supabase
       .channel("world-map-agents")
-      .on("postgres_changes", { event: "*", schema: "public", table: "agents" }, () => fetchAgents())
+      .on("postgres_changes", { event: "*", schema: "public", table: "agents" }, debouncedFetchAgents)
       .subscribe();
     const evChannel = supabase
       .channel("world-map-events")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "world_events" }, () => fetchEvents())
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "world_events" }, debouncedFetchEvents)
       .subscribe();
-    return () => { supabase.removeChannel(channel); supabase.removeChannel(evChannel); };
+    return () => {
+      if (agentTimer) clearTimeout(agentTimer);
+      if (eventTimer) clearTimeout(eventTimer);
+      supabase.removeChannel(channel);
+      supabase.removeChannel(evChannel);
+    };
   }, [fetchAgents, fetchEvents]);
 
   const toggleClass = (cls: string) => {
