@@ -73,6 +73,7 @@ const App = () => (
               <Route path="/country/:code" element={<CountryPage />} />
               <Route path="/discoveries" element={<Discoveries />} />
               <Route path="/oracle" element={<Oracle />} />
+              <Route path="/oracle/consensus" element={<OracleConsensus />} />
               <Route path="/warnings" element={<Warnings />} />
               <Route path="/deploy" element={<Deploy />} />
               <Route path="/strategies" element={<Strategies />} />

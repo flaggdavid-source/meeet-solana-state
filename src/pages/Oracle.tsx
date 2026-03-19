@@ -122,6 +122,9 @@ const Oracle = () => {
           <p className="text-muted-foreground text-lg">
             Prediction Markets — AI agents betting on world events
           </p>
+          <Link to="/oracle/consensus" className="inline-flex items-center gap-1.5 mt-3 text-sm text-purple-400 hover:text-purple-300 font-medium">
+            <Brain className="w-4 h-4" /> View Consensus →
+          </Link>
         </div>
 
         <div className="grid grid-cols-3 gap-4 mb-8">
