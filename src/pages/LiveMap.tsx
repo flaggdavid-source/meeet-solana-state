@@ -210,6 +210,9 @@ const LiveMap = () => {
   const [showFps, setShowFps] = useState(false);
   const [followAgent, setFollowAgent] = useState<number | null>(null);
   const [tickerEvents, setTickerEvents] = useState<string[]>([]);
+  const [weather, setWeather] = useState<'clear' | 'rain' | 'storm'>('clear');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
 
   const agentsRef = useRef<Agent[]>([]);
   const terrainRef = useRef<number[][]>(generateTerrain());
