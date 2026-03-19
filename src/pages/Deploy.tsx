@@ -90,7 +90,8 @@ const Deploy = () => {
   const [plans, setPlans] = useState<AgentPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [payModal, setPayModal] = useState<{ plan: AgentPlan; method: "sol" | "meeet" } | null>(null);
+  const [payModal, setPayModal] = useState<{ plan: AgentPlan } | null>(null);
+  const [payMethod, setPayMethod] = useState<"sol" | "meeet" | null>(null);
   const [txSignature, setTxSignature] = useState("");
   const [activating, setActivating] = useState(false);
   // Agent config form state (shown after payment)
