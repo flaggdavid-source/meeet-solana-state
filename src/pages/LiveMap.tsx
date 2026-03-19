@@ -739,9 +739,24 @@ const LiveMap = () => {
         if (sx < -10 || sx > w + 10 || sy < -10 || sy > h + 10) continue;
         const alpha = p.life / p.maxLife;
         if (p.type === "rain") {
-          ctx.strokeStyle = `rgba(100,160,200,${alpha * 0.2})`;
-          ctx.lineWidth = 0.5;
-          ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - z, sy + 5 * z); ctx.stroke();
+          ctx.strokeStyle = `rgba(100,160,200,${alpha * (weatherRef.current === 'storm' ? 0.35 : 0.2)})`;
+          ctx.lineWidth = weatherRef.current === 'storm' ? 0.8 : 0.5;
+          ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - z * 0.5, sy + 6 * z); ctx.stroke();
+        } else if (p.type === "firefly") {
+          // Fireflies with soft pulsing glow
+          p.vx += (Math.random() - 0.5) * 0.05;
+          p.vy += (Math.random() - 0.5) * 0.05;
+          p.vx *= 0.98; p.vy *= 0.98;
+          const pulse = 0.4 + Math.sin(t * 0.008 + p.x * 0.01) * 0.4;
+          const gr = 8 * z;
+          const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, gr);
+          glow.addColorStop(0, `rgba(136,255,68,${alpha * pulse * 0.6})`);
+          glow.addColorStop(0.5, `rgba(136,255,68,${alpha * pulse * 0.1})`);
+          glow.addColorStop(1, "transparent");
+          ctx.fillStyle = glow;
+          ctx.beginPath(); ctx.arc(sx, sy, gr, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = `rgba(200,255,150,${alpha * pulse})`;
+          ctx.beginPath(); ctx.arc(sx, sy, 1 * z, 0, Math.PI * 2); ctx.fill();
         } else if (p.type === "mine") {
           ctx.fillStyle = p.color + Math.floor(alpha * 150).toString(16).padStart(2, "0");
           ctx.beginPath(); ctx.arc(sx, sy, p.size * z, 0, Math.PI * 2); ctx.fill();
@@ -750,7 +765,32 @@ const LiveMap = () => {
           ctx.beginPath(); ctx.arc(sx, sy, p.size * z, 0, Math.PI * 2); ctx.fill();
         }
       }
-      if (particles.length > 600) particles.splice(0, particles.length - 600);
+      if (particles.length > 800) particles.splice(0, particles.length - 800);
+
+      // ─── AGENT TRAILS ─────────────────────────────────────
+      const trails = trailsRef.current;
+      // Age and cull old trails
+      for (let i = trails.length - 1; i >= 0; i--) {
+        trails[i].age++;
+        if (trails[i].age > 60) trails.splice(i, 1);
+      }
+      // Add new trail points for moving agents
+      if (z > 0.4) {
+        agents.forEach(a => {
+          if ((a.state === "move" || a.state === "visiting") && Math.random() < 0.3) {
+            trails.push({ x: a.x, y: a.y, age: 0, color: a.color });
+          }
+        });
+      }
+      // Draw trails
+      trails.forEach(tr => {
+        const sx = (tr.x - cam.x) * z, sy = (tr.y - cam.y) * z;
+        if (sx < -5 || sx > w + 5 || sy < -5 || sy > h + 5) return;
+        const alpha = (1 - tr.age / 60) * 0.15;
+        ctx.fillStyle = tr.color + Math.floor(alpha * 255).toString(16).padStart(2, "0");
+        ctx.beginPath(); ctx.arc(sx, sy, 1.5 * z, 0, Math.PI * 2); ctx.fill();
+      });
+      if (trails.length > 500) trails.splice(0, trails.length - 500);
 
       // ─── AGENTS — glowing orbs ────────────────────────────
       agents.forEach(a => {
