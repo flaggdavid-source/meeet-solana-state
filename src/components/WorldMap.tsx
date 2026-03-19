@@ -26,33 +26,20 @@ export const EVENT_TYPES = [
 ];
 
 export interface Agent {
-  id: string;
-  name: string;
-  class: string;
-  lat: number | null;
-  lng: number | null;
-  reputation: number;
-  balance_meeet: number;
-  level: number;
-  status: string;
-  nation_code: string | null;
+  id: string; name: string; class: string;
+  lat: number | null; lng: number | null;
+  reputation: number; balance_meeet: number;
+  level: number; status: string; nation_code: string | null;
 }
 
 export interface WorldEvent {
-  id: string;
-  event_type: string;
-  title: string;
-  lat: number | null;
-  lng: number | null;
-  nation_codes: any;
-  goldstein_scale: number | null;
-  created_at: string;
+  id: string; event_type: string; title: string;
+  lat: number | null; lng: number | null;
+  nation_codes: any; goldstein_scale: number | null; created_at: string;
 }
 
 interface WorldMapProps {
-  height?: string;
-  interactive?: boolean;
-  showSidebar?: boolean;
+  height?: string; interactive?: boolean; showSidebar?: boolean;
   onEventClick?: (event: WorldEvent) => void;
 }
 
@@ -70,13 +57,11 @@ const DARK_STYLE: maplibregl.StyleSpecification = {
       attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
     },
   },
-  layers: [
-    {
-      id: "carto-dark-layer", type: "raster", source: "carto-dark",
-      minzoom: 0, maxzoom: 20,
-      paint: { "raster-brightness-max": 0.55, "raster-contrast": 0.2, "raster-saturation": -0.3 },
-    },
-  ],
+  layers: [{
+    id: "carto-dark-layer", type: "raster", source: "carto-dark",
+    minzoom: 0, maxzoom: 20,
+    paint: { "raster-brightness-max": 0.55, "raster-contrast": 0.2, "raster-saturation": -0.3 },
+  }],
   glyphs: "https://fonts.openmaptiles.org/{fontstack}/{range}.pbf",
 };
 
@@ -92,6 +77,23 @@ const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, o
   const [showAgents, setShowAgents] = useState(true);
   const [showEvents, setShowEvents] = useState(true);
   const [recentActivity, setRecentActivity] = useState<Array<{ id: string; title: string; type: string; time: string }>>([]);
+
+  // Store geo-data for canvas (canvas will project on each frame via mapRef)
+  const agentGeoData = useMemo(() => {
+    return agents.filter(a => a.lat != null && a.lng != null && showAgents && classFilters.has(a.class)).map(a => ({
+      lng: a.lng!, lat: a.lat!,
+      color: CLASS_COLORS[a.class] || "#9945FF",
+      rep: a.reputation ?? 0, name: a.name, cls: a.class,
+    }));
+  }, [agents, classFilters, showAgents]);
+
+  const eventGeoData = useMemo(() => {
+    const colors: Record<string, string> = { conflict: "#ef4444", disaster: "#f97316", discovery: "#3b82f6", diplomacy: "#22c55e" };
+    return events.filter(e => e.lat != null && e.lng != null && showEvents && eventFilters.has(e.event_type)).map(e => ({
+      lng: e.lng!, lat: e.lat!,
+      color: colors[e.event_type] || "#9945FF", type: e.event_type,
+    }));
+  }, [events, eventFilters, showEvents]);
 
   const fetchAgents = useCallback(async () => {
     const { data } = await supabase
@@ -161,8 +163,6 @@ const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, o
         type: "geojson", data: { type: "FeatureCollection", features: [] },
         cluster: true, clusterMaxZoom: 7, clusterRadius: 60,
       });
-
-      // Cluster circles
       map.addLayer({
         id: "agent-clusters", type: "circle", source: "agents",
         filter: ["has", "point_count"],
@@ -180,7 +180,7 @@ const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, o
         paint: { "text-color": "#fff" },
       });
 
-      // Event source & layers
+      // Event layers
       map.addSource("world-events", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
       map.addLayer({
         id: "event-glow", type: "circle", source: "world-events",
@@ -201,7 +201,7 @@ const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, o
         },
       });
 
-      // Popups
+      // Click handlers
       map.on("click", "event-markers", (e) => {
         if (!e.features?.[0]) return;
         const p = e.features[0].properties!;
@@ -310,26 +310,6 @@ const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, o
     src.setData({ type: "FeatureCollection", features });
   }, [events, mapLoaded, eventFilters, showEvents]);
 
-  // Compute screen-space positions for canvas overlay
-  const agentScreenPositions = useMemo(() => {
-    if (!mapRef.current || !mapLoaded) return [];
-    const map = mapRef.current;
-    return agents.filter(a => a.lat != null && a.lng != null && showAgents && classFilters.has(a.class)).map(a => {
-      const pt = map.project([a.lng!, a.lat!]);
-      return { x: pt.x, y: pt.y, color: CLASS_COLORS[a.class] || "#9945FF", rep: a.reputation ?? 0, name: a.name, cls: a.class };
-    });
-  }, [agents, mapLoaded, classFilters, showAgents]);
-
-  const eventScreenPositions = useMemo(() => {
-    if (!mapRef.current || !mapLoaded) return [];
-    const map = mapRef.current;
-    const colors: Record<string, string> = { conflict: "#ef4444", disaster: "#f97316", discovery: "#3b82f6", diplomacy: "#22c55e" };
-    return events.filter(e => e.lat != null && e.lng != null && showEvents && eventFilters.has(e.event_type)).map(e => {
-      const pt = map.project([e.lng!, e.lat!]);
-      return { x: pt.x, y: pt.y, color: colors[e.event_type] || "#9945FF", type: e.event_type };
-    });
-  }, [events, mapLoaded, eventFilters, showEvents]);
-
   const toggleClass = (cls: string) => setClassFilters(p => { const n = new Set(p); n.has(cls) ? n.delete(cls) : n.add(cls); return n; });
   const toggleEventType = (t: string) => setEventFilters(p => { const n = new Set(p); n.has(t) ? n.delete(t) : n.add(t); return n; });
 
@@ -337,12 +317,11 @@ const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, o
     <div className="relative w-full h-full" style={{ height, minHeight: "320px" }}>
       <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
 
-      {/* Canvas animation overlay */}
+      {/* Canvas animation overlay - projects geo coords each frame */}
       <WorldMapCanvas
-        agents={agentScreenPositions}
-        events={eventScreenPositions}
+        agentGeoData={agentGeoData}
+        eventGeoData={eventGeoData}
         mapRef={mapRef}
-        mapLoaded={mapLoaded}
       />
 
       {/* Atmospheric edges */}
