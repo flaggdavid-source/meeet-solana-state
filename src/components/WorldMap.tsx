@@ -5,23 +5,29 @@ import { supabase } from "@/integrations/supabase/runtime-client";
 import { Filter, Layers, X, Users, Zap, MapPin } from "lucide-react";
 
 const CLASS_COLORS: Record<string, string> = {
-  warrior: "#ff3b3b",
-  trader: "#14F195",
+  warrior: "#ef4444",
+  trader: "#f59e0b",
+  scout: "#10b981",
+  diplomat: "#3b82f6",
+  builder: "#8b5cf6",
+  hacker: "#ec4899",
+  president: "#fbbf24",
   oracle: "#ffcc00",
-  diplomat: "#ffd700",
   miner: "#00aaff",
   banker: "#aa44ff",
-  president: "#ffd700",
 };
 
 const CLASS_ICONS: Record<string, string> = {
   warrior: "⚔️",
   trader: "💰",
-  oracle: "🔮",
+  scout: "🔭",
   diplomat: "🤝",
+  builder: "🏗️",
+  hacker: "💻",
+  president: "👑",
+  oracle: "🔮",
   miner: "⛏️",
   banker: "🏦",
-  president: "👑",
 };
 
 const EVENT_TYPES = [
@@ -93,6 +99,7 @@ const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, o
   const [eventFilters, setEventFilters] = useState<Set<string>>(new Set(EVENT_TYPES.map(e => e.key)));
   const [showAgents, setShowAgents] = useState(true);
   const [showEvents, setShowEvents] = useState(true);
+  const [stats, setStats] = useState({ agents: 0, warnings: 0, markets: 0 });
 
   const fetchAgents = useCallback(async () => {
     const { data } = await supabase
@@ -111,6 +118,19 @@ const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, o
       .order("created_at", { ascending: false })
       .limit(50);
     if (data) setEvents(data);
+  }, []);
+
+  const fetchStats = useCallback(async () => {
+    const [{ count: agentCount }, { count: warningCount }, { count: marketCount }] = await Promise.all([
+      supabase.from("agents_public").select("*", { count: "exact", head: true }),
+      supabase.from("warnings").select("*", { count: "exact", head: true }).eq("status", "active"),
+      supabase.from("oracle_questions").select("*", { count: "exact", head: true }).eq("status", "open"),
+    ]);
+    setStats({
+      agents: agentCount || 0,
+      warnings: warningCount || 0,
+      markets: marketCount || 0,
+    });
   }, []);
 
   // Init map
@@ -329,7 +349,7 @@ const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, o
         if (!e.features?.[0]) return;
         const p = e.features[0].properties!;
         const coords = (e.features[0].geometry as any).coordinates.slice();
-        const typeColor = { conflict: "#ef4444", disaster: "#f97316", discovery: "#3b82f6", diplomacy: "#22c55e" }[p.event_type] || "#9945FF";
+        const typeColor = { conflict: "#ef4444", disaster: "#f97316", discovery: "#3b82f6", diplomacy: "#22c55e" }[p.event_type as string] || "#9945FF";
         new maplibregl.Popup({ className: "meeet-popup", maxWidth: "300px" })
           .setLngLat(coords)
           .setHTML(`
@@ -370,9 +390,10 @@ const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, o
   useEffect(() => {
     fetchAgents();
     fetchEvents();
-    const interval = setInterval(() => { fetchAgents(); fetchEvents(); }, 30000);
+    fetchStats();
+    const interval = setInterval(() => { fetchAgents(); fetchEvents(); fetchStats(); }, 30000);
     return () => clearInterval(interval);
-  }, [fetchAgents, fetchEvents]);
+  }, [fetchAgents, fetchEvents, fetchStats]);
 
   // Update agents on map (with class filter)
   useEffect(() => {
@@ -466,12 +487,12 @@ const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, o
       <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background to-transparent pointer-events-none" />
       <div className="absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-background to-transparent pointer-events-none" />
 
-      {/* HUD Stats Bar */}
+      {/* Stats Bar */}
       <div className="absolute top-3 left-3 flex items-center gap-2 pointer-events-auto">
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-background/80 backdrop-blur-md border border-border text-xs font-mono">
           <div className="flex items-center gap-1.5">
             <Users className="w-3.5 h-3.5 text-primary" />
-            <span className="text-foreground font-bold">{filteredAgentCount}</span>
+            <span className="text-foreground font-bold">{stats.agents || filteredAgentCount}</span>
             <span className="text-muted-foreground">agents</span>
           </div>
           <div className="w-px h-4 bg-border" />
@@ -479,6 +500,18 @@ const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, o
             <Zap className="w-3.5 h-3.5 text-amber-400" />
             <span className="text-foreground font-bold">{filteredEventCount}</span>
             <span className="text-muted-foreground">events</span>
+          </div>
+          <div className="w-px h-4 bg-border" />
+          <div className="flex items-center gap-1.5">
+            <span className="text-orange-400">⚠️</span>
+            <span className="text-foreground font-bold">{stats.warnings}</span>
+            <span className="text-muted-foreground">warnings</span>
+          </div>
+          <div className="w-px h-4 bg-border" />
+          <div className="flex items-center gap-1.5">
+            <span className="text-purple-400">🔮</span>
+            <span className="text-foreground font-bold">{stats.markets}</span>
+            <span className="text-muted-foreground">markets</span>
           </div>
         </div>
 
