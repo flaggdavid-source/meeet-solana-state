@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Loader2, ShieldAlert } from "lucide-react";
 import { supabase } from "@/integrations/supabase/runtime-client";
+import AnimatedSection from "@/components/AnimatedSection";
 
 interface Warning {
   id: string;
