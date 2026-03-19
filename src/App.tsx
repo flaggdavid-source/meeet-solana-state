@@ -29,6 +29,10 @@ import World from "./pages/World.tsx";
 import WorldRankings from "./pages/WorldRankings.tsx";
 import CountryPage from "./pages/CountryPage.tsx";
 import Discoveries from "./pages/Discoveries.tsx";
+import Oracle from "./pages/Oracle.tsx";
+import Warnings from "./pages/Warnings.tsx";
+import Deploy from "./pages/Deploy.tsx";
+import Strategies from "./pages/Strategies.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -65,6 +69,10 @@ const App = () => (
               <Route path="/world/rankings" element={<WorldRankings />} />
               <Route path="/country/:code" element={<CountryPage />} />
               <Route path="/discoveries" element={<Discoveries />} />
+              <Route path="/oracle" element={<Oracle />} />
+              <Route path="/warnings" element={<Warnings />} />
+              <Route path="/deploy" element={<Deploy />} />
+              <Route path="/strategies" element={<Strategies />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
