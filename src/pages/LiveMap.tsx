@@ -477,11 +477,44 @@ const LiveMap = () => {
             oc.fillStyle = lerpColor(dayC, nightC, nf);
             oc.fillRect(sx, sy, ts + 1, ts + 1);
 
-            // Subtle water shimmer
+            // Water shimmer with wave pattern
             if (tile <= 1 && z > 0.3) {
               const shimmer = Math.sin(t * 0.001 + col * 0.3 + row * 0.2) * 0.03 + 0.02;
               oc.fillStyle = `rgba(20,60,120,${shimmer})`;
               oc.fillRect(sx, sy, ts + 1, ts + 1);
+              // Wave highlight lines
+              if (z > 0.5 && tile === 1) {
+                const waveOff = Math.sin(t * 0.0008 + col * 0.5) * ts * 0.3;
+                oc.fillStyle = `rgba(40,100,180,${shimmer * 0.5})`;
+                oc.fillRect(sx + waveOff, sy + ts * 0.4, ts * 0.4, 1);
+              }
+            }
+
+            // Shore foam
+            if (tile === 2 && z > 0.4) {
+              const foamAlpha = 0.03 + Math.sin(t * 0.002 + col + row * 0.7) * 0.015;
+              oc.fillStyle = `rgba(80,140,80,${foamAlpha})`;
+              oc.fillRect(sx, sy, ts + 1, ts + 1);
+            }
+
+            // Forest detail — tiny tree dots
+            if (tile === 5 && z > 0.6 && (col + row) % 3 === 0) {
+              oc.fillStyle = `rgba(20,60,20,${0.15 + nf * 0.1})`;
+              oc.beginPath();
+              oc.arc(sx + ts * 0.5, sy + ts * 0.4, ts * 0.2, 0, Math.PI * 2);
+              oc.fill();
+            }
+
+            // Mountain peaks
+            if (tile >= 6 && z > 0.5) {
+              const peakAlpha = 0.08 + (tile === 7 ? 0.06 : 0);
+              oc.fillStyle = `rgba(80,80,100,${peakAlpha})`;
+              oc.beginPath();
+              oc.moveTo(sx + ts * 0.2, sy + ts);
+              oc.lineTo(sx + ts * 0.5, sy + ts * 0.2);
+              oc.lineTo(sx + ts * 0.8, sy + ts);
+              oc.closePath();
+              oc.fill();
             }
           }
         }
