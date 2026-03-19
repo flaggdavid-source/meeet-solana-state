@@ -396,10 +396,12 @@ const WorldMapCanvas = ({ agentGeoData, eventGeoData, mapRef, followAgentName }:
       }
 
       // ══════ LAYER 5: Agent Sprites ══════
+      const showLabels = agents.length < (zoom > 4 ? 120 : 60);
+      const showLevelBadge = agents.length < 100;
       for (const agent of agents) {
         const sprite = SPRITE_DATA[agent.cls] || SPRITE_DATA.warrior;
         const color = AGENT_COLORS[agent.cls] || "#ff44ff";
-        const spritePixel = Math.max(pixelSize, Math.min(3, 2 + Math.floor(agent.rep / 200)));
+        const spritePixel = Math.max(pixelSize, Math.min(4, 2 + Math.floor(agent.rep / 150)));
         const isFollowed = followAgentName && agent.name === followAgentName;
 
         // Drop shadow
@@ -413,12 +415,16 @@ const WorldMapCanvas = ({ agentGeoData, eventGeoData, mapRef, followAgentName }:
         if (isFollowed) {
           const followPulse = 0.5 + 0.5 * Math.sin(frame * 0.08);
           const rgb2 = hexToRgb(color);
-          ctx.strokeStyle = `rgba(${rgb2.r},${rgb2.g},${rgb2.b},${followPulse * 0.6})`;
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.arc(agent.x, drawY, 14, 0, Math.PI * 2);
-          ctx.stroke();
-          // Selection arrows
+          // Double ring
+          for (let ring = 0; ring < 2; ring++) {
+            const ringR = 14 + ring * 6;
+            ctx.strokeStyle = `rgba(${rgb2.r},${rgb2.g},${rgb2.b},${followPulse * (0.6 - ring * 0.25)})`;
+            ctx.lineWidth = 2 - ring;
+            ctx.beginPath();
+            ctx.arc(agent.x, drawY, ringR, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+          // Selection arrows (animated)
           const arrowY = drawY - 18 - Math.sin(frame * 0.1) * 3;
           ctx.fillStyle = color;
           ctx.globalAlpha = 0.8;
@@ -432,11 +438,18 @@ const WorldMapCanvas = ({ agentGeoData, eventGeoData, mapRef, followAgentName }:
           const auraPhase = (frame * 0.04 + agent.x * 0.05) % (Math.PI * 2);
           const auraR = 8 + Math.sin(auraPhase) * 2;
           const rgb = hexToRgb(color);
-          ctx.strokeStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},0.2)`;
+          ctx.strokeStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},0.25)`;
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.arc(agent.x, drawY, auraR, 0, Math.PI * 2);
           ctx.stroke();
+          // Second aura ring for very high rep
+          if (agent.rep > 300) {
+            ctx.strokeStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},0.1)`;
+            ctx.beginPath();
+            ctx.arc(agent.x, drawY, auraR + 4, 0, Math.PI * 2);
+            ctx.stroke();
+          }
         }
 
         // Main sprite
@@ -444,40 +457,42 @@ const WorldMapCanvas = ({ agentGeoData, eventGeoData, mapRef, followAgentName }:
 
         // Breathing glow
         const breathe = 0.3 + 0.15 * Math.sin(frame * 0.04 + agent.y * 0.02);
-        drawSprite(ctx, sprite, agent.x, drawY, spritePixel, "#ffffff", breathe * 0.1);
+        drawSprite(ctx, sprite, agent.x, drawY, spritePixel, "#ffffff", breathe * 0.12);
 
-        // HP bar
-        const barW = 12;
+        // HP bar (improved with gradient)
+        const barW = 14;
         const barH = 2;
         const hpFrac = Math.min(1, agent.rep / 500);
-        ctx.fillStyle = "rgba(0,0,0,0.6)";
-        ctx.fillRect(Math.floor(agent.x - barW / 2), Math.floor(drawY - 12), barW, barH);
-        ctx.fillStyle = hpFrac > 0.5 ? "#44ff88" : hpFrac > 0.2 ? "#ffbb33" : "#ff4444";
+        ctx.fillStyle = "rgba(0,0,0,0.7)";
+        ctx.fillRect(Math.floor(agent.x - barW / 2) - 1, Math.floor(drawY - 13), barW + 2, barH + 2);
+        const hpColor = hpFrac > 0.5 ? "#44ff88" : hpFrac > 0.2 ? "#ffbb33" : "#ff4444";
+        ctx.fillStyle = hpColor;
         ctx.fillRect(Math.floor(agent.x - barW / 2), Math.floor(drawY - 12), Math.floor(barW * hpFrac), barH);
 
         // Level badge
-        if (agents.length < 100) {
-          ctx.fillStyle = "rgba(0,0,0,0.5)";
-          ctx.fillRect(Math.floor(agent.x + 5), Math.floor(drawY - 10), 8, 7);
+        if (showLevelBadge) {
+          const lvl = Math.min(99, Math.ceil(agent.rep / 50));
+          ctx.fillStyle = "rgba(0,0,0,0.6)";
+          ctx.fillRect(Math.floor(agent.x + 6), Math.floor(drawY - 11), 10, 8);
           ctx.fillStyle = color;
-          ctx.font = "5px monospace";
+          ctx.font = "bold 5px monospace";
           ctx.textAlign = "center";
-          ctx.fillText(`${Math.min(99, Math.ceil(agent.rep / 50))}`, agent.x + 9, drawY - 4);
+          ctx.fillText(`${lvl}`, agent.x + 11, drawY - 4);
         }
 
-        // Name label
-        if (agents.length < 80) {
+        // Name label (zoom-dependent)
+        if (showLabels) {
           ctx.fillStyle = isFollowed ? color : "#ffffff";
-          ctx.globalAlpha = isFollowed ? 0.9 : 0.6;
+          ctx.globalAlpha = isFollowed ? 0.95 : 0.65;
           ctx.font = isFollowed ? "bold 7px monospace" : "6px monospace";
           ctx.textAlign = "center";
-          ctx.fillText(agent.name.slice(0, 10), agent.x, agent.y + 14);
+          ctx.fillText(agent.name.slice(0, 12), agent.x, agent.y + 15);
           ctx.globalAlpha = 1;
         }
 
         // Trail
-        if (frame % 6 === 0 && trails.current.length < 500) {
-          trails.current.push({ x: agent.x, y: agent.y, alpha: 0.3, color });
+        if (frame % 5 === 0 && trails.current.length < 600) {
+          trails.current.push({ x: agent.x, y: agent.y, alpha: 0.35, color });
         }
       }
 

@@ -1283,38 +1283,117 @@ function drawOrb(ctx: CanvasRenderingContext2D, a: Agent, cam: { x: number; y: n
   const orbR = Math.max(2, 4 * z);
 
   // Outer glow — ambient aura
-  const glowR = orbR * 6;
+  const glowR = orbR * 7;
   const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, glowR);
-  glow.addColorStop(0, `rgba(${cfg.glow},${0.15 * pulse})`);
-  glow.addColorStop(0.3, `rgba(${cfg.glow},${0.05 * pulse})`);
+  glow.addColorStop(0, `rgba(${cfg.glow},${0.18 * pulse})`);
+  glow.addColorStop(0.2, `rgba(${cfg.glow},${0.08 * pulse})`);
+  glow.addColorStop(0.5, `rgba(${cfg.glow},${0.02 * pulse})`);
   glow.addColorStop(1, "transparent");
   ctx.fillStyle = glow;
   ctx.beginPath(); ctx.arc(sx, sy, glowR, 0, Math.PI * 2); ctx.fill();
 
+  // Shadow beneath agent
+  ctx.fillStyle = `rgba(0,0,0,${0.3 * pulse})`;
+  ctx.beginPath();
+  ctx.ellipse(sx, sy + orbR * 1.5, orbR * 1.2, orbR * 0.4, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Idle breathing float
+  const floatY = sy - Math.sin(t * 0.003 + a.phase) * 2 * z;
+
   // Core orb
-  const coreGrad = ctx.createRadialGradient(sx, sy - orbR * 0.3, orbR * 0.2, sx, sy, orbR);
-  coreGrad.addColorStop(0, `rgba(255,255,255,${0.8 * pulse})`);
-  coreGrad.addColorStop(0.4, a.color);
-  coreGrad.addColorStop(1, a.color + "60");
+  const coreGrad = ctx.createRadialGradient(sx, floatY - orbR * 0.3, orbR * 0.2, sx, floatY, orbR);
+  coreGrad.addColorStop(0, `rgba(255,255,255,${0.85 * pulse})`);
+  coreGrad.addColorStop(0.3, a.color);
+  coreGrad.addColorStop(0.8, a.color + "80");
+  coreGrad.addColorStop(1, a.color + "30");
   ctx.fillStyle = coreGrad;
-  ctx.beginPath(); ctx.arc(sx, sy, orbR, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(sx, floatY, orbR, 0, Math.PI * 2); ctx.fill();
+
+  // Inner bright dot
+  ctx.fillStyle = `rgba(255,255,255,${0.5 * pulse})`;
+  ctx.beginPath(); ctx.arc(sx - orbR * 0.15, floatY - orbR * 0.2, orbR * 0.25, 0, Math.PI * 2); ctx.fill();
+
+  // Class-specific decorations at higher zoom
+  if (z > 0.6) {
+    if (a.cls === "warrior") {
+      // Sword icon — two crossing lines
+      const sw = orbR * 1.8;
+      ctx.strokeStyle = `rgba(${cfg.glow},${0.4 * pulse})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(sx - sw, floatY - sw); ctx.lineTo(sx + sw, floatY + sw); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(sx + sw, floatY - sw); ctx.lineTo(sx - sw, floatY + sw); ctx.stroke();
+    } else if (a.cls === "oracle") {
+      // Orbiting particles
+      for (let oi = 0; oi < 3; oi++) {
+        const oa = t * 0.005 + oi * (Math.PI * 2 / 3);
+        const or2 = orbR * 2.5;
+        const ox = sx + Math.cos(oa) * or2;
+        const oy = floatY + Math.sin(oa) * or2 * 0.6;
+        ctx.fillStyle = `rgba(255,204,0,${0.5 * pulse})`;
+        ctx.beginPath(); ctx.arc(ox, oy, 1.2 * z, 0, Math.PI * 2); ctx.fill();
+      }
+    } else if (a.cls === "trader") {
+      // $ symbol particles floating up
+      const dp = (t * 0.002 + a.phase) % 1;
+      ctx.fillStyle = `rgba(0,255,136,${(1 - dp) * 0.4})`;
+      ctx.font = `${Math.max(5, 7 * z)}px monospace`;
+      ctx.textAlign = "center";
+      ctx.fillText("$", sx + orbR * 2, floatY - dp * orbR * 6);
+    } else if (a.cls === "miner") {
+      // Sparkles around
+      for (let mi = 0; mi < 2; mi++) {
+        const ma = t * 0.008 + mi * Math.PI + a.phase;
+        const mr = orbR * (2 + Math.sin(t * 0.004 + mi) * 0.5);
+        ctx.fillStyle = `rgba(0,170,255,${0.4 + Math.sin(t * 0.01 + mi) * 0.2})`;
+        ctx.fillRect(Math.floor(sx + Math.cos(ma) * mr), Math.floor(floatY + Math.sin(ma) * mr * 0.7), z * 1.5, z * 1.5);
+      }
+    }
+  }
 
   // Pulse ring on combat/trading/meeting
   if (a.state === "combat" || a.state === "trading" || a.state === "meeting") {
     const ringR = orbR * (2 + Math.sin(t * 0.008) * 0.5);
     const ringColor = a.state === "combat" ? "255,50,50" : a.state === "trading" ? "0,255,136" : "255,215,0";
-    ctx.strokeStyle = `rgba(${ringColor},${0.3 + Math.sin(t * 0.01) * 0.15})`;
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.arc(sx, sy, ringR, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = `rgba(${ringColor},${0.35 + Math.sin(t * 0.01) * 0.15})`;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(sx, floatY, ringR, 0, Math.PI * 2); ctx.stroke();
+    // Second pulse ring
+    const ringR2 = orbR * (3 + Math.sin(t * 0.006 + 1) * 0.5);
+    ctx.strokeStyle = `rgba(${ringColor},${0.12})`;
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.arc(sx, floatY, ringR2, 0, Math.PI * 2); ctx.stroke();
+  }
+
+  // HP bar when zoomed in
+  if (z > 0.6) {
+    const barW = 16 * z;
+    const barH = 2 * z;
+    const barX = sx - barW / 2;
+    const barY = floatY + orbR + 4;
+    const hpFrac = Math.min(1, a.hp / a.maxHp);
+    ctx.fillStyle = "rgba(0,0,0,0.5)";
+    ctx.fillRect(barX - 0.5, barY - 0.5, barW + 1, barH + 1);
+    ctx.fillStyle = hpFrac > 0.5 ? "#44ff88" : hpFrac > 0.2 ? "#ffbb33" : "#ff4444";
+    ctx.fillRect(barX, barY, barW * hpFrac, barH);
   }
 
   // Name label — only when zoomed in
-  if (z > 0.5) {
-    const fs = Math.max(7, 8 * z);
-    ctx.font = `500 ${fs}px 'Space Grotesk', monospace`;
+  if (z > 0.45) {
+    const fs = Math.max(7, 9 * z);
+    ctx.font = `600 ${fs}px 'Space Grotesk', monospace`;
     ctx.textAlign = "center";
-    ctx.fillStyle = `rgba(${cfg.glow},${0.5 + nf * 0.2})`;
-    ctx.fillText(a.name, sx, sy + orbR + fs + 4);
+    // Text shadow
+    ctx.fillStyle = `rgba(0,0,0,0.6)`;
+    ctx.fillText(a.name, sx + 0.5, floatY + orbR + (z > 0.6 ? 12 : 8) + fs + 0.5);
+    ctx.fillStyle = `rgba(${cfg.glow},${0.6 + nf * 0.2})`;
+    ctx.fillText(a.name, sx, floatY + orbR + (z > 0.6 ? 12 : 8) + fs);
+    // Level indicator
+    if (z > 0.7) {
+      ctx.font = `500 ${Math.max(5, 6 * z)}px monospace`;
+      ctx.fillStyle = `rgba(${cfg.glow},0.35)`;
+      ctx.fillText(`Lv.${a.level}`, sx, floatY + orbR + (z > 0.6 ? 12 : 8) + fs * 2 + 2);
+    }
     ctx.textAlign = "left";
   }
 }
