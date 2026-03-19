@@ -1160,7 +1160,7 @@ const LiveMap = () => {
             </div>
           )}
         </div>
-      )
+      )}
 
       {/* ═══ Zoom + Speed — Left ═══ */}
       <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-1.5">
