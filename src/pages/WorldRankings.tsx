@@ -20,35 +20,13 @@ const WorldRankings = () => {
   const { data: rankings = [], isLoading } = useQuery({
     queryKey: ["world-rankings-cis"],
     queryFn: async () => {
-      // Fetch nations + actual agent counts per country_code
-      const [{ data: nations }, { data: agents }] = await Promise.all([
-        supabase
-          .from("nations")
-          .select("code, name_en, flag_emoji, citizen_count, cis_score, continent")
-          .order("cis_score", { ascending: false })
-          .limit(50),
-        supabase
-          .from("agents")
-          .select("country_code"),
-      ]);
-
-      // Count agents per country
-      const agentCounts: Record<string, number> = {};
-      (agents || []).forEach((a: any) => {
-        if (a.country_code) {
-          agentCounts[a.country_code] = (agentCounts[a.country_code] || 0) + 1;
-        }
+      // Use edge function for server-side aggregation (no 1000-row limit)
+      const { data, error } = await supabase.functions.invoke("get-rankings", {
+        body: null,
+        method: "GET",
       });
-
-      const ranked: CountryRank[] = (nations || []).map((n: any) => ({
-        ...n,
-        agent_count: agentCounts[n.code] || 0,
-      }));
-
-      // Sort by agent_count DESC, then cis_score DESC
-      ranked.sort((a, b) => b.agent_count - a.agent_count || b.cis_score - a.cis_score);
-
-      return ranked.slice(0, 20);
+      if (error) throw error;
+      return (data?.rankings ?? []) as CountryRank[];
     },
   });
 

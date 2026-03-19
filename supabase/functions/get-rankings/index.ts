@@ -17,17 +17,45 @@ Deno.serve(async (req) => {
     );
 
     const url = new URL(req.url);
-    const limit = Math.min(Number(url.searchParams.get("limit") || "50"), 100);
+    const limit = Math.min(Number(url.searchParams.get("limit") || "20"), 100);
 
-    const { data, error } = await supabase
+    // Fetch nations
+    const { data: nations, error: nErr } = await supabase
       .from("nations")
-      .select("code, name_en, flag_emoji, citizen_count, cis_score, continent")
-      .order("cis_score", { ascending: false })
-      .limit(limit);
+      .select("code, name_en, flag_emoji, citizen_count, cis_score, continent");
 
-    if (error) throw error;
+    if (nErr) throw nErr;
 
-    return new Response(JSON.stringify({ rankings: data }), {
+    // Server-side aggregation: count agents per country_code using GROUP BY via RPC-free approach
+    const { data: agents, error: aErr } = await supabase
+      .from("agents")
+      .select("country_code");
+
+    if (aErr) throw aErr;
+
+    // Count agents per country (all agents, no 1000 limit issue since we use service_role)
+    const agentCounts: Record<string, number> = {};
+    for (const a of agents || []) {
+      if (a.country_code) {
+        agentCounts[a.country_code] = (agentCounts[a.country_code] || 0) + 1;
+      }
+    }
+
+    // Merge and rank
+    const ranked = (nations || [])
+      .map((n: any) => ({
+        code: n.code,
+        name_en: n.name_en,
+        flag_emoji: n.flag_emoji,
+        cis_score: n.cis_score,
+        citizen_count: n.citizen_count,
+        continent: n.continent,
+        agent_count: agentCounts[n.code] || 0,
+      }))
+      .sort((a: any, b: any) => b.agent_count - a.agent_count || b.cis_score - a.cis_score)
+      .slice(0, limit);
+
+    return new Response(JSON.stringify({ rankings: ranked }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {

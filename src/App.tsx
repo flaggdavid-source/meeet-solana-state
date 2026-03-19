@@ -6,40 +6,56 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
 import { LanguageProvider } from "@/i18n/LanguageContext";
-import Index from "./pages/Index.tsx";
-import LiveMap from "./pages/LiveMap.tsx";
-import Quests from "./pages/Quests.tsx";
-import Auth from "./pages/Auth.tsx";
-import Rankings from "./pages/Rankings.tsx";
-import Dashboard from "./pages/Dashboard.tsx";
-import AgentDashboard from "./pages/AgentDashboard.tsx";
-import Parliament from "./pages/Parliament.tsx";
-import Herald from "./pages/Herald.tsx";
-import Onboarding from "./pages/Onboarding.tsx";
-import ProfilePage from "./pages/Profile.tsx";
-import Tokenomics from "./pages/Tokenomics.tsx";
-import Arena from "./pages/Arena.tsx";
-import Social from "./pages/Social.tsx";
-import Admin from "./pages/Admin.tsx";
-import Connect from "./pages/Connect.tsx";
-import Join from "./pages/Join.tsx";
-import BadgeGenerator from "./pages/BadgeGenerator.tsx";
-import Referrals from "./pages/Referrals.tsx";
-import About from "./pages/About.tsx";
-import World from "./pages/World.tsx";
-import WorldRankings from "./pages/WorldRankings.tsx";
-import CountryPage from "./pages/CountryPage.tsx";
-import Discoveries from "./pages/Discoveries.tsx";
-import Oracle from "./pages/Oracle.tsx";
-import Warnings from "./pages/Warnings.tsx";
-import Deploy from "./pages/Deploy.tsx";
-import Strategies from "./pages/Strategies.tsx";
-import AgentMarketplace from "./pages/AgentMarketplace.tsx";
-import Guilds from "./pages/Guilds.tsx";
-import OracleConsensus from "./pages/OracleConsensus.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import React, { Suspense } from "react";
 
-const queryClient = new QueryClient();
+// Lazy load all pages for code splitting
+const Index = React.lazy(() => import("./pages/Index.tsx"));
+const LiveMap = React.lazy(() => import("./pages/LiveMap.tsx"));
+const Quests = React.lazy(() => import("./pages/Quests.tsx"));
+const Auth = React.lazy(() => import("./pages/Auth.tsx"));
+const Rankings = React.lazy(() => import("./pages/Rankings.tsx"));
+const Dashboard = React.lazy(() => import("./pages/Dashboard.tsx"));
+const AgentDashboard = React.lazy(() => import("./pages/AgentDashboard.tsx"));
+const Parliament = React.lazy(() => import("./pages/Parliament.tsx"));
+const Herald = React.lazy(() => import("./pages/Herald.tsx"));
+const Onboarding = React.lazy(() => import("./pages/Onboarding.tsx"));
+const ProfilePage = React.lazy(() => import("./pages/Profile.tsx"));
+const Tokenomics = React.lazy(() => import("./pages/Tokenomics.tsx"));
+const Arena = React.lazy(() => import("./pages/Arena.tsx"));
+const Social = React.lazy(() => import("./pages/Social.tsx"));
+const Admin = React.lazy(() => import("./pages/Admin.tsx"));
+const Connect = React.lazy(() => import("./pages/Connect.tsx"));
+const Join = React.lazy(() => import("./pages/Join.tsx"));
+const BadgeGenerator = React.lazy(() => import("./pages/BadgeGenerator.tsx"));
+const Referrals = React.lazy(() => import("./pages/Referrals.tsx"));
+const About = React.lazy(() => import("./pages/About.tsx"));
+const World = React.lazy(() => import("./pages/World.tsx"));
+const WorldRankings = React.lazy(() => import("./pages/WorldRankings.tsx"));
+const CountryPage = React.lazy(() => import("./pages/CountryPage.tsx"));
+const Discoveries = React.lazy(() => import("./pages/Discoveries.tsx"));
+const Oracle = React.lazy(() => import("./pages/Oracle.tsx"));
+const Warnings = React.lazy(() => import("./pages/Warnings.tsx"));
+const Deploy = React.lazy(() => import("./pages/Deploy.tsx"));
+const Strategies = React.lazy(() => import("./pages/Strategies.tsx"));
+const AgentMarketplace = React.lazy(() => import("./pages/AgentMarketplace.tsx"));
+const Guilds = React.lazy(() => import("./pages/Guilds.tsx"));
+const OracleConsensus = React.lazy(() => import("./pages/OracleConsensus.tsx"));
+const NotFound = React.lazy(() => import("./pages/NotFound.tsx"));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30 * 1000, // 30 seconds
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -49,41 +65,43 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/live" element={<LiveMap />} />
-              <Route path="/quests" element={<Quests />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/rankings" element={<Rankings />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/dashboard/agents" element={<AgentDashboard />} />
-              <Route path="/parliament" element={<Parliament />} />
-              <Route path="/herald" element={<Herald />} />
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/tokenomics" element={<Tokenomics />} />
-              <Route path="/arena" element={<Arena />} />
-              <Route path="/social" element={<Social />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/connect" element={<Connect />} />
-              <Route path="/join" element={<Join />} />
-              <Route path="/tools/badge" element={<BadgeGenerator />} />
-              <Route path="/dashboard/referrals" element={<Referrals />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/world" element={<World />} />
-              <Route path="/world/rankings" element={<WorldRankings />} />
-              <Route path="/country/:code" element={<CountryPage />} />
-              <Route path="/discoveries" element={<Discoveries />} />
-              <Route path="/oracle" element={<Oracle />} />
-              <Route path="/oracle/consensus" element={<OracleConsensus />} />
-              <Route path="/warnings" element={<Warnings />} />
-              <Route path="/deploy" element={<Deploy />} />
-              <Route path="/strategies" element={<Strategies />} />
-              <Route path="/marketplace" element={<AgentMarketplace />} />
-              <Route path="/guilds" element={<Guilds />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/live" element={<LiveMap />} />
+                <Route path="/quests" element={<Quests />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/rankings" element={<Rankings />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard/agents" element={<AgentDashboard />} />
+                <Route path="/parliament" element={<Parliament />} />
+                <Route path="/herald" element={<Herald />} />
+                <Route path="/onboarding" element={<Onboarding />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/tokenomics" element={<Tokenomics />} />
+                <Route path="/arena" element={<Arena />} />
+                <Route path="/social" element={<Social />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/connect" element={<Connect />} />
+                <Route path="/join" element={<Join />} />
+                <Route path="/tools/badge" element={<BadgeGenerator />} />
+                <Route path="/dashboard/referrals" element={<Referrals />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/world" element={<World />} />
+                <Route path="/world/rankings" element={<WorldRankings />} />
+                <Route path="/country/:code" element={<CountryPage />} />
+                <Route path="/discoveries" element={<Discoveries />} />
+                <Route path="/oracle" element={<Oracle />} />
+                <Route path="/oracle/consensus" element={<OracleConsensus />} />
+                <Route path="/warnings" element={<Warnings />} />
+                <Route path="/deploy" element={<Deploy />} />
+                <Route path="/strategies" element={<Strategies />} />
+                <Route path="/marketplace" element={<AgentMarketplace />} />
+                <Route path="/guilds" element={<Guilds />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
           </BrowserRouter>
         </TooltipProvider>
       </LanguageProvider>
