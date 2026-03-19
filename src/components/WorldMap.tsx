@@ -85,7 +85,7 @@ const DARK_STYLE: maplibregl.StyleSpecification = {
   layers: [
     { id: "carto-dark-layer", type: "raster", source: "carto-dark", minzoom: 0, maxzoom: 20 },
   ],
-  glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+  glyphs: "https://demotiles.maplibre.org/fonts/{fontstack}/{range}.pbf",
 };
 
 const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, onEventClick }: WorldMapProps) => {
