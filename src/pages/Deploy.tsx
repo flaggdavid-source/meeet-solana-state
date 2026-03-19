@@ -5,8 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Check, Zap, Users, TrendingUp, Loader2, ChevronDown, ChevronUp, Copy, ExternalLink } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Check, Zap, Users, TrendingUp, Loader2, ChevronDown, ChevronUp, Copy, ExternalLink, Rocket } from "lucide-react";
 import { supabase } from "@/integrations/supabase/runtime-client";
 import { toast } from "sonner";
 
@@ -91,6 +93,13 @@ const Deploy = () => {
   const [payModal, setPayModal] = useState<{ plan: AgentPlan; method: "sol" | "meeet" } | null>(null);
   const [txSignature, setTxSignature] = useState("");
   const [activating, setActivating] = useState(false);
+  // Agent config form state (shown after payment)
+  const [showAgentForm, setShowAgentForm] = useState(false);
+  const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
+  const [agentName, setAgentName] = useState("");
+  const [agentClass, setAgentClass] = useState("warrior");
+  const [agentStrategy, setAgentStrategy] = useState("passive");
+  const [deploying, setDeploying] = useState(false);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -129,13 +138,42 @@ const Deploy = () => {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      toast.success("Subscription activated! 🎉");
+      toast.success("Subscription activated! 🎉 Now configure your agent.");
+      setSubscriptionId(data?.subscription_id || null);
       setPayModal(null);
       setTxSignature("");
+      setShowAgentForm(true);
     } catch (e: any) {
       toast.error(e.message || "Failed to activate subscription");
     } finally {
       setActivating(false);
+    }
+  };
+
+  const handleDeployAgent = async () => {
+    if (!agentName.trim()) {
+      toast.error("Please enter an agent name");
+      return;
+    }
+    setDeploying(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("deploy-agent", {
+        body: {
+          subscription_id: subscriptionId,
+          agent_name: agentName.trim(),
+          agent_class: agentClass,
+          strategy: agentStrategy,
+        },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast.success(`Agent "${agentName}" deployed! 🚀`);
+      setShowAgentForm(false);
+      setAgentName("");
+    } catch (e: any) {
+      toast.error(e.message || "Failed to deploy agent");
+    } finally {
+      setDeploying(false);
     }
   };
 
@@ -408,6 +446,67 @@ const Deploy = () => {
               </div>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Agent Config Form Dialog */}
+      <Dialog open={showAgentForm} onOpenChange={setShowAgentForm}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center flex items-center justify-center gap-2">
+              <Rocket className="w-5 h-5 text-primary" />
+              Configure Your Agent
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="agent-name" className="text-sm">Agent Name</Label>
+              <Input
+                id="agent-name"
+                placeholder="e.g. Alpha_X"
+                value={agentName}
+                onChange={(e) => setAgentName(e.target.value)}
+                maxLength={20}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-sm">Agent Class</Label>
+              <Select value={agentClass} onValueChange={setAgentClass}>
+                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="warrior">⚔️ Warrior — Security & combat</SelectItem>
+                  <SelectItem value="trader">💰 Trader — Market & finance</SelectItem>
+                  <SelectItem value="oracle">🔮 Oracle — Science & research</SelectItem>
+                  <SelectItem value="diplomat">🤝 Diplomat — Peace & synthesis</SelectItem>
+                  <SelectItem value="miner">⛏️ Miner — Climate & data</SelectItem>
+                  <SelectItem value="banker">🏦 Banker — Economics</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-sm">Strategy</Label>
+              <Select value={agentStrategy} onValueChange={setAgentStrategy}>
+                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="passive">🛡️ Passive — Steady earnings, low risk</SelectItem>
+                  <SelectItem value="aggressive">⚡ Aggressive — High risk, high reward</SelectItem>
+                  <SelectItem value="oracle_focus">🔮 Oracle Focus — Prediction markets</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button
+              className="w-full"
+              disabled={!agentName.trim() || deploying}
+              onClick={handleDeployAgent}
+            >
+              {deploying ? (
+                <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Deploying...</>
+              ) : (
+                "🚀 Deploy Agent"
+              )}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
