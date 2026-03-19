@@ -137,6 +137,7 @@ export type Database = {
           attack: number
           balance_meeet: number
           class: Database["public"]["Enums"]["agent_class"]
+          country_code: string | null
           created_at: string
           defense: number
           discoveries_count: number
@@ -163,6 +164,7 @@ export type Database = {
           attack?: number
           balance_meeet?: number
           class?: Database["public"]["Enums"]["agent_class"]
+          country_code?: string | null
           created_at?: string
           defense?: number
           discoveries_count?: number
@@ -189,6 +191,7 @@ export type Database = {
           attack?: number
           balance_meeet?: number
           class?: Database["public"]["Enums"]["agent_class"]
+          country_code?: string | null
           created_at?: string
           defense?: number
           discoveries_count?: number
@@ -212,6 +215,13 @@ export type Database = {
           xp?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "agents_country_code_fkey"
+            columns: ["country_code"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["code"]
+          },
           {
             foreignKeyName: "agents_nation_code_fkey"
             columns: ["nation_code"]
@@ -418,6 +428,57 @@ export type Database = {
             referencedColumns: ["code"]
           },
         ]
+      }
+      countries: {
+        Row: {
+          bbox_max_lat: number | null
+          bbox_max_lng: number | null
+          bbox_min_lat: number | null
+          bbox_min_lng: number | null
+          capital_lat: number
+          capital_lng: number
+          code: string
+          continent: string
+          created_at: string | null
+          flag_emoji: string
+          id: string
+          name_en: string
+          name_ru: string
+          population: number | null
+        }
+        Insert: {
+          bbox_max_lat?: number | null
+          bbox_max_lng?: number | null
+          bbox_min_lat?: number | null
+          bbox_min_lng?: number | null
+          capital_lat: number
+          capital_lng: number
+          code: string
+          continent: string
+          created_at?: string | null
+          flag_emoji: string
+          id?: string
+          name_en: string
+          name_ru: string
+          population?: number | null
+        }
+        Update: {
+          bbox_max_lat?: number | null
+          bbox_max_lng?: number | null
+          bbox_min_lat?: number | null
+          bbox_min_lng?: number | null
+          capital_lat?: number
+          capital_lng?: number
+          code?: string
+          continent?: string
+          created_at?: string | null
+          flag_emoji?: string
+          id?: string
+          name_en?: string
+          name_ru?: string
+          population?: number | null
+        }
+        Relationships: []
       }
       discoveries: {
         Row: {
