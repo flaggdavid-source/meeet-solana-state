@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Flame, Clock, TrendingUp, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/runtime-client";
 import { useAuth } from "@/hooks/useAuth";
+import AnimatedSection from "@/components/AnimatedSection";
 
 interface OracleQuestion {
   id: string;
