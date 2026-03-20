@@ -656,7 +656,7 @@ const ArenaTab = ({ matches, agents, tg }: { matches: any[]; agents: Agent[]; tg
     setChallenging(true);
     tg?.HapticFeedback?.impactOccurred("heavy");
     try {
-      const { error } = await supabase.functions.invoke("arena-challenge", {
+      const { error } = await supabase.functions.invoke("duel", {
         body: { agent_id: selectedAgent, bet_meeet: parseInt(betAmount) },
       });
       if (error) throw error;
