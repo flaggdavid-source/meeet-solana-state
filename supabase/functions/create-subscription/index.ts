@@ -268,17 +268,32 @@ Deno.serve(async (req: Request) => {
   20% → Treasury: ${TREASURY_SOL}
   10% → Team: ${TEAM_WALLET}`);
 
+    // Send Telegram notification (fire-and-forget)
+    try {
+      const notifyUrl = `${supabaseUrl}/functions/v1/send-telegram-notification`;
+      await fetch(notifyUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${serviceKey}`,
+        },
+        body: JSON.stringify({
+          event_type: "subscription_activated",
+          user_id: user.id,
+          plan_name: plan.name,
+          amount: payment_method === "sol" ? SOL_PRICES[plan.name] : MEEET_PRICES[plan.name],
+          currency: payment_method === "sol" ? "SOL" : "MEEET",
+        }),
+      });
+    } catch (e) {
+      console.error("Telegram notification failed:", e);
+    }
+
     return json({
       subscription_id: subscription.id,
       plan_name: plan.name,
       expires_at: subscription.expires_at,
       verified: true,
-      distribution: {
-        lp_contribution: "40%",
-        ops_wallet: "30%",
-        treasury: "20%",
-        team: "10%",
-      },
     });
   } catch (err) {
     console.error("create-subscription error:", err);

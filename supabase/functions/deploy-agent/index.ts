@@ -121,6 +121,26 @@ Deno.serve(async (req: Request) => {
 
     if (deployError) return json({ error: deployError.message }, 500);
 
+    // Send Telegram notification (fire-and-forget)
+    try {
+      const notifyUrl = `${supabaseUrl}/functions/v1/send-telegram-notification`;
+      await fetch(notifyUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${serviceKey}`,
+        },
+        body: JSON.stringify({
+          event_type: "agent_deployed",
+          user_id: user.id,
+          agent_name: agent_name.trim(),
+          plan_name: subscription_id ? "Subscription" : "Free",
+        }),
+      });
+    } catch (e) {
+      console.error("Telegram notification failed:", e);
+    }
+
     return json({
       agent_id: agent.id,
       deployed_agent_id: deployed.id,

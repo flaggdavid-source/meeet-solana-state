@@ -214,6 +214,26 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    // Send Telegram notification (fire-and-forget)
+    try {
+      const notifyUrl = `${supabaseUrl}/functions/v1/send-telegram-notification`;
+      await fetch(notifyUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${serviceKey}`,
+        },
+        body: JSON.stringify({
+          event_type: "agent_purchased",
+          user_id: user.id,
+          agent_name: listing.agents?.name || "Unknown",
+          amount: priceM,
+        }),
+      });
+    } catch (e) {
+      console.error("Telegram notification failed:", e);
+    }
+
     return json({
       success: true,
       agent_id: soldAgentId,
