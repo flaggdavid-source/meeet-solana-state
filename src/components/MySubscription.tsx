@@ -81,7 +81,7 @@ export default function MySubscriptionCard({ userId }: { userId: string }) {
         <div className="flex items-center justify-between glass-card rounded-lg px-4 py-3">
           <div>
             <p className="font-display font-bold text-foreground">{plan?.name || "Unknown Plan"}</p>
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
               {plan?.quests_per_day && (
                 <span className="text-[10px] text-muted-foreground font-body">
                   {plan.quests_per_day} quests/day
@@ -92,13 +92,21 @@ export default function MySubscriptionCard({ userId }: { userId: string }) {
                   · {plan.max_agents} agent{plan.max_agents > 1 ? "s" : ""}
                 </span>
               )}
+              {plan?.compute_tier && (
+                <span className="text-[10px] text-muted-foreground font-body capitalize">
+                  · {plan.compute_tier} compute
+                </span>
+              )}
             </div>
           </div>
           <div className="text-right">
+            {plan?.price_usdc > 0 && (
+              <p className="text-sm font-display font-bold text-primary">${plan.price_usdc}<span className="text-[9px] font-normal text-muted-foreground">/mo</span></p>
+            )}
             {expiresAt && (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 mt-0.5">
                 <Calendar className="w-3 h-3 text-muted-foreground" />
-                <span className={`text-xs font-body ${isExpiringSoon ? "text-amber-400" : "text-muted-foreground"}`}>
+                <span className={`text-[10px] font-body ${isExpiringSoon ? "text-amber-400" : "text-muted-foreground"}`}>
                   {format(expiresAt, "MMM d, yyyy")}
                 </span>
               </div>
@@ -108,10 +116,24 @@ export default function MySubscriptionCard({ userId }: { userId: string }) {
             )}
           </div>
         </div>
+
+        {/* Plan Features */}
+        {plan?.features && typeof plan.features === "object" && (
+          <div className="flex flex-wrap gap-1.5">
+            {Object.entries(plan.features as Record<string, boolean>)
+              .filter(([, v]) => v)
+              .map(([k]) => (
+                <Badge key={k} variant="outline" className="text-[9px] border-primary/20 text-muted-foreground capitalize">
+                  {k.replace(/_/g, " ")}
+                </Badge>
+              ))}
+          </div>
+        )}
+
         <div className="flex gap-2">
           <Link to="/deploy" className="flex-1">
             <Button variant="outline" size="sm" className="w-full text-xs gap-1.5">
-              Manage
+              Manage Plan
             </Button>
           </Link>
         </div>

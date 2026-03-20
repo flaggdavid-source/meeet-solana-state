@@ -69,7 +69,29 @@ export default function MyDeployedAgents() {
     );
   }
 
-  if (deployedAgents.length === 0) return null;
+  if (deployedAgents.length === 0) {
+    return (
+      <Card className="glass-card border-border overflow-hidden relative">
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/50 via-secondary to-primary/50" />
+        <CardContent className="p-6 text-center space-y-3">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto">
+            <Bot className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <p className="font-display font-bold text-foreground">No agents deployed yet</p>
+            <p className="text-xs text-muted-foreground font-body mt-1">
+              Deploy an AI agent to start earning $MEEET automatically.
+            </p>
+          </div>
+          <Link to="/deploy">
+            <Button variant="default" size="sm" className="gap-1.5">
+              <Bot className="w-3.5 h-3.5" /> Deploy New Agent <ChevronRight className="w-3 h-3" />
+            </Button>
+          </Link>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="glass-card border-border overflow-hidden relative">

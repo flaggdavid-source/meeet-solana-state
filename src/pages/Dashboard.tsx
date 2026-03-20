@@ -30,7 +30,7 @@ import {
   Star, Trophy, Map, Plus, Sparkles, ArrowUpRight, ArrowDownRight,
   Activity, Users, Flame, Target, Crown, Scroll, MapPin,
   Clock, ChevronRight, Swords, Gift, BarChart3, Globe,
-  Landmark, Banknote, PiggyBank, Receipt,
+  Landmark, Banknote, PiggyBank, Receipt, Rocket,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Tables } from "@/integrations/supabase/types";
@@ -178,7 +178,7 @@ function useOracleBets(userId: string | undefined) {
         .select("*, oracle_questions(question_text, status, resolution)")
         .eq("user_id", userId!)
         .order("created_at", { ascending: false })
-        .limit(10);
+        .limit(5);
       if (error) throw error;
       return (data ?? []) as any[];
     },
@@ -922,12 +922,12 @@ const Dashboard = () => {
 
               {/* Quick Actions */}
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                <QuickAction icon={<Rocket className="w-5 h-5" />} label="Deploy Agent" to="/deploy" badge="🚀" />
+                <QuickAction icon={<Star className="w-5 h-5" />} label="Oracle Markets" to="/oracle" badge="🔮" />
+                <QuickAction icon={<Shield className="w-5 h-5" />} label="Warnings" to="/warnings" badge="⚠️" />
                 <QuickAction icon={<Scroll className="w-5 h-5" />} label="Quests" to="/quests" badge="New" />
                 <QuickAction icon={<Globe className="w-5 h-5" />} label="World" to="/world" />
-                <QuickAction icon={<Crown className="w-5 h-5" />} label="Parliament" to="/parliament" />
                 <QuickAction icon={<BarChart3 className="w-5 h-5" />} label="Rankings" to="/world/rankings" />
-                <QuickAction icon={<Sparkles className="w-5 h-5" />} label="Discoveries" to="/discoveries" />
-                <QuickAction icon={<Users className="w-5 h-5" />} label="Profile" to="/profile" />
               </div>
 
               {/* My Subscription */}
@@ -942,18 +942,21 @@ const Dashboard = () => {
               {/* Impact Score + Oracle Predictions */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {impactScore && (
-                  <Card className="glass-card border-border overflow-hidden relative">
+                  <Card className="glass-card border-border overflow-hidden relative group">
                     <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-secondary via-primary to-secondary" />
-                    <CardHeader className="pb-2">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <CardHeader className="pb-2 relative">
                       <CardTitle className="font-display text-sm flex items-center gap-2">
                         <Zap className="w-4 h-4 text-secondary" />
                         My Impact Score
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div className="text-center py-2">
-                        <p className="text-4xl font-display font-bold text-primary">{impactScore.total.toLocaleString()}</p>
-                        <p className="text-xs text-muted-foreground font-body mt-1">Cumulative Impact Points</p>
+                    <CardContent className="space-y-3 relative">
+                      <div className="text-center py-3">
+                        <div className="inline-flex items-center justify-center w-24 h-24 rounded-full border-2 border-primary/30 bg-primary/5 shadow-[0_0_30px_rgba(var(--primary),0.15)]">
+                          <p className="text-3xl font-display font-bold text-primary">{impactScore.total.toLocaleString()}</p>
+                        </div>
+                        <p className="text-xs text-muted-foreground font-body mt-2">Cumulative Impact Points</p>
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-center">
                         <div className="glass-card rounded-lg py-2">
@@ -1015,6 +1018,13 @@ const Dashboard = () => {
                                     {bet.prediction ? "YES" : "NO"}
                                   </Badge>
                                   <span className="text-[10px] text-muted-foreground font-body">{Number(bet.amount_meeet || 0).toLocaleString()} $MEEET</span>
+                                  <Badge variant="outline" className={`text-[9px] ${
+                                    q?.status === "resolved" ? "text-muted-foreground border-border" :
+                                    q?.status === "open" ? "text-blue-400 border-blue-500/20" :
+                                    "text-amber-400 border-amber-500/20"
+                                  }`}>
+                                    {q?.status === "resolved" ? "Closed" : q?.status === "open" ? "Open" : q?.status || "—"}
+                                  </Badge>
                                   {resolved && (
                                     <Badge variant="outline" className={`text-[9px] ${won ? "text-emerald-400 border-emerald-500/20" : "text-red-400 border-red-500/20"}`}>
                                       {won ? `Won +${Number(bet.payout_meeet || 0).toLocaleString()}` : "Lost"}
