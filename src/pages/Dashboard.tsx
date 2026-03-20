@@ -657,6 +657,8 @@ const Dashboard = () => {
   const { data: globalStats } = useGlobalStats();
   const { data: earnings = [] } = useRecentEarnings(agent?.id);
   const { data: treasury } = useTreasury();
+  const { data: oracleBets = [] } = useOracleBets(user?.id);
+  const { data: impactScore } = useImpactScore(agent?.id);
   const activityFeed = useActivityFeed();
 
   useEffect(() => {
