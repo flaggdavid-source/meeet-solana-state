@@ -837,6 +837,25 @@ const LiveMap = () => {
         }
       });
 
+      // ─── ACTIVITY DOTS — hundreds of ambient colored dots ───
+      // Spawn near agents to create dense activity haze
+      if (agents.length > 0) {
+        const dotsToSpawn = Math.min(8, Math.ceil(agents.length / 8));
+        for (let d = 0; d < dotsToSpawn; d++) {
+          const srcAgent = agents[Math.floor(Math.random() * agents.length)];
+          const actType = ACTIVITY_PARTICLE_COLORS[Math.floor(Math.random() * ACTIVITY_PARTICLE_COLORS.length)];
+          const spread = 80 + Math.random() * 200;
+          particles.push({
+            x: srcAgent.x + (Math.random() - 0.5) * spread,
+            y: srcAgent.y + (Math.random() - 0.5) * spread,
+            vx: (Math.random() - 0.5) * 0.15,
+            vy: (Math.random() - 0.5) * 0.15,
+            life: 90 + Math.random() * 120, maxLife: 210,
+            color: `rgb(${actType.color})`, size: 0.8 + Math.random() * 1.5, type: "activity",
+          });
+        }
+      }
+
       // Update & draw particles
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
