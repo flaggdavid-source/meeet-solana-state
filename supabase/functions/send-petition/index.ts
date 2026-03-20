@@ -37,11 +37,11 @@ async function resolveUser(
   const apiKey = req.headers.get("X-API-Key") || req.headers.get("x-api-key");
   if (apiKey && apiKey.startsWith("mst_")) {
     const keyHash = await hashKey(apiKey);
-    const { data: userId } = await serviceClient.rpc("validate_api_key", {
+    const { data: userId } = await (serviceClient as any).rpc("validate_api_key", {
       _key_hash: keyHash,
     });
     if (userId) {
-      await serviceClient
+      await (serviceClient as any)
         .from("api_keys")
         .update({ last_used_at: new Date().toISOString() })
         .eq("key_hash", keyHash);
