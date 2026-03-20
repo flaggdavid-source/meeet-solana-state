@@ -1356,7 +1356,7 @@ const LiveMap = () => {
 
       {/* ═══ Selected Agent Inspector ═══ */}
       {selectedAgent && (
-        <div className="absolute bottom-14 left-1/2 -translate-x-1/2 z-20 bg-black/70 backdrop-blur border border-white/[0.06] rounded-lg p-4 w-72 animate-fade-in">
+        <div className="absolute bottom-14 left-2 right-2 md:left-1/2 md:right-auto md:-translate-x-1/2 z-20 bg-black/70 backdrop-blur border border-white/[0.06] rounded-lg p-4 md:w-72 animate-fade-in">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: selectedAgent.color + "20", boxShadow: `0 0 15px ${selectedAgent.color}30` }}>
