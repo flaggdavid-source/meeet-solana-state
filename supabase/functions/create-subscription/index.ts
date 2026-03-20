@@ -175,22 +175,28 @@ Deno.serve(async (req: Request) => {
     if (!plan_id || !payment_method || !tx_signature) {
       return json({ error: "Missing required fields: plan_id, payment_method, tx_signature" }, 400);
     }
-    if (!["sol", "meeet"].includes(payment_method)) {
+    if (!["sol", "meeet", "free_promo"].includes(payment_method)) {
       return json({ error: "Invalid payment method" }, 400);
     }
-    if (typeof tx_signature !== "string" || tx_signature.length < 32 || tx_signature.length > 200) {
-      return json({ error: "Invalid transaction signature" }, 400);
-    }
 
-    // Check duplicate tx_signature
-    const { data: existingPayment } = await supabase
-      .from("payments")
-      .select("id")
-      .eq("tx_hash", tx_signature)
-      .limit(1);
+    // Free promo: validate agent count < 100 and plan is Scout
+    const isFreePromo = payment_method === "free_promo";
 
-    if (existingPayment && existingPayment.length > 0) {
-      return json({ error: "This transaction has already been used for a subscription" }, 409);
+    if (!isFreePromo) {
+      if (typeof tx_signature !== "string" || tx_signature.length < 32 || tx_signature.length > 200) {
+        return json({ error: "Invalid transaction signature" }, 400);
+      }
+
+      // Check duplicate tx_signature
+      const { data: existingPayment } = await supabase
+        .from("payments")
+        .select("id")
+        .eq("tx_hash", tx_signature)
+        .limit(1);
+
+      if (existingPayment && existingPayment.length > 0) {
+        return json({ error: "This transaction has already been used for a subscription" }, 409);
+      }
     }
 
     // Validate plan exists
@@ -202,30 +208,54 @@ Deno.serve(async (req: Request) => {
 
     if (planError || !plan) return json({ error: "Plan not found" }, 404);
 
+    // ── FREE PROMO VALIDATION ───────────────────────────────
+    if (isFreePromo) {
+      if (plan.name !== "Scout") {
+        return json({ error: "Free promo is only available for the Scout plan" }, 400);
+      }
+      const { count } = await supabase.from("agents").select("id", { count: "exact", head: true });
+      if ((count ?? 0) >= 100) {
+        return json({ error: "Free promo has ended — all 100 spots have been claimed" }, 400);
+      }
+      // Check if user already claimed free promo
+      const { data: existingFree } = await supabase
+        .from("payments")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("payment_method", "free_promo")
+        .limit(1);
+      if (existingFree && existingFree.length > 0) {
+        return json({ error: "You have already claimed your free agent" }, 409);
+      }
+      console.log(`Free promo claimed by user ${user.id} (agent #${(count ?? 0) + 1}/100)`);
+    }
+
     // ── VERIFY ON-CHAIN TRANSACTION ─────────────────────────
-    if (payment_method === "sol") {
-      const expectedSol = SOL_PRICES[plan.name];
-      if (!expectedSol) return json({ error: `No SOL price for plan ${plan.name}` }, 400);
+    if (!isFreePromo) {
+      if (payment_method === "sol") {
+        const expectedSol = SOL_PRICES[plan.name];
+        if (!expectedSol) return json({ error: `No SOL price for plan ${plan.name}` }, 400);
 
-      const expectedLamports = Math.round(expectedSol * LAMPORTS_PER_SOL);
-      const result = await verifySolTransaction(tx_signature, expectedLamports, TREASURY_SOL);
+        const expectedLamports = Math.round(expectedSol * LAMPORTS_PER_SOL);
+        const result = await verifySolTransaction(tx_signature, expectedLamports, TREASURY_SOL);
 
-      if (!result.verified) {
-        return json({ error: result.error, verified: false }, 400);
+        if (!result.verified) {
+          return json({ error: result.error, verified: false }, 400);
+        }
+
+        console.log(`SOL payment verified: ${expectedSol} SOL for ${plan.name} (tx: ${tx_signature})`);
+      } else {
+        const expectedMeeet = MEEET_PRICES[plan.name];
+        if (!expectedMeeet) return json({ error: `No MEEET price for plan ${plan.name}` }, 400);
+
+        const result = await verifyMeeetTransaction(tx_signature, expectedMeeet, TREASURY_SOL);
+
+        if (!result.verified) {
+          return json({ error: result.error, verified: false }, 400);
+        }
+
+        console.log(`MEEET payment verified: ${result.actualAmount} MEEET for ${plan.name} (tx: ${tx_signature})`);
       }
-
-      console.log(`SOL payment verified: ${expectedSol} SOL for ${plan.name} (tx: ${tx_signature})`);
-    } else {
-      const expectedMeeet = MEEET_PRICES[plan.name];
-      if (!expectedMeeet) return json({ error: `No MEEET price for plan ${plan.name}` }, 400);
-
-      const result = await verifyMeeetTransaction(tx_signature, expectedMeeet, TREASURY_SOL);
-
-      if (!result.verified) {
-        return json({ error: result.error, verified: false }, 400);
-      }
-
-      console.log(`MEEET payment verified: ${result.actualAmount} MEEET for ${plan.name} (tx: ${tx_signature})`);
     }
 
     // ── CREATE SUBSCRIPTION ─────────────────────────────────
