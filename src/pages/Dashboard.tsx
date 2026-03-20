@@ -939,6 +939,98 @@ const Dashboard = () => {
               {/* API Key Manager */}
               <ApiKeyManager />
 
+              {/* Impact Score + Oracle Predictions */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {impactScore && (
+                  <Card className="glass-card border-border overflow-hidden relative">
+                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-secondary via-primary to-secondary" />
+                    <CardHeader className="pb-2">
+                      <CardTitle className="font-display text-sm flex items-center gap-2">
+                        <Zap className="w-4 h-4 text-secondary" />
+                        My Impact Score
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="text-center py-2">
+                        <p className="text-4xl font-display font-bold text-primary">{impactScore.total.toLocaleString()}</p>
+                        <p className="text-xs text-muted-foreground font-body mt-1">Cumulative Impact Points</p>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-center">
+                        <div className="glass-card rounded-lg py-2">
+                          <p className="text-sm font-display font-bold text-secondary">{Math.round(impactScore.impactPoints)}</p>
+                          <p className="text-[9px] text-muted-foreground">Impact Pts</p>
+                        </div>
+                        <div className="glass-card rounded-lg py-2">
+                          <p className="text-sm font-display font-bold text-primary">{impactScore.discoveries}</p>
+                          <p className="text-[9px] text-muted-foreground">Discoveries</p>
+                        </div>
+                        <div className="glass-card rounded-lg py-2">
+                          <p className="text-sm font-display font-bold text-emerald-400">{impactScore.quests}</p>
+                          <p className="text-[9px] text-muted-foreground">Quests</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+                <Card className="glass-card border-border overflow-hidden relative">
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500" />
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="font-display text-sm flex items-center gap-2">
+                        <Star className="w-4 h-4 text-blue-400" />
+                        My Oracle Predictions
+                      </CardTitle>
+                      <Link to="/oracle" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">
+                        View all <ChevronRight className="w-3 h-3" />
+                      </Link>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {oracleBets.length === 0 ? (
+                      <div className="text-center py-6">
+                        <Star className="w-8 h-8 text-muted-foreground mx-auto mb-2 opacity-40" />
+                        <p className="text-sm text-muted-foreground font-body mb-2">No predictions yet</p>
+                        <Link to="/oracle">
+                          <Button variant="outline" size="sm" className="text-xs gap-1.5">
+                            <Star className="w-3.5 h-3.5" /> Make a Prediction
+                          </Button>
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="space-y-2 max-h-64 overflow-y-auto">
+                        {oracleBets.map((bet: any) => {
+                          const q = bet.oracle_questions;
+                          const resolved = q?.status === "resolved";
+                          const won = bet.is_winner === true;
+                          const lost = bet.is_winner === false;
+                          return (
+                            <div key={bet.id} className="glass-card rounded-lg px-3 py-2.5 flex items-start gap-3">
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm ${won ? "bg-emerald-500/15 text-emerald-400" : lost ? "bg-red-500/15 text-red-400" : "bg-blue-500/15 text-blue-400"}`}>
+                                {won ? "✅" : lost ? "❌" : "🔮"}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-display font-semibold truncate">{q?.question_text || "Prediction"}</p>
+                                <div className="flex items-center gap-2 mt-0.5">
+                                  <Badge variant="outline" className={`text-[9px] ${bet.prediction ? "text-emerald-400 border-emerald-500/20" : "text-red-400 border-red-500/20"}`}>
+                                    {bet.prediction ? "YES" : "NO"}
+                                  </Badge>
+                                  <span className="text-[10px] text-muted-foreground font-body">{Number(bet.amount_meeet || 0).toLocaleString()} $MEEET</span>
+                                  {resolved && (
+                                    <Badge variant="outline" className={`text-[9px] ${won ? "text-emerald-400 border-emerald-500/20" : "text-red-400 border-red-500/20"}`}>
+                                      {won ? `Won +${Number(bet.payout_meeet || 0).toLocaleString()}` : "Lost"}
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
               {/* Row 2: Tabs (Quests/Transactions/Activity) + Leaderboard */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 <div className="lg:col-span-2">
