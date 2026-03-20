@@ -1389,7 +1389,7 @@ const LiveMap = () => {
       )}
 
       {/* ═══ THREAT LEVEL — Top Right ═══ */}
-      <div className="absolute top-10 right-[17.5rem] z-10">
+      <div className="absolute top-10 right-2 md:right-[17.5rem] z-10 hidden sm:block">
         {(() => {
           const combatCount = agentsRef.current.filter(a => a.state === "combat").length;
           const threat = combatCount >= 6 ? "CRITICAL" : combatCount >= 3 ? "HIGH" : combatCount >= 1 ? "ELEVATED" : "LOW";
