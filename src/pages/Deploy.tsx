@@ -83,7 +83,7 @@ const FAQ = [
   },
   {
     q: "What payment methods are accepted?",
-    a: "We accept SOL, $MEEET tokens (20% discount!), and Stripe credit card payments.",
+    a: "We accept SOL and $MEEET tokens (20% discount!). All payments are verified on-chain via Solana RPC before activating your subscription.",
   },
 ];
 
