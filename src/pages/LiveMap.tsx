@@ -886,6 +886,20 @@ const LiveMap = () => {
         } else if (p.type === "mine") {
           ctx.fillStyle = p.color + Math.floor(alpha * 150).toString(16).padStart(2, "0");
           ctx.beginPath(); ctx.arc(sx, sy, p.size * z, 0, Math.PI * 2); ctx.fill();
+        } else if (p.type === "activity") {
+          // Pulsing/twinkling activity dots
+          const twinkle = 0.3 + Math.sin(t * 0.006 + p.x * 0.02 + p.y * 0.01) * 0.3;
+          const dotAlpha = alpha * twinkle;
+          // Soft glow behind dot
+          const glowR = p.size * z * 4;
+          const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, glowR);
+          grad.addColorStop(0, p.color.replace("rgb(", "rgba(").replace(")", `,${dotAlpha * 0.4})`));
+          grad.addColorStop(1, p.color.replace("rgb(", "rgba(").replace(")", ",0)"));
+          ctx.fillStyle = grad;
+          ctx.beginPath(); ctx.arc(sx, sy, glowR, 0, Math.PI * 2); ctx.fill();
+          // Core bright dot
+          ctx.fillStyle = p.color.replace("rgb(", "rgba(").replace(")", `,${dotAlpha * 0.9})`);
+          ctx.beginPath(); ctx.arc(sx, sy, p.size * z * 0.6, 0, Math.PI * 2); ctx.fill();
         } else {
           ctx.fillStyle = p.color + Math.floor(alpha * 200).toString(16).padStart(2, "0");
           ctx.beginPath(); ctx.arc(sx, sy, p.size * z, 0, Math.PI * 2); ctx.fill();
