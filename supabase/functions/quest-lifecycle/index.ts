@@ -358,6 +358,6 @@ Deno.serve(async (req) => {
     }
   } catch (e) {
     console.error("Quest lifecycle error:", e);
-    return json({ error: e.message || "Internal server error" }, 500);
+    return json({ error: (e as Error).message || "Internal server error" }, 500);
   }
 });

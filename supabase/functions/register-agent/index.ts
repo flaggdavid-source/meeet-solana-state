@@ -118,15 +118,15 @@ async function registerSingle(
   // Resolve geospatial data
   let geoFields: Record<string, unknown> = {};
   if (body.country_code) {
-    const { data: country } = await serviceClient
+    const { data: country } = await (serviceClient as any)
       .from("countries")
       .select("code, capital_lat, capital_lng")
       .eq("code", body.country_code)
       .maybeSingle();
     if (country) {
-      const lat = typeof body.lat === "number" ? body.lat : country.capital_lat + (Math.random() - 0.5) * 4;
-      const lng = typeof body.lng === "number" ? body.lng : country.capital_lng + (Math.random() - 0.5) * 4;
-      geoFields = { country_code: country.code, lat, lng };
+      const lat = typeof body.lat === "number" ? body.lat : (country as any).capital_lat + (Math.random() - 0.5) * 4;
+      const lng = typeof body.lng === "number" ? body.lng : (country as any).capital_lng + (Math.random() - 0.5) * 4;
+      geoFields = { country_code: (country as any).code, lat, lng };
     }
   }
 
