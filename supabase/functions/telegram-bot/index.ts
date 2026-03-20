@@ -94,7 +94,7 @@ Deno.serve(async (req: Request) => {
             referred_tg_id: String(userId),
             referred_username: username,
             status: "registered",
-          }, { onConflict: "referred_tg_id" } as any).then(() => {}).catch(() => {});
+          });
         }
 
         // Get free agent slots — goal: 1M agents
