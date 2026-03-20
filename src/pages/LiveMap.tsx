@@ -1410,126 +1410,146 @@ const LiveMap = () => {
   );
 };
 
-// ─── Glowing Orb Renderer ───────────────────────────────────────
+// ─── Cyber Command Center Agent Badge Renderer ─────────────────
 function drawOrb(ctx: CanvasRenderingContext2D, a: Agent, cam: { x: number; y: number }, z: number, t: number, nf: number) {
   const sx = (a.x - cam.x) * z, sy = (a.y - cam.y) * z;
-  if (sx < -50 || sx > ctx.canvas.width + 50 || sy < -50 || sy > ctx.canvas.height + 50) return;
+  if (sx < -80 || sx > ctx.canvas.width + 80 || sy < -80 || sy > ctx.canvas.height + 80) return;
 
   const cfg = CLASS_CONFIG[a.cls] || CLASS_CONFIG.warrior;
   const pulse = 0.7 + Math.sin(t * 0.004 + a.phase) * 0.3;
-  const orbR = Math.max(2, 4 * z);
 
-  // Outer glow — ambient aura
-  const glowR = orbR * 7;
-  const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, glowR);
-  glow.addColorStop(0, `rgba(${cfg.glow},${0.18 * pulse})`);
-  glow.addColorStop(0.2, `rgba(${cfg.glow},${0.08 * pulse})`);
-  glow.addColorStop(0.5, `rgba(${cfg.glow},${0.02 * pulse})`);
-  glow.addColorStop(1, "transparent");
-  ctx.fillStyle = glow;
-  ctx.beginPath(); ctx.arc(sx, sy, glowR, 0, Math.PI * 2); ctx.fill();
+  // Level-scaled badge radius (higher level = bigger presence)
+  const baseR = Math.max(6, (8 + a.level * 1.2) * z);
+  const isPresident = a.cls === "president";
+  const badgeR = isPresident ? baseR * 1.4 : baseR;
 
-  // Shadow beneath agent
-  ctx.fillStyle = `rgba(0,0,0,${0.3 * pulse})`;
-  ctx.beginPath();
-  ctx.ellipse(sx, sy + orbR * 1.5, orbR * 1.2, orbR * 0.4, 0, 0, Math.PI * 2);
-  ctx.fill();
+  // ── OUTER BLOOM GLOW (class-colored, level-scaled) ──
+  const bloomR = badgeR * (3 + a.level * 0.4);
+  const bloom = ctx.createRadialGradient(sx, sy, 0, sx, sy, bloomR);
+  bloom.addColorStop(0, `rgba(${cfg.glow},${(isPresident ? 0.25 : 0.15) * pulse})`);
+  bloom.addColorStop(0.25, `rgba(${cfg.glow},${0.08 * pulse})`);
+  bloom.addColorStop(0.5, `rgba(${cfg.glow},${0.03 * pulse})`);
+  bloom.addColorStop(1, "transparent");
+  ctx.fillStyle = bloom;
+  ctx.beginPath(); ctx.arc(sx, sy, bloomR, 0, Math.PI * 2); ctx.fill();
+
+  // ── SECONDARY HAZE (warm atmospheric layer) ──
+  if (a.level >= 3) {
+    const hazeR = bloomR * 1.3;
+    const haze = ctx.createRadialGradient(sx, sy, bloomR * 0.5, sx, sy, hazeR);
+    haze.addColorStop(0, `rgba(${cfg.glow},${0.02 * pulse})`);
+    haze.addColorStop(1, "transparent");
+    ctx.fillStyle = haze;
+    ctx.beginPath(); ctx.arc(sx, sy, hazeR, 0, Math.PI * 2); ctx.fill();
+  }
 
   // Idle breathing float
   const floatY = sy - Math.sin(t * 0.003 + a.phase) * 2 * z;
 
-  // Core orb
-  const coreGrad = ctx.createRadialGradient(sx, floatY - orbR * 0.3, orbR * 0.2, sx, floatY, orbR);
-  coreGrad.addColorStop(0, `rgba(255,255,255,${0.85 * pulse})`);
-  coreGrad.addColorStop(0.3, a.color);
-  coreGrad.addColorStop(0.8, a.color + "80");
-  coreGrad.addColorStop(1, a.color + "30");
-  ctx.fillStyle = coreGrad;
-  ctx.beginPath(); ctx.arc(sx, floatY, orbR, 0, Math.PI * 2); ctx.fill();
+  // ── SHADOW ──
+  ctx.fillStyle = `rgba(0,0,0,${0.3 * pulse})`;
+  ctx.beginPath();
+  ctx.ellipse(sx, floatY + badgeR * 1.3, badgeR * 0.9, badgeR * 0.25, 0, 0, Math.PI * 2);
+  ctx.fill();
 
-  // Inner bright dot
-  ctx.fillStyle = `rgba(255,255,255,${0.5 * pulse})`;
-  ctx.beginPath(); ctx.arc(sx - orbR * 0.15, floatY - orbR * 0.2, orbR * 0.25, 0, Math.PI * 2); ctx.fill();
+  // ── CIRCULAR BADGE — dark bg with class border ──
+  // Outer ring glow
+  ctx.beginPath(); ctx.arc(sx, floatY, badgeR + 2 * z, 0, Math.PI * 2);
+  ctx.strokeStyle = `rgba(${cfg.glow},${0.4 * pulse})`;
+  ctx.lineWidth = 2 * z;
+  ctx.shadowColor = `rgba(${cfg.glow},0.6)`;
+  ctx.shadowBlur = 12 * z;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
 
-  // Class-specific decorations at higher zoom
-  if (z > 0.6) {
-    if (a.cls === "warrior") {
-      // Sword icon — two crossing lines
-      const sw = orbR * 1.8;
-      ctx.strokeStyle = `rgba(${cfg.glow},${0.4 * pulse})`;
-      ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(sx - sw, floatY - sw); ctx.lineTo(sx + sw, floatY + sw); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(sx + sw, floatY - sw); ctx.lineTo(sx - sw, floatY + sw); ctx.stroke();
-    } else if (a.cls === "oracle") {
-      // Orbiting particles
-      for (let oi = 0; oi < 3; oi++) {
-        const oa = t * 0.005 + oi * (Math.PI * 2 / 3);
-        const or2 = orbR * 2.5;
-        const ox = sx + Math.cos(oa) * or2;
-        const oy = floatY + Math.sin(oa) * or2 * 0.6;
-        ctx.fillStyle = `rgba(255,204,0,${0.5 * pulse})`;
-        ctx.beginPath(); ctx.arc(ox, oy, 1.2 * z, 0, Math.PI * 2); ctx.fill();
-      }
-    } else if (a.cls === "trader") {
-      // $ symbol particles floating up
-      const dp = (t * 0.002 + a.phase) % 1;
-      ctx.fillStyle = `rgba(0,255,136,${(1 - dp) * 0.4})`;
-      ctx.font = `${Math.max(5, 7 * z)}px monospace`;
-      ctx.textAlign = "center";
-      ctx.fillText("$", sx + orbR * 2, floatY - dp * orbR * 6);
-    } else if (a.cls === "miner") {
-      // Sparkles around
-      for (let mi = 0; mi < 2; mi++) {
-        const ma = t * 0.008 + mi * Math.PI + a.phase;
-        const mr = orbR * (2 + Math.sin(t * 0.004 + mi) * 0.5);
-        ctx.fillStyle = `rgba(0,170,255,${0.4 + Math.sin(t * 0.01 + mi) * 0.2})`;
-        ctx.fillRect(Math.floor(sx + Math.cos(ma) * mr), Math.floor(floatY + Math.sin(ma) * mr * 0.7), z * 1.5, z * 1.5);
-      }
-    }
+  // Badge background
+  ctx.beginPath(); ctx.arc(sx, floatY, badgeR, 0, Math.PI * 2);
+  const badgeBg = ctx.createRadialGradient(sx, floatY - badgeR * 0.3, 0, sx, floatY, badgeR);
+  badgeBg.addColorStop(0, `rgba(20,25,40,${0.9 * pulse})`);
+  badgeBg.addColorStop(0.7, `rgba(8,12,20,0.95)`);
+  badgeBg.addColorStop(1, `rgba(${cfg.glow},0.15)`);
+  ctx.fillStyle = badgeBg;
+  ctx.fill();
+  ctx.strokeStyle = `rgba(${cfg.glow},${0.7 * pulse})`;
+  ctx.lineWidth = 1.5 * z;
+  ctx.stroke();
+
+  // ── CLASS ICON (emoji) inside badge ──
+  const iconSize = Math.max(8, badgeR * 1.1);
+  ctx.font = `${iconSize}px sans-serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(cfg.icon, sx, floatY + 1);
+  ctx.textBaseline = "alphabetic";
+
+  // ── SPINNING OUTER RING for high-level agents (5+) ──
+  if (a.level >= 5) {
+    const ringR = badgeR + 5 * z;
+    const rotAngle = t * 0.001 + a.phase;
+    ctx.save();
+    ctx.translate(sx, floatY);
+    ctx.rotate(rotAngle);
+    ctx.strokeStyle = `rgba(${cfg.glow},${0.3 * pulse})`;
+    ctx.lineWidth = 1 * z;
+    ctx.setLineDash([4 * z, 6 * z]);
+    ctx.beginPath(); ctx.arc(0, 0, ringR, 0, Math.PI * 2); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
   }
 
-  // Pulse ring on combat/trading/meeting
+  // ── PULSE RING on interaction ──
   if (a.state === "combat" || a.state === "trading" || a.state === "meeting") {
-    const ringR = orbR * (2 + Math.sin(t * 0.008) * 0.5);
+    const ringR = badgeR * (1.5 + Math.sin(t * 0.008) * 0.3);
     const ringColor = a.state === "combat" ? "255,50,50" : a.state === "trading" ? "0,255,136" : "255,215,0";
-    ctx.strokeStyle = `rgba(${ringColor},${0.35 + Math.sin(t * 0.01) * 0.15})`;
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = `rgba(${ringColor},${0.45 + Math.sin(t * 0.01) * 0.15})`;
+    ctx.lineWidth = 2 * z;
+    ctx.shadowColor = `rgba(${ringColor},0.5)`;
+    ctx.shadowBlur = 8;
     ctx.beginPath(); ctx.arc(sx, floatY, ringR, 0, Math.PI * 2); ctx.stroke();
-    // Second pulse ring
-    const ringR2 = orbR * (3 + Math.sin(t * 0.006 + 1) * 0.5);
-    ctx.strokeStyle = `rgba(${ringColor},${0.12})`;
-    ctx.lineWidth = 0.5;
+    ctx.shadowBlur = 0;
+    // Second expanding ring
+    const ringR2 = badgeR * (2 + Math.sin(t * 0.006 + 1) * 0.4);
+    ctx.strokeStyle = `rgba(${ringColor},0.12)`;
+    ctx.lineWidth = 1;
     ctx.beginPath(); ctx.arc(sx, floatY, ringR2, 0, Math.PI * 2); ctx.stroke();
   }
 
-  // HP bar when zoomed in
-  if (z > 0.6) {
-    const barW = 16 * z;
-    const barH = 2 * z;
+  // ── HP BAR ──
+  if (z > 0.5) {
+    const barW = 20 * z;
+    const barH = 2.5 * z;
     const barX = sx - barW / 2;
-    const barY = floatY + orbR + 4;
+    const barY = floatY + badgeR + 4 * z;
     const hpFrac = Math.min(1, a.hp / a.maxHp);
-    ctx.fillStyle = "rgba(0,0,0,0.5)";
+    ctx.fillStyle = "rgba(0,0,0,0.6)";
     ctx.fillRect(barX - 0.5, barY - 0.5, barW + 1, barH + 1);
-    ctx.fillStyle = hpFrac > 0.5 ? "#44ff88" : hpFrac > 0.2 ? "#ffbb33" : "#ff4444";
+    const hpColor = hpFrac > 0.5 ? "#44ff88" : hpFrac > 0.2 ? "#ffbb33" : "#ff4444";
+    ctx.fillStyle = hpColor;
     ctx.fillRect(barX, barY, barW * hpFrac, barH);
+    // HP bar glow
+    ctx.shadowColor = hpColor;
+    ctx.shadowBlur = 4;
+    ctx.fillRect(barX, barY, barW * hpFrac, barH);
+    ctx.shadowBlur = 0;
   }
 
-  // Name label — only when zoomed in
-  if (z > 0.45) {
-    const fs = Math.max(7, 9 * z);
-    ctx.font = `600 ${fs}px 'Space Grotesk', monospace`;
+  // ── NAME LABEL (white sans-serif) ──
+  if (z > 0.4) {
+    const fs = Math.max(8, 10 * z);
+    const labelY = floatY + badgeR + (z > 0.5 ? 10 : 6) * z + fs;
+    ctx.font = `600 ${fs}px 'Inter', 'Segoe UI', sans-serif`;
     ctx.textAlign = "center";
-    // Text shadow
-    ctx.fillStyle = `rgba(0,0,0,0.6)`;
-    ctx.fillText(a.name, sx + 0.5, floatY + orbR + (z > 0.6 ? 12 : 8) + fs + 0.5);
-    ctx.fillStyle = `rgba(${cfg.glow},${0.6 + nf * 0.2})`;
-    ctx.fillText(a.name, sx, floatY + orbR + (z > 0.6 ? 12 : 8) + fs);
-    // Level indicator
-    if (z > 0.7) {
-      ctx.font = `500 ${Math.max(5, 6 * z)}px monospace`;
-      ctx.fillStyle = `rgba(${cfg.glow},0.35)`;
-      ctx.fillText(`Lv.${a.level}`, sx, floatY + orbR + (z > 0.6 ? 12 : 8) + fs * 2 + 2);
+    // Text shadow for readability
+    ctx.fillStyle = "rgba(0,0,0,0.7)";
+    ctx.fillText(a.name, sx + 0.5, labelY + 0.5);
+    // White name
+    ctx.fillStyle = `rgba(255,255,255,${0.85 + nf * 0.1})`;
+    ctx.fillText(a.name, sx, labelY);
+    // Level badge
+    if (z > 0.6) {
+      ctx.font = `500 ${Math.max(6, 7 * z)}px 'Inter', sans-serif`;
+      ctx.fillStyle = `rgba(${cfg.glow},0.5)`;
+      ctx.fillText(`Lv.${a.level}`, sx, labelY + fs * 0.8 + 2);
     }
     ctx.textAlign = "left";
   }
