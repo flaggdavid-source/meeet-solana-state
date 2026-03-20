@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import SEOHead from "@/components/SEOHead";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -78,11 +78,45 @@ const Deploy = () => {
   const [agentStrategy, setAgentStrategy] = useState("passive");
   const [deploying, setDeploying] = useState(false);
   const [totalAgents, setTotalAgents] = useState<number>(0);
+  const [solBalance, setSolBalance] = useState<number | null>(null);
+  const [meeetBalance, setMeeetBalance] = useState<number | null>(null);
 
   const { address: walletAddress, connect: connectWallet, getProvider, availableWallets } = useSolanaWallet();
 
   const freeSlots = Math.max(0, FREE_AGENT_LIMIT - totalAgents);
   const promoActive = freeSlots > 0;
+
+  // Fetch wallet balances when connected
+  const fetchBalances = useCallback(async (addr: string) => {
+    try {
+      const { Connection, PublicKey } = await import("@solana/web3.js");
+      const { getAssociatedTokenAddress, getAccount } = await import("@solana/spl-token");
+      const connection = new Connection("https://api.mainnet-beta.solana.com", "confirmed");
+      const pubkey = new PublicKey(addr);
+      const MEEET_MINT = new PublicKey("EJgyptJK58M9AmJi1w8ivGBjeTm5JoTqFefoQ6JTpump");
+
+      const [lamports, ata] = await Promise.all([
+        connection.getBalance(pubkey),
+        getAssociatedTokenAddress(MEEET_MINT, pubkey),
+      ]);
+      setSolBalance(lamports / 1_000_000_000);
+
+      try {
+        const tokenAccount = await getAccount(connection, ata);
+        setMeeetBalance(Number(tokenAccount.amount));
+      } catch {
+        setMeeetBalance(0);
+      }
+    } catch {
+      setSolBalance(null);
+      setMeeetBalance(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (walletAddress) fetchBalances(walletAddress);
+    else { setSolBalance(null); setMeeetBalance(null); }
+  }, [walletAddress, fetchBalances]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -421,8 +455,13 @@ const Deploy = () => {
                     </div>
 
                     {walletAddress && (
-                      <div className="bg-muted/30 rounded-lg p-2 text-center">
-                        <p className="text-xs text-muted-foreground">Connected: <code className="text-foreground">{walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}</code></p>
+                      <div className="bg-muted/30 rounded-lg p-3 space-y-1">
+                        <p className="text-xs text-muted-foreground text-center">Connected: <code className="text-foreground">{walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}</code></p>
+                        <div className="flex items-center justify-center gap-4 text-sm">
+                          <span className="font-medium">◎ {solBalance !== null ? solBalance.toFixed(4) : "..."} SOL</span>
+                          <span className="text-muted-foreground">|</span>
+                          <span className="font-medium text-emerald-400">🪙 {meeetBalance !== null ? meeetBalance.toLocaleString() : "..."} MEEET</span>
+                        </div>
                       </div>
                     )}
 
