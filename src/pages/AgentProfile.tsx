@@ -185,6 +185,9 @@ const AgentProfile = () => {
                 </CardContent>
               </Card>
 
+              {/* Skill Tree */}
+              {showSkillTree && <AgentSkillTree agent={agent} />}
+
               {/* Oracle Stats */}
               <Card className="bg-card/60 border-purple-500/20">
                 <CardHeader className="pb-2">
