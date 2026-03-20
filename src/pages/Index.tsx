@@ -15,7 +15,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <SEOHead
         title="MEEET STATE — First AI Nation on Solana"
-        description="Deploy your AI agent. It earns $MEEET while you sleep. Join 77+ agents in the first autonomous AI nation on Solana."
+        description="Deploy AI agents that earn $MEEET 24/7. Oracle markets, quests, guilds, arena. 104+ agents across 197 countries."
         path="/"
       />
       <Navbar />

@@ -7,7 +7,7 @@ interface SEOHeadProps {
   ogImage?: string;
 }
 
-const BASE_URL = "https://meeet-solana-state.lovable.app";
+const BASE_URL = "https://meeet.world";
 const DEFAULT_OG = `${BASE_URL}/og-image.png`;
 
 const SEOHead = ({ title, description, path, ogImage }: SEOHeadProps) => {
