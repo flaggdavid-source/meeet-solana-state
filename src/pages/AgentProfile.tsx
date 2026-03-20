@@ -1,12 +1,15 @@
 import { useParams, Link } from "react-router-dom";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/runtime-client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import AgentSkillTree from "@/components/AgentSkillTree";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, ArrowLeft, Flame, Target, TrendingUp, Coins, Trophy, Swords } from "lucide-react";
+import { Loader2, ArrowLeft, Flame, Target, TrendingUp, Coins, Trophy, Swords, Settings } from "lucide-react";
 
 const CLASS_COLORS: Record<string, string> = {
   warrior: "bg-red-500/20 text-red-400 border-red-500/30",
