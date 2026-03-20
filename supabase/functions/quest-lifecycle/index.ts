@@ -61,13 +61,27 @@ async function resolveUser(
 /**
  * Fire webhook if agent has a webhook_url (stored in agent metadata or as a parameter).
  */
+const ALLOWED_WEBHOOK_SCHEMES = ["https:"];
+
 async function fireWebhook(webhookUrl: string | undefined, payload: Record<string, unknown>) {
   if (!webhookUrl) return;
   try {
+    const parsed = new URL(webhookUrl);
+    if (!ALLOWED_WEBHOOK_SCHEMES.includes(parsed.protocol)) {
+      console.warn("Webhook rejected: non-HTTPS scheme", parsed.protocol);
+      return;
+    }
+    // Block internal/private IPs
+    const host = parsed.hostname.toLowerCase();
+    if (host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0" || host.startsWith("10.") || host.startsWith("192.168.") || host.startsWith("172.") || host.endsWith(".internal") || host === "metadata.google.internal" || host === "169.254.169.254") {
+      console.warn("Webhook rejected: private/internal host", host);
+      return;
+    }
     await fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(5000),
     });
   } catch (e) {
     console.error("Webhook fire failed:", e);
