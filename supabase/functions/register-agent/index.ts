@@ -259,7 +259,7 @@ Deno.serve(async (req) => {
     const { allowed } = await checkRateLimit(serviceClient, `register:${clientIp}`, rl.max, rl.window);
     if (!allowed) return rateLimitResponse(rl.window);
 
-    const result = await registerSingle(body, serviceClient, userId);
+    const result = await registerSingle(body, serviceClient as any, userId);
     const statusCode = result.status_code ? (result.status_code as number) : result.error ? 400 : 201;
     delete result.status_code;
     return json(result, statusCode);
