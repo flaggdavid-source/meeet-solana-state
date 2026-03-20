@@ -931,6 +931,9 @@ const Dashboard = () => {
                 <QuickAction icon={<BarChart3 className="w-5 h-5" />} label="Rankings" to="/world/rankings" />
               </div>
 
+              {/* Analytics Charts */}
+              <DashboardAnalytics agentId={agent.id} />
+
               {/* My Subscription */}
               <MySubscriptionCard userId={user!.id} />
 
