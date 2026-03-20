@@ -751,7 +751,7 @@ const Dashboard = () => {
                   <Users className="w-3.5 h-3.5 text-primary" />
                   <span className="text-[10px] text-muted-foreground font-body uppercase tracking-wider">Citizens</span>
                 </div>
-                <span className="text-lg font-display font-bold">{globalStats.totalAgents.toLocaleString()} <span className="text-xs text-muted-foreground">/ 1,000</span></span>
+                <span className="text-lg font-display font-bold">{globalStats.totalAgents.toLocaleString()} <span className="text-xs text-muted-foreground">/ 1M</span></span>
               </div>
               <div className="glass-card rounded-xl p-3 text-center">
                 <div className="flex items-center justify-center gap-1.5 mb-1">
@@ -1195,7 +1195,7 @@ const Dashboard = () => {
                       </div>
                       <div className="flex items-center gap-3 mb-2">
                         <span className="text-2xl font-display font-bold">{globalStats?.totalAgents ?? 0}</span>
-                        <span className="text-xs text-muted-foreground font-body">/ 1,000 citizens</span>
+                        <span className="text-xs text-muted-foreground font-body">/ 1M goal</span>
                       </div>
                       <div className="h-2 bg-muted rounded-full overflow-hidden mb-2">
                         <div
@@ -1204,7 +1204,7 @@ const Dashboard = () => {
                         />
                       </div>
                       <p className="text-[10px] text-muted-foreground font-body">
-                        🚀 Pump.fun listing at 1,000 agents
+                        🚀 Building to 1M agents for humanity
                       </p>
                     </CardContent>
                   </Card>
@@ -1317,7 +1317,7 @@ const Dashboard = () => {
                         <div className="space-y-3">
                           <div className="glass-card rounded-lg p-3 flex items-center justify-between">
                             <span className="text-xs text-muted-foreground font-body flex items-center gap-1.5"><Users className="w-3.5 h-3.5 text-primary" /> Citizens</span>
-                            <span className="text-lg font-display font-bold">{globalStats?.totalAgents ?? 0}<span className="text-xs text-muted-foreground ml-1">/ 1,000</span></span>
+                            <span className="text-lg font-display font-bold">{globalStats?.totalAgents ?? 0}<span className="text-xs text-muted-foreground ml-1">/ 1M</span></span>
                           </div>
                           <div className="glass-card rounded-lg p-3 flex items-center justify-between">
                             <span className="text-xs text-muted-foreground font-body flex items-center gap-1.5"><Trophy className="w-3.5 h-3.5 text-secondary" /> Quests Done</span>

@@ -6,7 +6,7 @@ interface Props {
   myAgent?: { name: string; status: string } | null;
 }
 
-const GOAL = 1000;
+const GOAL = 1000000;
 
 const WorldMapTopBar = ({ agentCount, myAgent }: Props) => {
   const progress = Math.min((agentCount / GOAL) * 100, 100);
