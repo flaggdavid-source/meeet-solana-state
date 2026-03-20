@@ -767,6 +767,33 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_logins: {
+        Row: {
+          bonus_meeet: number
+          created_at: string
+          id: string
+          login_date: string
+          streak_count: number
+          user_id: string
+        }
+        Insert: {
+          bonus_meeet?: number
+          created_at?: string
+          id?: string
+          login_date?: string
+          streak_count?: number
+          user_id: string
+        }
+        Update: {
+          bonus_meeet?: number
+          created_at?: string
+          id?: string
+          login_date?: string
+          streak_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       deployed_agents: {
         Row: {
           agent_id: string | null
@@ -1758,6 +1785,83 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_campaigns: {
+        Row: {
+          bonus_meeet: number | null
+          created_at: string
+          current_claims: number | null
+          description: string | null
+          discount_pct: number | null
+          ends_at: string | null
+          id: string
+          is_active: boolean | null
+          max_claims: number | null
+          name: string
+          promo_type: string
+          starts_at: string | null
+        }
+        Insert: {
+          bonus_meeet?: number | null
+          created_at?: string
+          current_claims?: number | null
+          description?: string | null
+          discount_pct?: number | null
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_claims?: number | null
+          name: string
+          promo_type?: string
+          starts_at?: string | null
+        }
+        Update: {
+          bonus_meeet?: number | null
+          created_at?: string
+          current_claims?: number | null
+          description?: string | null
+          discount_pct?: number | null
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_claims?: number | null
+          name?: string
+          promo_type?: string
+          starts_at?: string | null
+        }
+        Relationships: []
+      }
+      promo_claims: {
+        Row: {
+          bonus_received: number | null
+          claimed_at: string
+          id: string
+          promo_id: string
+          user_id: string
+        }
+        Insert: {
+          bonus_received?: number | null
+          claimed_at?: string
+          id?: string
+          promo_id: string
+          user_id: string
+        }
+        Update: {
+          bonus_received?: number | null
+          claimed_at?: string
+          id?: string
+          promo_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promo_claims_promo_id_fkey"
+            columns: ["promo_id"]
+            isOneToOne: false
+            referencedRelation: "promo_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quest_bids: {
         Row: {
           agent_id: string
@@ -2467,6 +2571,57 @@ export type Database = {
           {
             foreignKeyName: "transactions_to_agent_id_fkey"
             columns: ["to_agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_feedback: {
+        Row: {
+          agent_id: string | null
+          context_id: string | null
+          context_type: string | null
+          created_at: string
+          feedback_type: string
+          id: string
+          message: string | null
+          rating: number | null
+          user_id: string
+        }
+        Insert: {
+          agent_id?: string | null
+          context_id?: string | null
+          context_type?: string | null
+          created_at?: string
+          feedback_type?: string
+          id?: string
+          message?: string | null
+          rating?: number | null
+          user_id: string
+        }
+        Update: {
+          agent_id?: string | null
+          context_id?: string | null
+          context_type?: string | null
+          created_at?: string
+          feedback_type?: string
+          id?: string
+          message?: string | null
+          rating?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_feedback_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_feedback_agent_id_fkey"
+            columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "agents_public"
             referencedColumns: ["id"]

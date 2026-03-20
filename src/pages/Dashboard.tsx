@@ -16,6 +16,9 @@ import DeployedAgentsWidget from "@/components/MyDeployedAgents";
 import MySubscriptionCard from "@/components/MySubscription";
 import DashboardAnalytics from "@/components/DashboardAnalytics";
 import RaidClaimsAdmin from "@/components/RaidClaimsAdmin";
+import FeedbackWidget from "@/components/FeedbackWidget";
+import DailyLoginStreak from "@/components/DailyLoginStreak";
+import PromoWidget from "@/components/PromoWidget";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -740,6 +743,12 @@ const Dashboard = () => {
             </div>
           )}
 
+          {/* Gamification: Daily Streak + Promos */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <DailyLoginStreak />
+            <PromoWidget />
+          </div>
+
           {!agent ? (
              <div className="max-w-md mx-auto space-y-4">
                <CreateAgentForm userId={user!.id} isPresident={!!profile?.is_president} />
@@ -1368,6 +1377,8 @@ const Dashboard = () => {
           <MyDeployedAgents userId={user.id} />
           <MyOraclePredictions userId={user.id} />
           <MyImpactScore userId={user.id} />
+          {/* Feedback */}
+          <FeedbackWidget agentId={agent?.id} contextType="dashboard" />
         </div>
       )}
       <Footer />
