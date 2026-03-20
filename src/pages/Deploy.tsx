@@ -83,7 +83,7 @@ const FAQ = [
   },
   {
     q: "What payment methods are accepted?",
-    a: "We accept SOL, $MEEET tokens (20% discount!), and Stripe credit card payments.",
+    a: "We accept SOL and $MEEET tokens (20% discount!). All payments are verified on-chain via Solana RPC before activating your subscription.",
   },
 ];
 
@@ -233,10 +233,17 @@ const Deploy = () => {
                         {isEnterprise ? (
                           <span className="text-2xl font-bold">Custom</span>
                         ) : (
-                          <>
-                            <span className="text-3xl font-bold">${plan.price_usdc}</span>
-                            <span className="text-muted-foreground text-sm">/mo</span>
-                          </>
+                          <div className="space-y-1">
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-2xl font-bold">◎ {SOL_PRICES[plan.name]}</span>
+                              <span className="text-muted-foreground text-xs">SOL/mo</span>
+                            </div>
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-sm font-semibold text-emerald-400">🪙 {(MEEET_PRICES[plan.name] ?? 0).toLocaleString()}</span>
+                              <span className="text-muted-foreground text-[10px]">MEEET</span>
+                              <Badge variant="outline" className="text-[9px] border-emerald-500/30 text-emerald-400 ml-1">-20%</Badge>
+                            </div>
+                          </div>
                         )}
                       </div>
                     </CardHeader>
@@ -407,13 +414,15 @@ const Deploy = () => {
                       </div>
                     </div>
                     <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3">
-                      <p className="text-xs text-yellow-400 text-center font-medium">⚠️ Send the exact amount to activate your subscription</p>
+                      <p className="text-xs text-yellow-400 text-center font-medium">⚠️ Send the exact amount — your transaction will be verified on-chain before activation</p>
                     </div>
                     <div className="space-y-2">
-                      <Input placeholder="Paste transaction signature here..." value={txSignature} onChange={(e) => setTxSignature(e.target.value)} className="text-xs" />
+                      <Label htmlFor="tx-sig" className="text-xs text-muted-foreground">Transaction Signature</Label>
+                      <Input id="tx-sig" placeholder="Paste transaction signature here..." value={txSignature} onChange={(e) => setTxSignature(e.target.value)} className="text-xs font-mono" />
                       <Button className="w-full" disabled={!txSignature.trim() || activating} onClick={handleActivate}>
-                        {activating ? <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Activating...</> : "🚀 Activate Subscription"}
+                        {activating ? <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Verifying on-chain...</> : "✅ I've Paid — Verify & Activate"}
                       </Button>
+                      <p className="text-[10px] text-muted-foreground text-center">Payment is verified via Solana RPC before activation</p>
                     </div>
                     <a href={`https://solscan.io/account/${TREASURY_SOL}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1 text-xs text-primary hover:underline">
                       View on Solscan <ExternalLink className="w-3 h-3" />
