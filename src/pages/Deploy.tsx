@@ -233,10 +233,17 @@ const Deploy = () => {
                         {isEnterprise ? (
                           <span className="text-2xl font-bold">Custom</span>
                         ) : (
-                          <>
-                            <span className="text-3xl font-bold">${plan.price_usdc}</span>
-                            <span className="text-muted-foreground text-sm">/mo</span>
-                          </>
+                          <div className="space-y-1">
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-2xl font-bold">◎ {SOL_PRICES[plan.name]}</span>
+                              <span className="text-muted-foreground text-xs">SOL/mo</span>
+                            </div>
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-sm font-semibold text-emerald-400">🪙 {(MEEET_PRICES[plan.name] ?? 0).toLocaleString()}</span>
+                              <span className="text-muted-foreground text-[10px]">MEEET</span>
+                              <Badge variant="outline" className="text-[9px] border-emerald-500/30 text-emerald-400 ml-1">-20%</Badge>
+                            </div>
+                          </div>
                         )}
                       </div>
                     </CardHeader>
