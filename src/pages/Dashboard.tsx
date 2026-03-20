@@ -30,7 +30,7 @@ import {
   Star, Trophy, Map, Plus, Sparkles, ArrowUpRight, ArrowDownRight,
   Activity, Users, Flame, Target, Crown, Scroll, MapPin,
   Clock, ChevronRight, Swords, Gift, BarChart3, Globe,
-  Landmark, Banknote, PiggyBank, Receipt,
+  Landmark, Banknote, PiggyBank, Receipt, Rocket,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Tables } from "@/integrations/supabase/types";
