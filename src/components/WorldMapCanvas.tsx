@@ -1,15 +1,13 @@
 import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 
-interface AgentGeo {
-  lng: number; lat: number; color: string; rep: number; name: string; cls: string;
-}
-interface EventGeo {
-  lng: number; lat: number; color: string; type: string;
+interface HubGeo {
+  lng: number; lat: number; color: string; type: string; agentCount: number;
 }
 interface Props {
-  agentGeoData: AgentGeo[];
-  eventGeoData: EventGeo[];
+  agentGeoData: any[];
+  eventGeoData: any[];
+  hubGeoData?: HubGeo[];
   mapRef: React.MutableRefObject<maplibregl.Map | null>;
 }
 
@@ -20,46 +18,17 @@ function hexToRgb(hex: string) {
   return { r, g, b };
 }
 
-interface AuroraBlob {
-  x: number; y: number; vx: number; vy: number;
-  r: number; color: string; phase: number;
-}
-
-const WorldMapCanvas = ({ agentGeoData, mapRef }: Props) => {
+const WorldMapCanvas = ({ hubGeoData = [], mapRef }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frameRef = useRef(0);
-  const agentsRef = useRef(agentGeoData);
-  agentsRef.current = agentGeoData;
-
-  const ripples = useRef<Array<{ x: number; y: number; radius: number; maxR: number; color: string }>>([]);
-  const auroraBlobs = useRef<AuroraBlob[]>([]);
-  const lastRippleFrame = useRef(0);
+  const hubsRef = useRef(hubGeoData);
+  hubsRef.current = hubGeoData;
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
-
-    // Init aurora blobs — very subtle
-    if (auroraBlobs.current.length === 0) {
-      const colors = [
-        "rgba(139, 92, 246, 0.025)",
-        "rgba(78, 205, 196, 0.025)",
-        "rgba(99, 102, 241, 0.02)",
-        "rgba(20, 184, 166, 0.02)",
-      ];
-      for (let i = 0; i < 4; i++) {
-        auroraBlobs.current.push({
-          x: Math.random(), y: Math.random(),
-          vx: (Math.random() - 0.5) * 0.0002,
-          vy: (Math.random() - 0.5) * 0.0002,
-          r: 140 + Math.random() * 100,
-          color: colors[i],
-          phase: Math.random() * Math.PI * 2,
-        });
-      }
-    }
 
     let running = true;
 
@@ -86,58 +55,66 @@ const WorldMapCanvas = ({ agentGeoData, mapRef }: Props) => {
       }
 
       const frame = frameRef.current;
+      const hubs = hubsRef.current;
 
-      // Project agents for sonar ripples only
-      const agents = agentsRef.current.map(a => {
-        const pt = map.project([a.lng, a.lat]);
-        return { x: pt.x * dpr, y: pt.y * dpr, ...a };
-      }).filter(d => d.x >= -80 && d.x <= rw + 80 && d.y >= -80 && d.y <= rh + 80);
+      // Project hubs
+      const projected = hubs.map(h => {
+        const pt = map.project([h.lng, h.lat]);
+        return { x: pt.x * dpr, y: pt.y * dpr, ...h };
+      }).filter(d => d.x >= -100 && d.x <= rw + 100 && d.y >= -100 && d.y <= rh + 100);
 
-      // ═══ AURORA BLOBS (very subtle) ═══
-      for (const blob of auroraBlobs.current) {
-        blob.x += blob.vx;
-        blob.y += blob.vy;
-        if (blob.x < -0.1 || blob.x > 1.1) blob.vx *= -1;
-        if (blob.y < -0.1 || blob.y > 1.1) blob.vy *= -1;
+      // ═══ CONNECTION LINES between same-type hubs ═══
+      if (projected.length > 1) {
+        const typeGroups: Record<string, typeof projected> = {};
+        for (const h of projected) {
+          if (!typeGroups[h.type]) typeGroups[h.type] = [];
+          typeGroups[h.type].push(h);
+        }
 
-        const bx = blob.x * rw;
-        const by = blob.y * rh;
-        const br = blob.r * dpr;
+        for (const [, group] of Object.entries(typeGroups)) {
+          if (group.length < 2) continue;
+          for (let i = 0; i < group.length; i++) {
+            for (let j = i + 1; j < group.length; j++) {
+              const a = group[i], b = group[j];
+              const dx = a.x - b.x, dy = a.y - b.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < 10 || dist > rw * 0.8) continue;
 
-        ctx.save();
-        ctx.filter = `blur(${80 * dpr}px)`;
-        ctx.beginPath();
-        ctx.arc(bx, by, br, 0, Math.PI * 2);
-        ctx.fillStyle = blob.color;
-        ctx.fill();
-        ctx.restore();
+              const rgb = hexToRgb(a.color);
+
+              // Very thin semi-transparent line
+              ctx.strokeStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},0.06)`;
+              ctx.lineWidth = 0.5 * dpr;
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.stroke();
+
+              // Animated pulse dot traveling along the line
+              const speed = 0.003;
+              const t = ((frame * speed + i * 0.3 + j * 0.17) % 1);
+              const dotX = a.x + (b.x - a.x) * t;
+              const dotY = a.y + (b.y - a.y) * t;
+
+              const dotGrad = ctx.createRadialGradient(dotX, dotY, 0, dotX, dotY, 4 * dpr);
+              dotGrad.addColorStop(0, `rgba(${rgb.r},${rgb.g},${rgb.b},0.5)`);
+              dotGrad.addColorStop(1, `rgba(${rgb.r},${rgb.g},${rgb.b},0)`);
+              ctx.fillStyle = dotGrad;
+              ctx.fillRect(dotX - 4 * dpr, dotY - 4 * dpr, 8 * dpr, 8 * dpr);
+
+              ctx.beginPath();
+              ctx.arc(dotX, dotY, 1.5 * dpr, 0, Math.PI * 2);
+              ctx.fillStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},0.7)`;
+              ctx.fill();
+            }
+          }
+        }
       }
-
-      // ═══ SONAR RIPPLES (every ~15s, very gentle) ═══
-      if (agents.length > 0 && frame - lastRippleFrame.current > 900) {
-        const a = agents[Math.floor(Math.random() * agents.length)];
-        ripples.current.push({ x: a.x, y: a.y, radius: 0, maxR: 60 * dpr, color: a.color });
-        lastRippleFrame.current = frame;
-      }
-      ripples.current = ripples.current.filter(r => {
-        r.radius += 1 * dpr;
-        if (r.radius > r.maxR) return false;
-        const progress = r.radius / r.maxR;
-        const alpha = (1 - progress) * 0.2;
-        const rgb = hexToRgb(r.color);
-
-        ctx.strokeStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})`;
-        ctx.lineWidth = (1.5 - progress) * dpr;
-        ctx.beginPath();
-        ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
-        ctx.stroke();
-        return true;
-      });
 
       // ═══ VIGNETTE ═══
       const vGrad = ctx.createRadialGradient(rw / 2, rh / 2, rh * 0.4, rw / 2, rh / 2, rh * 0.9);
       vGrad.addColorStop(0, "transparent");
-      vGrad.addColorStop(1, "rgba(8,12,20,0.35)");
+      vGrad.addColorStop(1, "rgba(8,12,20,0.3)");
       ctx.fillStyle = vGrad;
       ctx.fillRect(0, 0, rw, rh);
 
