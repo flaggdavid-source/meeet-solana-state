@@ -1,6 +1,4 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { Connection, Keypair, PublicKey, SystemProgram, Transaction, sendAndConfirmTransaction, LAMPORTS_PER_SOL } from "npm:@solana/web3.js@1.95.8";
-import { decode as decodeBase58 } from "https://esm.sh/bs58@5.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -15,7 +13,74 @@ function json(body: Record<string, unknown>, status = 200) {
   });
 }
 
-const RPC_URL = "https://api.mainnet-beta.solana.com";
+const RPC_URL = Deno.env.get("SOLANA_RPC_URL") ?? "https://api.mainnet-beta.solana.com";
+const LAMPORTS_PER_SOL = 1_000_000_000;
+
+// Lightweight base58 decoder — no external dependency
+const BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+function base58Decode(str: string): Uint8Array {
+  const bytes: number[] = [0];
+  for (const c of str) {
+    const idx = BASE58_ALPHABET.indexOf(c);
+    if (idx < 0) throw new Error("Invalid base58 character");
+    let carry = idx;
+    for (let j = 0; j < bytes.length; j++) {
+      carry += bytes[j] * 58;
+      bytes[j] = carry & 0xff;
+      carry >>= 8;
+    }
+    while (carry > 0) {
+      bytes.push(carry & 0xff);
+      carry >>= 8;
+    }
+  }
+  for (const c of str) {
+    if (c !== "1") break;
+    bytes.push(0);
+  }
+  return new Uint8Array(bytes.reverse());
+}
+
+async function solanaRpc(method: string, params: unknown[]) {
+  const res = await fetch(RPC_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(`RPC: ${data.error.message}`);
+  return data.result;
+}
+
+async function sendSolTransfer(
+  fromSecretKey: Uint8Array,
+  toAddress: string,
+  lamports: number,
+): Promise<string> {
+  // Use @solana/web3.js dynamically only when actually sending
+  const { Connection, Keypair, PublicKey, SystemProgram, Transaction, sendAndConfirmTransaction } =
+    await import("npm:@solana/web3.js@1.95.8");
+
+  const keypair = Keypair.fromSecretKey(fromSecretKey);
+  const connection = new Connection(RPC_URL, "confirmed");
+
+  const balance = await connection.getBalance(keypair.publicKey);
+  if (balance < lamports + 5000) {
+    throw new Error(
+      `Insufficient treasury balance: ${(balance / LAMPORTS_PER_SOL).toFixed(6)} SOL, need ${(lamports / LAMPORTS_PER_SOL).toFixed(6)} SOL`,
+    );
+  }
+
+  const tx = new Transaction().add(
+    SystemProgram.transfer({
+      fromPubkey: keypair.publicKey,
+      toPubkey: new PublicKey(toAddress),
+      lamports,
+    }),
+  );
+
+  return await sendAndConfirmTransaction(connection, tx, [keypair]);
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -23,14 +88,14 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Only allow internal calls (from other edge functions)
+    // Only allow internal calls
     const internalSecret = req.headers.get("x-internal-service");
     const expectedSecret = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.slice(-16);
     if (!internalSecret || internalSecret !== expectedSecret) {
       return json({ error: "Internal only" }, 403);
     }
 
-    const { recipient_wallet, amount_sol, quest_id, description } = await req.json();
+    const { recipient_wallet, amount_sol, quest_id } = await req.json();
 
     if (!recipient_wallet || !amount_sol) {
       return json({ error: "recipient_wallet and amount_sol required" }, 400);
@@ -41,57 +106,16 @@ Deno.serve(async (req) => {
       return json({ error: "Invalid SOL amount (0 < amount <= 100)" }, 400);
     }
 
-    // Validate recipient address
-    let recipientPubkey: PublicKey;
-    try {
-      recipientPubkey = new PublicKey(recipient_wallet);
-    } catch {
-      return json({ error: "Invalid recipient wallet address" }, 400);
-    }
-
     // Load treasury keypair
     const privateKeyBase58 = Deno.env.get("TREASURY_WALLET_PRIVATE_KEY");
     if (!privateKeyBase58) {
       return json({ error: "Treasury wallet not configured" }, 500);
     }
 
-    let treasuryKeypair: Keypair;
-    try {
-      const secretKey = decodeBase58(privateKeyBase58);
-      treasuryKeypair = Keypair.fromSecretKey(secretKey);
-    } catch {
-      return json({ error: "Invalid treasury wallet key" }, 500);
-    }
-
-    const treasuryAddress = treasuryKeypair.publicKey.toBase58();
-
-    // Connect to Solana
-    const connection = new Connection(RPC_URL, "confirmed");
-
-    // Check treasury balance
-    const balance = await connection.getBalance(treasuryKeypair.publicKey);
+    const secretKey = base58Decode(privateKeyBase58);
     const lamportsToSend = Math.round(solAmount * LAMPORTS_PER_SOL);
-    const estimatedFee = 5000; // ~0.000005 SOL
 
-    if (balance < lamportsToSend + estimatedFee) {
-      const balanceSol = (balance / LAMPORTS_PER_SOL).toFixed(6);
-      return json({
-        error: `Insufficient treasury balance: ${balanceSol} SOL available, ${solAmount} SOL needed`,
-        treasury_balance: balanceSol,
-        treasury_address: treasuryAddress,
-      }, 400);
-    }
-
-    // Build and send transaction
-    const transaction = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: treasuryKeypair.publicKey,
-        toPubkey: recipientPubkey,
-        lamports: lamportsToSend,
-      })
-    );
-
-    const signature = await sendAndConfirmTransaction(connection, transaction, [treasuryKeypair]);
+    const signature = await sendSolTransfer(secretKey, recipient_wallet, lamportsToSend);
 
     console.log(`SOL Transfer: ${solAmount} SOL to ${recipient_wallet} | tx: ${signature} | quest: ${quest_id || "n/a"}`);
 
@@ -100,7 +124,6 @@ Deno.serve(async (req) => {
       signature,
       amount_sol: solAmount,
       recipient: recipient_wallet,
-      treasury_address: treasuryAddress,
       explorer_url: `https://solscan.io/tx/${signature}`,
     });
   } catch (e) {

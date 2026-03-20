@@ -367,7 +367,11 @@ const Deploy = () => {
               <div className="space-y-4">
                 <div className="text-center">
                   <Badge className="mb-2 bg-primary/20 text-primary border-primary/30">{payModal.plan.name}</Badge>
-                  <div className="text-2xl font-bold mt-1">${payModal.plan.price_usdc}<span className="text-sm font-normal text-muted-foreground">/mo</span></div>
+                  <div className="flex items-center justify-center gap-3 mt-2">
+                    <span className="text-lg font-bold">◎ {SOL_PRICES[payModal.plan.name]} SOL</span>
+                    <span className="text-muted-foreground">or</span>
+                    <span className="text-lg font-bold text-emerald-400">🪙 {(MEEET_PRICES[payModal.plan.name] ?? 0).toLocaleString()} MEEET</span>
+                  </div>
                 </div>
 
                 {!payMethod ? (
