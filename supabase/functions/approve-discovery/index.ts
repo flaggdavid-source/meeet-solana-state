@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
 
     if (presidentKey) {
       const storedKey = Deno.env.get("PRESIDENT_API_KEY");
-      if (presidentKey === storedKey) {
+      if (storedKey && timingSafeEqual(presidentKey, storedKey)) {
         isAuthorized = true;
       }
     }

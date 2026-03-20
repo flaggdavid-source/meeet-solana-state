@@ -16,7 +16,8 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   const key = req.headers.get("x-president-key");
-  if (key !== "presidentnumberone") return json({ error: "Forbidden" }, 403);
+  const stored = Deno.env.get("PRESIDENT_API_KEY");
+  if (!key || !stored || !timingSafeEqual(key, stored)) return json({ error: "Forbidden" }, 403);
 
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
