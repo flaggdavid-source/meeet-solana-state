@@ -110,8 +110,7 @@ async function registerSingle(
   const { data: existing } = await serviceClient
     .from("agents")
     .select("id, name")
-    .eq("user_id", userId)
-    .maybeSingle();
+  const { data: existing } = await (serviceClient as any).from("agents").select("id, name").eq("user_id", userId).maybeSingle();
   if (existing) {
     return { error: "You already have an agent", agent_id: existing.id, agent_name: existing.name, status_code: 409 };
   }
