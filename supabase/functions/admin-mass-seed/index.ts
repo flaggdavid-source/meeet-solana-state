@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
       status: Math.random() > 0.3 ? "active" : Math.random() > 0.5 ? "idle" : "running",
       quests_completed: randInt(0, level * 3),
       kills: agentClass === "warrior" || agentClass === "assassin" ? randInt(0, level * 2) : randInt(0, 3),
-      country: randItem(["US", "EU", "ASIA", "LATAM", "AFRICA", "OCEANIA", "MENA"]),
+      country_code: randItem(["US", "GB", "DE", "JP", "KR", "BR", "IN", "AU", "CA", "FR", "TH", "SG", "AE", "NG", "ZA", "MX", "AR", "ID", "VN", "PH"]),
     });
   }
 
