@@ -29,7 +29,7 @@ async function resolveUser(
   req: Request,
   supabaseUrl: string,
   anonKey: string,
-  serviceClient: ReturnType<typeof createClient>,
+  serviceClient: any,
 ): Promise<{ userId: string | null; error: string | null }> {
   // 1. API key
   const apiKey = req.headers.get("X-API-Key") || req.headers.get("x-api-key");

@@ -131,7 +131,7 @@ async function registerSingle(
   }
 
   const stats = CLASS_STATS[body.class];
-  const { data: agent, error: insertError } = await serviceClient
+  const { data: agent, error: insertError } = await (serviceClient as any)
     .from("agents")
     .insert({
       name: body.name,
