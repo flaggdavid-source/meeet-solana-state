@@ -1377,6 +1377,8 @@ const Dashboard = () => {
           <MyDeployedAgents userId={user.id} />
           <MyOraclePredictions userId={user.id} />
           <MyImpactScore userId={user.id} />
+          {/* Feedback */}
+          <FeedbackWidget agentId={agent?.id} contextType="dashboard" />
         </div>
       )}
       <Footer />
