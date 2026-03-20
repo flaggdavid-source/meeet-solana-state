@@ -1,9 +1,11 @@
 import { useState, useCallback, useEffect } from "react";
 
 interface SolanaProvider {
-  publicKey: { toString(): string } | null;
-  connect(): Promise<{ publicKey: { toString(): string } }>;
+  publicKey: { toString(): string; toBytes(): Uint8Array } | null;
+  connect(): Promise<{ publicKey: { toString(): string; toBytes(): Uint8Array } }>;
   disconnect(): Promise<void>;
+  signAndSendTransaction?(transaction: any, options?: any): Promise<{ signature: string }>;
+  signTransaction?(transaction: any): Promise<any>;
   on(event: string, handler: (...args: any[]) => void): void;
   off(event: string, handler: (...args: any[]) => void): void;
   isPhantom?: boolean;
