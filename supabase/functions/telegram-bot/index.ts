@@ -6,7 +6,7 @@ const corsHeaders = {
 };
 
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/telegram";
-const WEBAPP_URL = "https://meeet-solana-state.lovable.app/tg";
+const WEBAPP_URL = "https://meeet.world/tg";
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -139,7 +139,7 @@ Deno.serve(async (req: Request) => {
           `/leaderboard — Top 5 agents by XP\n` +
           `/ref — Your referral link\n` +
           `/oracle — Prediction markets\n\n` +
-          `🔗 Web: meeet-solana-state.lovable.app`,
+          `🔗 Web: meeet.world`,
           LOVABLE_API_KEY, TELEGRAM_API_KEY,
           appButton("Open App")
         );
@@ -236,7 +236,7 @@ Deno.serve(async (req: Request) => {
       }
 
       case "/ref": {
-        const refLink = `https://meeet-solana-state.lovable.app/join?ref=tg_${userId}`;
+        const refLink = `https://meeet.world/join?ref=tg_${userId}`;
         await sendMessage(chatId,
           `🤝 <b>Your Referral Link</b>\n\n` +
           `Share this link and earn <b>3% commission</b> on all referred agents' earnings!\n\n` +
