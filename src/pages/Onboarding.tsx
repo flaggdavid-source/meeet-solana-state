@@ -10,6 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Loader2, Sparkles, ArrowRight, ArrowLeft, Globe, Search, Swords,
   TrendingUp, Eye, Handshake, Hammer, Terminal, CheckCircle2, Rocket,
+  Map, Compass, Shield, Coins, Users, Zap,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -77,7 +78,14 @@ interface Country {
   continent: string;
 }
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
+
+const WELCOME_FEATURES = [
+  { icon: Shield, label: "Deploy AI agents", desc: "that work 24/7 earning $MEEET" },
+  { icon: Coins, label: "Complete quests", desc: "and earn rewards in SOL & MEEET" },
+  { icon: Users, label: "Join guilds", desc: "and compete on a global leaderboard" },
+  { icon: Zap, label: "Oracle markets", desc: "predict events and win $MEEET" },
+];
 
 const Onboarding = () => {
   const { user, session, loading } = useAuth();
@@ -139,13 +147,13 @@ const Onboarding = () => {
       if (!resp.ok || data.error) {
         throw new Error(data.error || "Registration failed");
       }
-      // Mark profile as onboarded
       await supabase
         .from("profiles")
         .update({ is_onboarded: true, welcome_bonus_claimed: true })
         .eq("user_id", user.id);
 
       setResult(data);
+      setStep(4);
       toast({ title: "🎉 Agent Deployed!", description: data.message });
     } catch (e: any) {
       toast({ title: "Error", description: e.message, variant: "destructive" });
@@ -184,9 +192,9 @@ const Onboarding = () => {
               </p>
             </div>
 
-            <div className="glass-card rounded-xl p-4 space-y-2.5 text-sm">
+            <div className="glass-card rounded-xl p-5 space-y-3">
               <Row label="Name" value={agent?.name} />
-              <Row label="Class" value={selectedClassData?.name} />
+              {selectedClassData && <Row label="Class" value={selectedClassData.name} />}
               <Row label="Level" value={`${agent?.level}`} />
               <Row label="HP" value={`${agent?.hp}`} />
               <Row label="Attack" value={`${agent?.attack}`} />
@@ -197,9 +205,17 @@ const Onboarding = () => {
               )}
             </div>
 
-            <Button variant="hero" className="w-full gap-2" onClick={() => navigate("/dashboard")}>
-              <Rocket className="w-4 h-4" /> Enter Dashboard
-            </Button>
+            <div className="space-y-3">
+              <Button variant="hero" className="w-full gap-2" onClick={() => navigate("/deploy")}>
+                <Rocket className="w-4 h-4" /> Upgrade Agent Plan
+              </Button>
+              <Button variant="outline" className="w-full gap-2" onClick={() => navigate("/world")}>
+                <Map className="w-4 h-4" /> Explore the World
+              </Button>
+              <Button variant="ghost" className="w-full gap-2" onClick={() => navigate("/dashboard")}>
+                Go to Dashboard <ArrowRight className="w-4 h-4" />
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -214,56 +230,91 @@ const Onboarding = () => {
 
       <Card className="relative z-10 w-full max-w-md glass-card border-border">
         <CardContent className="p-6 space-y-6">
-          {/* Progress bar */}
-          <div className="flex gap-2">
+          {/* Progress dots */}
+          <div className="flex justify-center gap-2">
             {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
-              <div
+              <button
                 key={i}
-                className={`h-1 flex-1 rounded-full transition-all ${i <= step ? "bg-primary" : "bg-muted"}`}
+                onClick={() => {
+                  // Only allow going back to completed steps
+                  if (i < step) setStep(i);
+                }}
+                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                  i === step
+                    ? "bg-primary w-6"
+                    : i < step
+                    ? "bg-primary/50 cursor-pointer hover:bg-primary/70"
+                    : "bg-muted"
+                }`}
               />
             ))}
           </div>
 
-          {/* ── Step 0: Agent Name ── */}
+          <p className="text-center text-[10px] text-muted-foreground font-body">
+            Step {step + 1} of {TOTAL_STEPS}
+          </p>
+
+          {/* ── Step 0: Welcome ── */}
           {step === 0 && (
             <div className="space-y-6 animate-fade-in">
               <div className="text-center">
-                <Sparkles className="w-10 h-10 text-primary mx-auto mb-3" />
-                <h2 className="text-2xl font-display font-bold">Welcome to MEEET STATE</h2>
-                <p className="text-sm text-muted-foreground font-body mt-1">
-                  Choose a name for your AI agent
+                <Sparkles className="w-12 h-12 text-primary mx-auto mb-4" />
+                <h2 className="text-2xl font-display font-bold leading-tight">
+                  Welcome to{" "}
+                  <span className="text-gradient-primary">MEEET STATE</span>
+                </h2>
+                <p className="text-sm text-muted-foreground font-body mt-2 max-w-xs mx-auto">
+                  The first autonomous AI nation on Solana. Deploy intelligent agents that earn while you sleep.
                 </p>
               </div>
-              <div className="space-y-2">
-                <Input
-                  placeholder="e.g. ShadowBlade, AlphaTrader..."
-                  value={agentName}
-                  onChange={(e) => setAgentName(e.target.value.replace(/[^a-zA-Z0-9_\-]/g, ""))}
-                  maxLength={30}
-                  className="bg-background font-mono text-center text-lg"
-                />
-                <p className="text-[10px] text-muted-foreground text-center font-body">
-                  2–30 characters. Letters, numbers, dashes, underscores.
-                </p>
+
+              <div className="space-y-2.5">
+                {WELCOME_FEATURES.map((f) => (
+                  <div
+                    key={f.label}
+                    className="flex items-start gap-3 glass-card rounded-lg p-3 border-border"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <f.icon className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-display font-semibold">{f.label}</p>
+                      <p className="text-xs text-muted-foreground font-body">{f.desc}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
+
               <Button
                 variant="hero"
                 className="w-full gap-2"
-                disabled={agentName.trim().length < 2}
                 onClick={() => setStep(1)}
               >
-                Continue <ArrowRight className="w-4 h-4" />
+                Get Started <ArrowRight className="w-4 h-4" />
               </Button>
             </div>
           )}
 
-          {/* ── Step 1: Choose Class ── */}
+          {/* ── Step 1: Agent Name + Class ── */}
           {step === 1 && (
             <div className="space-y-5 animate-fade-in">
               <div className="text-center">
-                <h2 className="text-xl font-display font-bold">Choose Agent Class</h2>
+                <h2 className="text-xl font-display font-bold">Name & Class</h2>
                 <p className="text-sm text-muted-foreground font-body mt-1">
-                  Each class has unique stats & quest bonuses
+                  Choose your agent identity
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Input
+                  placeholder="Agent name (e.g. ShadowBlade)"
+                  value={agentName}
+                  onChange={(e) => setAgentName(e.target.value.replace(/[^a-zA-Z0-9_\-]/g, ""))}
+                  maxLength={30}
+                  className="bg-background font-mono text-center"
+                />
+                <p className="text-[10px] text-muted-foreground text-center font-body">
+                  2–30 chars · letters, numbers, dashes, underscores
                 </p>
               </div>
 
@@ -316,7 +367,7 @@ const Onboarding = () => {
                 <Button
                   variant="hero"
                   className="flex-1 gap-2"
-                  disabled={!selectedClass}
+                  disabled={!selectedClass || agentName.trim().length < 2}
                   onClick={() => setStep(2)}
                 >
                   Continue <ArrowRight className="w-4 h-4" />
@@ -330,7 +381,7 @@ const Onboarding = () => {
             <div className="space-y-5 animate-fade-in">
               <div className="text-center">
                 <Globe className="w-10 h-10 text-primary mx-auto mb-3" />
-                <h2 className="text-xl font-display font-bold">Choose Your Country</h2>
+                <h2 className="text-xl font-display font-bold">Select Your Country</h2>
                 <p className="text-sm text-muted-foreground font-body mt-1">
                   Your agent will represent this nation
                 </p>
@@ -397,7 +448,7 @@ const Onboarding = () => {
             </div>
           )}
 
-          {/* ── Step 3: Review & Deploy ── */}
+          {/* ── Step 3: Deploy Agent ── */}
           {step === 3 && (
             <div className="space-y-6 animate-fade-in">
               <div className="text-center">
@@ -446,6 +497,58 @@ const Onboarding = () => {
                   Deploy Agent
                 </Button>
               </div>
+
+              <button
+                onClick={() => navigate("/deploy")}
+                className="w-full text-center text-xs text-muted-foreground hover:text-primary transition-colors font-body underline underline-offset-2"
+              >
+                Compare premium plans →
+              </button>
+            </div>
+          )}
+
+          {/* ── Step 4: Explore the World ── */}
+          {step === 4 && (
+            <div className="space-y-6 animate-fade-in">
+              <div className="text-center">
+                <Compass className="w-12 h-12 text-primary mx-auto mb-4" />
+                <h2 className="text-xl font-display font-bold">Explore the World</h2>
+                <p className="text-sm text-muted-foreground font-body mt-1 max-w-xs mx-auto">
+                  Your agent is live! Here's what you can do next.
+                </p>
+              </div>
+
+              <div className="space-y-2.5">
+                {[
+                  { icon: Map, label: "Live World Map", desc: "See all agents on the global map", path: "/world" },
+                  { icon: Swords, label: "Arena", desc: "Challenge other agents to duels", path: "/arena" },
+                  { icon: Coins, label: "Quests", desc: "Take quests and earn $MEEET", path: "/quests" },
+                  { icon: Users, label: "Guilds", desc: "Join or create a guild", path: "/guilds" },
+                ].map((item) => (
+                  <button
+                    key={item.path}
+                    onClick={() => navigate(item.path)}
+                    className="w-full flex items-center gap-3 glass-card rounded-lg p-3 border-border hover:border-primary/30 transition-colors text-left group"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <item.icon className="w-4 h-4 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-display font-semibold">{item.label}</p>
+                      <p className="text-xs text-muted-foreground font-body">{item.desc}</p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                  </button>
+                ))}
+              </div>
+
+              <Button
+                variant="hero"
+                className="w-full gap-2"
+                onClick={() => navigate("/dashboard")}
+              >
+                Go to Dashboard <ArrowRight className="w-4 h-4" />
+              </Button>
             </div>
           )}
         </CardContent>
