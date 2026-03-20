@@ -375,44 +375,73 @@ const Deploy = () => {
                 <DialogTitle className="text-center">{selectedPlan.name} Plan</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                <div className="text-center">
-                  <Badge className="mb-2 bg-primary/20 text-primary border-primary/30">{selectedPlan.name}</Badge>
-                  <div className="flex items-center justify-center gap-3 mt-2">
-                    <span className="text-lg font-bold">◎ {SOL_PRICES[selectedPlan.name]} SOL</span>
-                    <span className="text-muted-foreground">or</span>
-                    <span className="text-lg font-bold text-emerald-400">🪙 {(MEEET_PRICES[selectedPlan.name] ?? 0).toLocaleString()} MEEET</span>
-                  </div>
-                </div>
+                {/* Free promo for Scout */}
+                {promoActive && selectedPlan.name === "Scout" ? (
+                  <>
+                    <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4 text-center">
+                      <p className="text-lg font-bold text-emerald-400">🎁 FREE Deploy!</p>
+                      <p className="text-sm text-muted-foreground mt-1">You're one of the first {FREE_AGENT_LIMIT} agents — no payment needed.</p>
+                      <p className="text-xs text-muted-foreground mt-2">{freeSlots} free spots remaining</p>
+                    </div>
+                    <Button
+                      className="w-full h-14 text-base bg-emerald-600 hover:bg-emerald-700 text-white"
+                      disabled={activating}
+                      onClick={async () => {
+                        setActivating(true);
+                        setStep("paying");
+                        try {
+                          const { data, error } = await supabase.functions.invoke("create-subscription", {
+                            body: { plan_id: selectedPlan.id, payment_method: "free_promo", tx_signature: "promo_first_100" },
+                          });
+                          if (error) throw error;
+                          if (data?.error) throw new Error(data.error);
+                          setSubscriptionId(data?.subscription_id || null);
+                          setStep("configuring");
+                          toast.success("Free plan activated! Now configure your agent. 🎉");
+                        } catch (e: any) {
+                          toast.error(e.message || "Failed to activate free plan");
+                          setStep("choose");
+                        } finally {
+                          setActivating(false);
+                        }
+                      }}
+                    >
+                      🚀 Activate Free Agent
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-center">
+                      <Badge className="mb-2 bg-primary/20 text-primary border-primary/30">{selectedPlan.name}</Badge>
+                      <div className="flex items-center justify-center gap-3 mt-2">
+                        <span className="text-lg font-bold">◎ {SOL_PRICES[selectedPlan.name]} SOL</span>
+                        <span className="text-muted-foreground">or</span>
+                        <span className="text-lg font-bold text-emerald-400">🪙 {(MEEET_PRICES[selectedPlan.name] ?? 0).toLocaleString()} MEEET</span>
+                      </div>
+                    </div>
 
-                {walletAddress && (
-                  <div className="bg-muted/30 rounded-lg p-2 text-center">
-                    <p className="text-xs text-muted-foreground">Connected: <code className="text-foreground">{walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}</code></p>
-                  </div>
+                    {walletAddress && (
+                      <div className="bg-muted/30 rounded-lg p-2 text-center">
+                        <p className="text-xs text-muted-foreground">Connected: <code className="text-foreground">{walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}</code></p>
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <Button className="w-full h-14 text-base" variant="outline" disabled={activating} onClick={() => handlePay("sol")}>
+                        <Wallet className="w-5 h-5 mr-2" />
+                        Pay ◎ {SOL_PRICES[selectedPlan.name]} SOL
+                      </Button>
+                      <Button className="w-full h-14 text-base bg-emerald-600 hover:bg-emerald-700 text-white" disabled={activating} onClick={() => handlePay("meeet")}>
+                        🪙 Pay {(MEEET_PRICES[selectedPlan.name] ?? 0).toLocaleString()} MEEET
+                        <Badge className="ml-2 text-xs bg-emerald-800 text-emerald-200">20% off</Badge>
+                      </Button>
+                    </div>
+
+                    <p className="text-[10px] text-muted-foreground text-center">
+                      Payment is sent directly from your wallet and verified on-chain automatically.
+                    </p>
+                  </>
                 )}
-
-                <div className="space-y-2">
-                  <Button
-                    className="w-full h-14 text-base"
-                    variant="outline"
-                    disabled={activating}
-                    onClick={() => handlePay("sol")}
-                  >
-                    <Wallet className="w-5 h-5 mr-2" />
-                    Pay ◎ {SOL_PRICES[selectedPlan.name]} SOL
-                  </Button>
-                  <Button
-                    className="w-full h-14 text-base bg-emerald-600 hover:bg-emerald-700 text-white"
-                    disabled={activating}
-                    onClick={() => handlePay("meeet")}
-                  >
-                    🪙 Pay {(MEEET_PRICES[selectedPlan.name] ?? 0).toLocaleString()} MEEET
-                    <Badge className="ml-2 text-xs bg-emerald-800 text-emerald-200">20% off</Badge>
-                  </Button>
-                </div>
-
-                <p className="text-[10px] text-muted-foreground text-center">
-                  Payment is sent directly from your wallet and verified on-chain automatically.
-                </p>
               </div>
             </>
           )}
