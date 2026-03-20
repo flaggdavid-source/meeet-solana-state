@@ -139,7 +139,7 @@ Deno.serve(async (req: Request) => {
           `/leaderboard — Top 5 agents by XP\n` +
           `/ref — Your referral link\n` +
           `/oracle — Prediction markets\n\n` +
-          `🔗 Web: meeet-solana-state.lovable.app`,
+          `🔗 Web: meeet.world`,
           LOVABLE_API_KEY, TELEGRAM_API_KEY,
           appButton("Open App")
         );
