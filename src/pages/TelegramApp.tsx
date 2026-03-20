@@ -77,7 +77,7 @@ const SOL_PRICES: Record<string, number> = {
   Scout: 0.19, Warrior: 0.49, Commander: 1.49, Nation: 4.99,
 };
 const MEEET_PRICES: Record<string, number> = {
-  Scout: 3800, Warrior: 8800, Commander: 25600, Nation: 80000,
+  Scout: 4750, Warrior: 12250, Commander: 37250, Nation: 124750,
 };
 
 interface Agent {
@@ -130,7 +130,7 @@ const TelegramApp = () => {
   }, [tab]);
 
   // Data loading
-  const FREE_AGENT_LIMIT = 100;
+  const FREE_AGENT_LIMIT = 200;
   const [totalAgentCount, setTotalAgentCount] = useState(0);
   const freeSlots = Math.max(0, FREE_AGENT_LIMIT - totalAgentCount);
   const promoActive = freeSlots > 0;
