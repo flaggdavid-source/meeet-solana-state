@@ -4,7 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { supabase } from "@/integrations/supabase/runtime-client";
 import { RESEARCH_HUBS, HUB_STATS, type ResearchHub } from "@/data/research-hubs";
 import WorldMapCanvas from "./WorldMapCanvas";
-import WorldMapTopBar from "./world/WorldMapTopBar";
+// WorldMapTopBar replaced by inline HUD
 import WorldMapLeftSidebar from "./world/WorldMapLeftSidebar";
 import WorldMapRightPanel from "./world/WorldMapRightPanel";
 import WorldMapEventFeed from "./world/WorldMapEventFeed";
