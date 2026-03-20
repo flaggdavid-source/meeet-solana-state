@@ -2,7 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 function json(body: unknown, status = 200) {
@@ -13,50 +13,54 @@ function json(body: unknown, status = 200) {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const authHeader = req.headers.get("authorization") ?? "";
     const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: authErr } = await supabase.auth.getUser();
+    if (authErr || !user) return json({ error: "Unauthorized" }, 401);
+
+    const { amount_sol, tx_hash } = await req.json();
+    if (!amount_sol || amount_sol <= 0) return json({ error: "Valid amount_sol required" }, 400);
+
+    const admin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Internal only — called by pay-sol/process-transaction after payment
-    const { amount_sol, tx_signature, user_id, source } = await req.json();
-    if (!amount_sol) return json({ error: "amount_sol required" }, 400);
-
-    // Record the LP contribution intent
-    const { data, error } = await supabase
+    const { data: payment, error: insertErr } = await admin
       .from("payments")
       .insert({
-        user_id: user_id || null,
-        amount_sol: Number(amount_sol),
-        lp_contribution_sol: Number(amount_sol),
-        tx_signature: tx_signature || null,
-        payment_type: "lp_contribution",
+        user_id: user.id,
+        amount_sol: amount_sol,
+        payment_method: "sol_transfer",
+        reference_type: "lp_contribution",
+        tx_hash: tx_hash || null,
         status: "recorded",
-        source: source || "auto",
-        created_at: new Date().toISOString(),
       })
-      .select()
+      .select("id")
       .single();
 
-    if (error) {
-      // If payments table doesn't have all columns, try minimal insert
-      const { data: fallback, error: fallbackErr } = await supabase
-        .from("activity_feed")
-        .insert({
-          event_type: "lp_contribution",
-          description: `LP contribution: ${amount_sol} SOL (tx: ${tx_signature || "pending"})`,
-        })
-        .select()
-        .single();
+    if (insertErr) return json({ error: insertErr.message }, 500);
 
-      if (fallbackErr) return json({ error: fallbackErr.message }, 400);
-      return json({ recorded: true, id: fallback.id, method: "activity_feed" });
+    // Notify president
+    const presidentId = Deno.env.get("PRESIDENT_OWNER_USER_ID");
+    if (presidentId) {
+      await admin.from("notifications").insert({
+        user_id: presidentId,
+        title: "LP Contribution Received",
+        body: `User contributed ${amount_sol} SOL for LP. Payment ID: ${payment.id}`,
+        type: "treasury",
+      });
     }
 
-    return json({ recorded: true, id: data.id, amount_sol: Number(amount_sol) });
+    return json({ recorded: true, payment_id: payment.id });
   } catch (e) {
     return json({ error: e.message }, 500);
   }

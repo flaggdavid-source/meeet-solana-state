@@ -2,7 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 function json(body: unknown, status = 200) {
@@ -12,90 +12,123 @@ function json(body: unknown, status = 200) {
   });
 }
 
+const TREASURY_FEE_PCT = 5;
+
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const authHeader = req.headers.get("authorization") ?? "";
     const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: authErr } = await supabase.auth.getUser();
+    if (authErr || !user) return json({ error: "Unauthorized" }, 401);
+
+    const { listing_id, buyer_agent_id } = await req.json();
+    if (!listing_id) return json({ error: "listing_id required" }, 400);
+
+    const admin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader) return json({ error: "Unauthorized" }, 401);
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader.replace("Bearer ", "")
-    );
-    if (authError || !user) return json({ error: "Unauthorized" }, 401);
-
-    const { listing_id } = await req.json();
-    if (!listing_id) return json({ error: "listing_id required" }, 400);
-
-    // Get listing
-    const { data: listing, error: listErr } = await supabase
+    // Fetch listing
+    const { data: listing } = await admin
       .from("agent_marketplace_listings")
-      .select("*")
+      .select("id, agent_id, seller_user_id, price_meeet, is_active, status")
       .eq("id", listing_id)
-      .eq("status", "active")
       .single();
 
-    if (listErr || !listing) return json({ error: "Listing not found or already sold" }, 404);
-
-    if (listing.seller_id === user.id) {
-      return json({ error: "Cannot buy your own agent" }, 400);
-    }
-
-    // Check buyer balance
-    const { data: buyerProfile } = await supabase
-      .from("profiles")
-      .select("balance_meeet")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!buyerProfile || (buyerProfile.balance_meeet || 0) < listing.price_meeet) {
-      return json({ error: "Insufficient MEEET balance" }, 400);
-    }
+    if (!listing) return json({ error: "Listing not found" }, 404);
+    if (!listing.is_active || listing.status !== "active") return json({ error: "Listing no longer active" }, 410);
+    if (listing.seller_user_id === user.id) return json({ error: "Cannot buy your own agent" }, 400);
 
     const price = Number(listing.price_meeet);
-    const sellerCut = price * 0.95;
-    const treasuryCut = price * 0.05;
 
-    // Deduct from buyer
-    await supabase.rpc("increment_agent_balance", {
-      agent_uuid: user.id,
-      amount: -price,
-    }).throwOnError();
+    // If buyer_agent_id provided, deduct from that agent's balance
+    if (buyer_agent_id) {
+      const { data: buyerAgent } = await admin
+        .from("agents")
+        .select("id, balance_meeet")
+        .eq("id", buyer_agent_id)
+        .eq("user_id", user.id)
+        .single();
 
-    // Pay seller (95%)
-    await supabase.rpc("increment_agent_balance", {
-      agent_uuid: listing.seller_id,
-      amount: sellerCut,
-    }).throwOnError();
+      if (!buyerAgent) return json({ error: "Buyer agent not found" }, 404);
+      if (Number(buyerAgent.balance_meeet) < price) return json({ error: "Insufficient MEEET balance" }, 402);
+
+      // Deduct from buyer
+      await admin.from("agents").update({ balance_meeet: Number(buyerAgent.balance_meeet) - price }).eq("id", buyer_agent_id);
+    }
+
+    const sellerShare = Math.floor(price * (100 - TREASURY_FEE_PCT) / 100);
+    const treasuryShare = price - sellerShare;
+
+    // Credit seller's first agent or create a payment record
+    const { data: sellerAgents } = await admin
+      .from("agents")
+      .select("id, balance_meeet")
+      .eq("user_id", listing.seller_user_id)
+      .limit(1);
+
+    if (sellerAgents && sellerAgents.length > 0) {
+      await admin.from("agents").update({
+        balance_meeet: Number(sellerAgents[0].balance_meeet) + sellerShare,
+      }).eq("id", sellerAgents[0].id);
+    }
+
+    // Treasury fee
+    await admin.from("payments").insert({
+      user_id: user.id,
+      amount_meeet: treasuryShare,
+      payment_method: "meeet_internal",
+      reference_type: "marketplace_fee",
+      reference_id: listing_id,
+      status: "completed",
+    });
 
     // Transfer agent ownership
-    await supabase
-      .from("agents")
-      .update({ user_id: user.id })
-      .eq("id", listing.agent_id)
-      .throwOnError();
+    await admin.from("agents").update({ user_id: user.id }).eq("id", listing.agent_id);
 
-    // Mark listing as sold
-    await supabase
-      .from("agent_marketplace_listings")
-      .update({ status: "sold", buyer_id: user.id, sold_at: new Date().toISOString() })
-      .eq("id", listing_id)
-      .throwOnError();
+    // Deactivate listing
+    await admin.from("agent_marketplace_listings").update({
+      is_active: false,
+      status: "sold",
+      buyer_id: user.id,
+      sold_at: new Date().toISOString(),
+    }).eq("id", listing_id);
 
-    // Record treasury fee
-    await supabase
-      .from("activity_feed")
-      .insert({
-        event_type: "marketplace_sale",
-        description: `Agent sold for ${price} MEEET. Treasury fee: ${treasuryCut} MEEET.`,
-      });
+    // Notify seller
+    await admin.from("notifications").insert({
+      user_id: listing.seller_user_id,
+      title: "Agent Sold!",
+      body: `Your agent was purchased for ${price} $MEEET. You received ${sellerShare} $MEEET (${TREASURY_FEE_PCT}% fee).`,
+      type: "marketplace",
+      reference_id: listing.agent_id,
+    });
 
-    return json({ success: true, price_paid: price, treasury_fee: treasuryCut });
+    // Notify buyer
+    await admin.from("notifications").insert({
+      user_id: user.id,
+      title: "Agent Purchased!",
+      body: `You successfully purchased an agent for ${price} $MEEET.`,
+      type: "marketplace",
+      reference_id: listing.agent_id,
+    });
+
+    // Activity feed
+    await admin.from("activity_feed").insert({
+      event_type: "marketplace_sale",
+      title: `Agent sold for ${price} $MEEET`,
+      agent_id: listing.agent_id,
+      meeet_amount: price,
+    });
+
+    return json({ success: true, agent_id: listing.agent_id, price, fee: treasuryShare });
   } catch (e) {
     return json({ error: e.message }, 500);
   }

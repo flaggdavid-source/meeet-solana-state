@@ -173,6 +173,7 @@ export type Database = {
       agent_marketplace_listings: {
         Row: {
           agent_id: string
+          buyer_id: string | null
           created_at: string | null
           description: string | null
           id: string
@@ -180,10 +181,13 @@ export type Database = {
           price_meeet: number
           price_usdc: number | null
           seller_user_id: string
+          sold_at: string | null
+          status: string | null
           updated_at: string | null
         }
         Insert: {
           agent_id: string
+          buyer_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -191,10 +195,13 @@ export type Database = {
           price_meeet?: number
           price_usdc?: number | null
           seller_user_id: string
+          sold_at?: string | null
+          status?: string | null
           updated_at?: string | null
         }
         Update: {
           agent_id?: string
+          buyer_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -202,6 +209,8 @@ export type Database = {
           price_meeet?: number
           price_usdc?: number | null
           seller_user_id?: string
+          sold_at?: string | null
+          status?: string | null
           updated_at?: string | null
         }
         Relationships: [
