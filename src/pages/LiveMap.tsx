@@ -1248,31 +1248,31 @@ const LiveMap = () => {
       </div>
 
       {/* ═══ HUD — Top Left ═══ */}
-      <div className="absolute top-10 left-3 z-10 flex items-center gap-2 flex-wrap max-w-[calc(100%-5rem)]">
+      <div className="absolute top-10 left-2 z-10 flex items-center gap-1.5 flex-wrap max-w-[calc(100%-3rem)] md:max-w-[calc(100%-5rem)]">
         <button onClick={() => navigate("/")} className="bg-black/50 backdrop-blur border border-white/[0.06] rounded p-2 hover:bg-white/5 transition-all">
           <ArrowLeft className="w-4 h-4 text-white/60" />
         </button>
-        <div className="bg-black/50 backdrop-blur border border-white/[0.06] rounded px-3 py-1.5 flex items-center gap-2">
+        <div className="hidden sm:flex bg-black/50 backdrop-blur border border-white/[0.06] rounded px-3 py-1.5 items-center gap-2">
           <Globe className="w-3 h-3 text-primary/80" />
           <span className="text-[10px] font-mono text-primary/90 tracking-wider">MEEET STATE</span>
         </div>
-        <div className="bg-black/50 backdrop-blur border border-white/[0.06] rounded px-3 py-1.5 flex items-center gap-2">
+        <div className="bg-black/50 backdrop-blur border border-white/[0.06] rounded px-2 py-1.5 flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-[10px] font-mono text-white/70">{agentCount} AGENTS ONLINE</span>
+          <span className="text-[9px] md:text-[10px] font-mono text-white/70">{agentCount}</span>
         </div>
-        <div className="bg-black/50 backdrop-blur border border-white/[0.06] rounded px-2.5 py-1.5 flex items-center gap-1.5">
+        <div className="hidden sm:flex bg-black/50 backdrop-blur border border-white/[0.06] rounded px-2.5 py-1.5 items-center gap-1.5">
           <span className="text-[9px] font-mono text-white/30">QUESTS</span>
           <span className="text-[10px] font-mono text-cyan-400">{agentsRef.current.filter(a => a.state === "visiting").length}</span>
         </div>
-        <div className="bg-black/50 backdrop-blur border border-white/[0.06] rounded px-2.5 py-1.5 flex items-center gap-1.5">
+        <div className="hidden sm:flex bg-black/50 backdrop-blur border border-white/[0.06] rounded px-2.5 py-1.5 items-center gap-1.5">
           <span className="text-[9px] font-mono text-white/30">$MEEET</span>
           <span className="text-[10px] font-mono text-emerald-400">{agentsRef.current.reduce((s, a) => s + a.balance, 0).toLocaleString()}</span>
         </div>
-        <div className="bg-black/50 backdrop-blur border border-white/[0.06] rounded px-2.5 py-1.5 flex items-center gap-1.5">
+        <div className="bg-black/50 backdrop-blur border border-white/[0.06] rounded px-2 py-1.5 flex items-center gap-1">
           {timeLabel === "Night" || timeLabel === "Dusk" ? <Moon className="w-3 h-3 text-indigo-300/70" /> : <Sun className="w-3 h-3 text-amber-400/70" />}
           <span className="text-[9px] font-mono text-white/40">{timeLabel}</span>
         </div>
-        <div className="bg-black/50 backdrop-blur border border-white/[0.06] rounded px-2.5 py-1.5 flex items-center gap-1.5">
+        <div className="hidden md:flex bg-black/50 backdrop-blur border border-white/[0.06] rounded px-2.5 py-1.5 items-center gap-1.5">
           {weather === 'storm' ? <CloudLightning className="w-3 h-3 text-yellow-400/70" /> : weather === 'rain' ? <CloudRain className="w-3 h-3 text-blue-300/70" /> : <Cloud className="w-3 h-3 text-white/30" />}
           <span className="text-[9px] font-mono text-white/40 capitalize">{weather}</span>
         </div>
