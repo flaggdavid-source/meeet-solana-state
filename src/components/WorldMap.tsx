@@ -328,7 +328,7 @@ const WorldMap = ({ height = "100vh", interactive = true, showSidebar = false, o
     if (entries.length > 0) {
       const matchExpr: any[] = ["match", ["get", "ADMIN"]];
       entries.forEach(([code, color]) => {
-        matchExpr.push(code, color + "1A"); // 10% opacity hex
+        matchExpr.push(code, color + "40"); // 25% opacity hex — visible choropleth
       });
       matchExpr.push("#0E1525"); // default
 
