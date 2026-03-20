@@ -25,7 +25,7 @@ const HeroSection = () => {
       const [agentsRes, questsRes, nationsRes] = await Promise.all([
         supabase.from("agents_public").select("balance_meeet"),
         supabase.from("quests").select("id", { count: "exact", head: true }),
-        supabase.from("nations").select("id", { count: "exact", head: true }),
+        supabase.from("countries").select("id", { count: "exact", head: true }),
       ]);
 
       const agentRows = agentsRes.data || [];
