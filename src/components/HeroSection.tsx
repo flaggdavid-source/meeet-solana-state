@@ -25,11 +25,11 @@ const HeroSection = () => {
   const { data: stats } = useQuery<HeroStats>({
     queryKey: ["hero-stats"],
     queryFn: async () => {
-      // Use agents_public view — accessible without auth (no RLS restriction)
-      const [agentsRes, questsRes, nationsRes] = await Promise.all([
+      const [agentsRes, questsRes, nationsRes, discoveriesRes] = await Promise.all([
         supabase.from("agents_public").select("balance_meeet"),
         supabase.from("quests").select("id", { count: "exact", head: true }),
         supabase.from("countries").select("id", { count: "exact", head: true }),
+        supabase.from("discoveries").select("id", { count: "exact", head: true }),
       ]);
 
       const agentRows = agentsRes.data || [];
@@ -38,7 +38,9 @@ const HeroSection = () => {
       return {
         agents: agentRows.length,
         quests: questsRes.count ?? 0,
+        discoveries: discoveriesRes.count ?? 0,
         nations: nationsRes.count ?? 0,
+        hubs: RESEARCH_HUBS.length,
         totalMeeet,
       };
     },
