@@ -154,9 +154,28 @@ const POPUP_CSS = `
   0%, 100% { opacity: 1; }
   50% { opacity: 0.85; }
 }
+@keyframes conflict-pulse {
+  0% { transform: scale(1); opacity: 0.9; box-shadow: 0 0 8px rgba(255,51,51,0.6); }
+  50% { transform: scale(1.25); opacity: 0.5; box-shadow: 0 0 20px rgba(255,51,51,0.9); }
+  100% { transform: scale(1); opacity: 0.9; box-shadow: 0 0 8px rgba(255,51,51,0.6); }
+}
+@keyframes conflict-ring {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+@keyframes disaster-shake {
+  0%, 100% { transform: translate(0,0); }
+  20% { transform: translate(-1px,1px); }
+  40% { transform: translate(1px,-1px); }
+  60% { transform: translate(-1px,-1px); }
+  80% { transform: translate(1px,1px); }
+}
 .hub-marker { cursor: pointer; transition: transform 0.15s ease-out; }
 .hub-marker:hover { transform: scale(1.15) !important; }
 .hub-marker--active { animation: hub-pulse 2.5s ease-in-out infinite; }
+.event-marker-conflict { animation: conflict-pulse 1.8s ease-in-out infinite; }
+.event-marker-disaster { animation: disaster-shake 0.4s ease-in-out infinite; }
+.event-ring { animation: conflict-ring 2s ease-out infinite; }
 `;
 
 const EVENT_COLORS: Record<string, string> = {
@@ -284,17 +303,30 @@ const WorldMap = forwardRef<HTMLDivElement, WorldMapProps>(({ height = "100vh", 
       const isHot = severity > 6;
 
       const el = document.createElement("div");
+      const animClass = ev.event_type === 'conflict' ? 'event-marker-conflict' : ev.event_type === 'disaster' ? 'event-marker-disaster' : '';
       el.style.cssText = `position:relative;width:${size}px;height:${size}px;cursor:pointer;`;
 
-      // Pulse ring for severe events
-      if (isHot) {
+      // Expanding ring for conflicts
+      if (ev.event_type === 'conflict') {
         const ring = document.createElement("div");
-        ring.style.cssText = `position:absolute;inset:-${size * 0.4}px;border-radius:50%;border:1.5px solid ${color}60;animation:hub-pulse 2s ease-in-out infinite;pointer-events:none;`;
+        ring.className = 'event-ring';
+        ring.style.cssText = `position:absolute;inset:0;border-radius:50%;border:1.5px solid ${color};pointer-events:none;`;
+        el.appendChild(ring);
+        // Second ring offset
+        const ring2 = document.createElement("div");
+        ring2.className = 'event-ring';
+        ring2.style.cssText = `position:absolute;inset:0;border-radius:50%;border:1px solid ${color};pointer-events:none;animation-delay:1s;`;
+        el.appendChild(ring2);
+      } else if (isHot) {
+        const ring = document.createElement("div");
+        ring.className = 'event-ring';
+        ring.style.cssText = `position:absolute;inset:0;border-radius:50%;border:1.5px solid ${color}60;pointer-events:none;`;
         el.appendChild(ring);
       }
 
-      // Core diamond/circle
+      // Core marker
       const core = document.createElement("div");
+      core.className = animClass;
       core.style.cssText = `
         width:100%;height:100%;border-radius:${ev.event_type === 'conflict' ? '2px' : '50%'};
         background:radial-gradient(circle,${color}90 0%,${color}40 100%);
@@ -303,7 +335,6 @@ const WorldMap = forwardRef<HTMLDivElement, WorldMapProps>(({ height = "100vh", 
         font-size:${Math.max(8, size * 0.45)}px;
       `;
       core.textContent = icon;
-      core.style.transform = ev.event_type === 'conflict' ? 'rotate(45deg)' : 'none';
       el.appendChild(core);
 
       // Popup on click
