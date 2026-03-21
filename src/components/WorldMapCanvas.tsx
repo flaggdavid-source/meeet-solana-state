@@ -116,7 +116,6 @@ const WorldMapCanvas = forwardRef<HTMLCanvasElement, Props>(({ hubGeoData = [], 
       style={{ zIndex: 5 }}
     />
   );
-};
 });
 
 WorldMapCanvas.displayName = "WorldMapCanvas";

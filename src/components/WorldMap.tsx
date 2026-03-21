@@ -574,7 +574,9 @@ const WorldMap = forwardRef<HTMLDivElement, WorldMapProps>(({ height = "100vh", 
       />
     </div>
   );
-};
+});
+
+WorldMap.displayName = "WorldMap";
 
 function getTimeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -585,9 +587,5 @@ function getTimeAgo(dateStr: string): string {
   if (hrs < 24) return `${hrs}h ago`;
   return `${Math.floor(hrs / 24)}d ago`;
 }
-
-});
-
-WorldMap.displayName = "WorldMap";
 
 export default WorldMap;
