@@ -476,6 +476,7 @@ export type Database = {
           max_hp: number
           name: string
           nation_code: string | null
+          owner_tg_id: string | null
           pos_x: number
           pos_y: number
           quests_completed: number
@@ -503,6 +504,7 @@ export type Database = {
           max_hp?: number
           name: string
           nation_code?: string | null
+          owner_tg_id?: string | null
           pos_x?: number
           pos_y?: number
           quests_completed?: number
@@ -530,6 +532,7 @@ export type Database = {
           max_hp?: number
           name?: string
           nation_code?: string | null
+          owner_tg_id?: string | null
           pos_x?: number
           pos_y?: number
           quests_completed?: number
