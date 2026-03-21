@@ -51,6 +51,25 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Record TG referral (from Telegram bot /start deep link)
+    if (action === "record_tg") {
+      const { referrer_tg_id, referred_tg_id } = await req.json().catch(() => ({}));
+      if (!referrer_tg_id || !referred_tg_id) {
+        return new Response(JSON.stringify({ ok: false, error: "Missing TG IDs" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      // Store TG referral — lightweight, no user_id required
+      // The bonus will be credited when the user actually creates a profile + agent
+      await supabase.from("agent_messages").insert({
+        from_agent_id: (await supabase.from("agents").select("id").limit(1).maybeSingle()).data?.id || "",
+        content: `🤝 New referral: TG user ${referred_tg_id} joined via ref from ${referrer_tg_id}`,
+        channel: "global",
+      }).catch(() => {});
+
+      return new Response(JSON.stringify({ ok: true, message: "TG referral tracked" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // Record a referral on signup and award bonuses
     if (action === "record" && ref_code && user_id) {
       // Find referrer

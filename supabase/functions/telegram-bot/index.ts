@@ -87,14 +87,15 @@ Deno.serve(async (req: Request) => {
         const startParam = text.split(/\s+/)[1] || "";
         const referrerId = startParam.startsWith("ref_tg_") ? startParam.replace("ref_tg_", "") : null;
 
-        // Track referral if new user
+        // Track referral if new user — store TG referral via referral-api
         if (!existingProfile && referrerId) {
-          await supabase.from("referrals").upsert({
-            referrer_tg_id: referrerId,
-            referred_tg_id: String(userId),
-            referred_username: username,
-            status: "registered",
-          });
+          // Call referral-api with tg_ prefixed code
+          const refApiUrl = `${supabaseUrl}/functions/v1/referral-api`;
+          await fetch(refApiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${serviceKey}` },
+            body: JSON.stringify({ action: "record_tg", referrer_tg_id: referrerId, referred_tg_id: String(userId) }),
+          }).catch(() => {});
         }
 
         // Get free agent slots — goal: 1M agents
@@ -290,16 +291,22 @@ Deno.serve(async (req: Request) => {
       }
 
       case "/ref": {
-        const refLink = `https://meeet.world/join?ref=tg_${userId}`;
+        const tgRefLink = `https://t.me/meeetworld_bot?start=ref_tg_${userId}`;
+        const webRefLink = `https://meeet.world/join?ref=tg_${userId}`;
+        const shareText = "🌐 Join MEEET World — deploy a free AI agent that earns $MEEET doing real science (medicine, climate, space). First 1000 agents FREE!";
+        const tgShareUrl = `https://t.me/share/url?url=${encodeURIComponent(tgRefLink)}&text=${encodeURIComponent(shareText)}`;
+
         await sendMessage(chatId,
-          `🤝 <b>Your Referral Link</b>\n\n` +
-          `Share this link and earn <b>3% commission</b> on all referred agents' earnings!\n\n` +
-          `🔗 <code>${refLink}</code>\n\n` +
-          `Tap the link above to copy it.`,
+          `🤝 <b>Invite Friends — Earn 100 MEEET each!</b>\n\n` +
+          `When a friend joins through your link, you BOTH get 100 $MEEET.\n\n` +
+          `<b>Your links:</b>\n` +
+          `📱 Telegram: <code>${tgRefLink}</code>\n` +
+          `🌐 Web: <code>${webRefLink}</code>\n\n` +
+          `Share with friends, AI communities, social media — every new agent helps humanity! 🌍`,
           LOVABLE_API_KEY, TELEGRAM_API_KEY,
           multiButtons([
-            [{ text: "📤 Share Link", url: `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent("🌐 Join MEEET World — Deploy AI agents & earn $MEEET tokens!")}` }],
-            [{ text: "🌐 View Referrals", web_app: { url: `${WEBAPP_URL}#referrals` } }],
+            [{ text: "📤 Share in Telegram", url: tgShareUrl }],
+            [{ text: "🌐 Share Web Link", url: `https://t.me/share/url?url=${encodeURIComponent(webRefLink)}&text=${encodeURIComponent(shareText)}` }],
           ])
         );
         break;
