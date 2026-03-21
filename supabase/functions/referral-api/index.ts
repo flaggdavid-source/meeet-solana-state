@@ -18,8 +18,7 @@ Deno.serve(async (req) => {
   );
 
   try {
-    const body = await req.json();
-    const { action, ref_code, user_id, referrer_tg_id, referred_tg_id } = body;
+    const { action, ref_code, user_id } = await req.json();
 
     // Validate referral code
     if (action === "validate") {
@@ -54,72 +53,24 @@ Deno.serve(async (req) => {
 
     // Record TG referral (from Telegram bot /start deep link)
     if (action === "record_tg") {
-      // referrer_tg_id and referred_tg_id already destructured from body above
+      const { referrer_tg_id, referred_tg_id } = await req.json().catch(() => ({}));
       if (!referrer_tg_id || !referred_tg_id) {
         return new Response(JSON.stringify({ ok: false, error: "Missing TG IDs" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
-
-      // Check if already referred
-      const { data: existingRef } = await supabase
-        .from("agent_messages")
-        .select("id")
-        .like("content", `%ref_tracked:${referred_tg_id}%`)
-        .maybeSingle();
-
-      if (existingRef) {
-        return new Response(JSON.stringify({ ok: true, message: "Already referred" }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      }
-
-      // Get a system agent for posting
-      const { data: sysAgent } = await supabase.from("agents").select("id").limit(1).maybeSingle();
-
-      // Log referral in chat (tagged for dedup)
-      if (sysAgent) {
+      // Store TG referral — lightweight, no user_id required
+      // The bonus will be credited when the user actually creates a profile + agent
+      const { data: firstAgent } = await supabase.from("agents").select("id").limit(1).maybeSingle();
+      if (firstAgent?.id) {
         await supabase.from("agent_messages").insert({
-          from_agent_id: sysAgent.id,
-          content: `🤝 New citizen! TG user ${referred_tg_id} joined via referral from ${referrer_tg_id}. Welcome to MEEET World! [ref_tracked:${referred_tg_id}]`,
+          from_agent_id: firstAgent.id,
+          content: `🤝 New referral: TG user ${referred_tg_id} joined via ref from ${referrer_tg_id}`,
           channel: "global",
-        }).catch(() => {});
+        });
       }
 
-      // Create a free agent for the new user via agent-api
-      const agentApiUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/agent-api`;
-      const regResult = await fetch(agentApiUrl, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
-        },
-        body: JSON.stringify({
-          action: "register",
-          name: `Citizen-${referred_tg_id}`,
-          class: "oracle",
-          framework: `tg-referral-from-${referrer_tg_id}`,
-        }),
-      }).then(r => r.json()).catch(() => null);
-
-      // Award bonus to referrer's agent (find by framework tag)
-      const { data: referrerAgents } = await supabase
-        .from("agents")
-        .select("id, balance_meeet")
-        .or(`name.like.%${referrer_tg_id}%,name.like.%Citizen-${referrer_tg_id}%`)
-        .limit(1);
-
-      if (referrerAgents && referrerAgents.length > 0) {
-        const ra = referrerAgents[0];
-        await supabase.from("agents").update({
-          balance_meeet: (ra.balance_meeet || 0) + REFERRAL_BONUS,
-        }).eq("id", ra.id);
-      }
-
-      return new Response(JSON.stringify({ 
-        ok: true, 
-        message: "TG referral tracked",
-        agent_created: regResult?.agent?.name || null,
-        bonus: REFERRAL_BONUS,
-      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ ok: true, message: "TG referral tracked" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // Record a referral on signup and award bonuses
