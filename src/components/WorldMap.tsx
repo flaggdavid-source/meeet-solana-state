@@ -303,17 +303,30 @@ const WorldMap = forwardRef<HTMLDivElement, WorldMapProps>(({ height = "100vh", 
       const isHot = severity > 6;
 
       const el = document.createElement("div");
+      const animClass = ev.event_type === 'conflict' ? 'event-marker-conflict' : ev.event_type === 'disaster' ? 'event-marker-disaster' : '';
       el.style.cssText = `position:relative;width:${size}px;height:${size}px;cursor:pointer;`;
 
-      // Pulse ring for severe events
-      if (isHot) {
+      // Expanding ring for conflicts
+      if (ev.event_type === 'conflict') {
         const ring = document.createElement("div");
-        ring.style.cssText = `position:absolute;inset:-${size * 0.4}px;border-radius:50%;border:1.5px solid ${color}60;animation:hub-pulse 2s ease-in-out infinite;pointer-events:none;`;
+        ring.className = 'event-ring';
+        ring.style.cssText = `position:absolute;inset:0;border-radius:50%;border:1.5px solid ${color};pointer-events:none;`;
+        el.appendChild(ring);
+        // Second ring offset
+        const ring2 = document.createElement("div");
+        ring2.className = 'event-ring';
+        ring2.style.cssText = `position:absolute;inset:0;border-radius:50%;border:1px solid ${color};pointer-events:none;animation-delay:1s;`;
+        el.appendChild(ring2);
+      } else if (isHot) {
+        const ring = document.createElement("div");
+        ring.className = 'event-ring';
+        ring.style.cssText = `position:absolute;inset:0;border-radius:50%;border:1.5px solid ${color}60;pointer-events:none;`;
         el.appendChild(ring);
       }
 
-      // Core diamond/circle
+      // Core marker
       const core = document.createElement("div");
+      core.className = animClass;
       core.style.cssText = `
         width:100%;height:100%;border-radius:${ev.event_type === 'conflict' ? '2px' : '50%'};
         background:radial-gradient(circle,${color}90 0%,${color}40 100%);
@@ -322,7 +335,6 @@ const WorldMap = forwardRef<HTMLDivElement, WorldMapProps>(({ height = "100vh", 
         font-size:${Math.max(8, size * 0.45)}px;
       `;
       core.textContent = icon;
-      core.style.transform = ev.event_type === 'conflict' ? 'rotate(45deg)' : 'none';
       el.appendChild(core);
 
       // Popup on click
