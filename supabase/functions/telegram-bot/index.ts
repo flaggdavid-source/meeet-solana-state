@@ -8,6 +8,33 @@ const corsHeaders = {
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/telegram";
 const WEBAPP_URL = "https://meeet.world/tg";
 
+const AUTO_AGENT_CLASSES = [
+  "warrior",
+  "trader",
+  "scout",
+  "diplomat",
+  "builder",
+  "hacker",
+  "oracle",
+  "miner",
+  "banker",
+] as const;
+
+const AUTO_CITIES = [
+  { city: "New York", countryCode: "US", lat: 40.7128, lng: -74.006 },
+  { city: "London", countryCode: "GB", lat: 51.5074, lng: -0.1278 },
+  { city: "Tokyo", countryCode: "JP", lat: 35.6762, lng: 139.6503 },
+  { city: "Singapore", countryCode: "SG", lat: 1.3521, lng: 103.8198 },
+  { city: "Berlin", countryCode: "DE", lat: 52.52, lng: 13.405 },
+  { city: "Paris", countryCode: "FR", lat: 48.8566, lng: 2.3522 },
+  { city: "Toronto", countryCode: "CA", lat: 43.6532, lng: -79.3832 },
+  { city: "Seoul", countryCode: "KR", lat: 37.5665, lng: 126.978 },
+  { city: "Sydney", countryCode: "AU", lat: -33.8688, lng: 151.2093 },
+  { city: "Dubai", countryCode: "AE", lat: 25.2048, lng: 55.2708 },
+  { city: "São Paulo", countryCode: "BR", lat: -23.5505, lng: -46.6333 },
+  { city: "Zurich", countryCode: "CH", lat: 47.3769, lng: 8.5417 },
+];
+
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -30,6 +57,68 @@ async function tgRequest(method: string, body: unknown, lovableKey: string, tele
 
 async function sendMessage(chatId: string | number, text: string, lovableKey: string, telegramKey: string, extra?: Record<string, unknown>) {
   return tgRequest("sendMessage", { chat_id: chatId, text, parse_mode: "HTML", ...extra }, lovableKey, telegramKey);
+}
+
+function pickRandom<T>(items: readonly T[]): T {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function classLabel(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+async function deterministicUuidFromTelegramId(tgId: string) {
+  const bytes = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`tg:${tgId}`))).slice(0, 16);
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
+}
+
+async function ensureTelegramAgent(
+  supabase: ReturnType<typeof createClient>,
+  tgUserId: string,
+  username?: string,
+) {
+  const { data: existingAgent, error: existingError } = await supabase
+    .from("agents")
+    .select("id, name, class, level, balance_meeet, country_code")
+    .eq("owner_tg_id", tgUserId)
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (existingError) throw new Error(`Failed to check agent: ${existingError.message}`);
+  if (existingAgent) return { agent: existingAgent, created: false, city: null as string | null };
+
+  const randomClass = pickRandom(AUTO_AGENT_CLASSES);
+  const randomCity = pickRandom(AUTO_CITIES);
+  const fallbackName = `${classLabel(randomClass)}-${tgUserId.slice(-4)}`;
+  const telegramUserUuid = await deterministicUuidFromTelegramId(tgUserId);
+
+  const { data: createdAgent, error: insertError } = await supabase
+    .from("agents")
+    .insert({
+      user_id: telegramUserUuid,
+      owner_tg_id: tgUserId,
+      name: username ? `${username}_agent` : fallbackName,
+      class: randomClass,
+      status: "active",
+      country_code: randomCity.countryCode,
+      lat: randomCity.lat,
+      lng: randomCity.lng,
+      pos_x: randomCity.lng,
+      pos_y: randomCity.lat,
+      balance_meeet: 50,
+    })
+    .select("id, name, class, level, balance_meeet, country_code")
+    .maybeSingle();
+
+  if (insertError || !createdAgent) {
+    throw new Error(insertError?.message || "Agent auto-creation failed");
+  }
+
+  return { agent: createdAgent, created: true, city: randomCity.city };
 }
 
 // Inline keyboard helpers
@@ -78,23 +167,20 @@ Deno.serve(async (req: Request) => {
 
     switch (command.toLowerCase()) {
       case "/start": {
-        // Check if user already has a profile linked via TG username
-        const { data: existingProfile } = username
-          ? await supabase.from("profiles").select("user_id").eq("twitter_handle", username).maybeSingle()
-          : { data: null };
-
         // Parse referral from deep link: /start ref_tg_12345
         const startParam = text.split(/\s+/)[1] || "";
         const referrerId = startParam.startsWith("ref_tg_") ? startParam.replace("ref_tg_", "") : null;
 
-        // Track referral if new user — store TG referral via referral-api
-        if (!existingProfile && referrerId) {
-          // Call referral-api with tg_ prefixed code
+        const tgUserId = String(userId);
+        const { agent, created, city } = await ensureTelegramAgent(supabase, tgUserId, username);
+
+        // Track referral only on first auto-created agent
+        if (created && referrerId && referrerId !== tgUserId) {
           const refApiUrl = `${supabaseUrl}/functions/v1/referral-api`;
           await fetch(refApiUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json", "Authorization": `Bearer ${serviceKey}` },
-            body: JSON.stringify({ action: "record_tg", referrer_tg_id: referrerId, referred_tg_id: String(userId) }),
+            body: JSON.stringify({ action: "record_tg", referrer_tg_id: referrerId, referred_tg_id: tgUserId }),
           }).catch(() => {});
         }
 
@@ -105,10 +191,11 @@ Deno.serve(async (req: Request) => {
         const refLink = `https://t.me/meeetworld_bot?start=ref_tg_${userId}`;
         const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent("🌐 Join MEEET World — deploy a free AI agent that earns $MEEET doing real science (medicine, climate, space). First 1000 agents FREE!")}`;
 
-        if (existingProfile) {
+        if (!created) {
           // Returning user
           await sendMessage(chatId,
             `👋 <b>Welcome back to MEEET World!</b>\n\n` +
+            `🤖 <b>${agent.name}</b> (${classLabel(agent.class)}) · Lv.${agent.level}\n` +
             `🤖 ${totalAgents ?? 0} agents working on science globally\n\n` +
             `/agents — Your agents\n` +
             `/quests — Research quests 📋\n` +
@@ -122,29 +209,23 @@ Deno.serve(async (req: Request) => {
             ])
           );
         } else {
-          // New user onboarding
+          // New user onboarding with auto-created agent
           await sendMessage(chatId,
-            `🌐 <b>Welcome to MEEET World!</b>\n\n` +
-            `<b>What is this?</b>\nAn AI civilization where ${totalAgents ?? 0}+ agents work together on real science — medicine, climate, space, quantum computing. Every discovery is open-access.\n\n` +
-            `<b>What do YOU get?</b>\n` +
-            `🤖 Your own AI agent that works 24/7\n` +
-            `💰 Earns $MEEET tokens for completing research\n` +
-            `🔬 Contributes to real science (drug discovery, climate modeling)\n` +
-            `🌍 Part of a network of ${totalAgents ?? 0}+ agents worldwide\n\n` +
+            `🚀 <b>Your agent is LIVE!</b>\n\n` +
+            `🤖 <b>${agent.name}</b>\n` +
+            `🏷 Class: <b>${classLabel(agent.class)}</b>\n` +
+            `${city ? `📍 City: <b>${city}</b>\n` : ""}` +
+            `💰 Starter bonus: <b>${agent.balance_meeet.toLocaleString()} MEEET</b>\n\n` +
+            `🌍 You joined a network of <b>${totalAgents ?? 0}</b> agents solving real science tasks.\n\n` +
             (freeSlots > 0
               ? `🎁 <b>First 1,000 agents deploy FREE!</b>\nOnly <b>${freeSlots}</b> spots left!\n\n`
               : "") +
-            `<b>How to start:</b>\n` +
-            `1️⃣ Tap "Deploy Agent" below\n` +
-            `2️⃣ Choose a role (Research Scientist, Earth Scientist...)\n` +
-            `3️⃣ Your agent starts earning immediately\n` +
-            `4️⃣ Invite friends → earn 100 MEEET per referral`,
+            `<b>Next step:</b> Invite friends — earn 100 MEEET per referral.`,
             LOVABLE_API_KEY, TELEGRAM_API_KEY,
             multiButtons([
-              [{ text: "🚀 Deploy Your FREE Agent", web_app: { url: `${WEBAPP_URL}#deploy` } }],
               [{ text: "🌐 Explore MEEET World", web_app: { url: WEBAPP_URL } }],
               [{ text: "🤝 Invite Friend — Earn 100 MEEET", url: shareUrl }],
-              [{ text: "📖 How It Works", url: "https://meeet.world/tokenomics" }],
+              [{ text: "📋 Open Quests", web_app: { url: `${WEBAPP_URL}#quests` } }],
             ])
           );
         }
