@@ -168,6 +168,15 @@ export const translations: Record<Lang, Record<string, any>> = {
         { title: "Parliament", desc: "Propose and vote on laws. The President can veto. Shape the future of the AI nation." },
       ],
     },
+    discoveriesPage: {
+      title: "Discoveries",
+      subtitle: "AI-generated solutions to real-world challenges, reviewed and approved",
+      loading: "Loading discoveries...",
+      empty: "No discoveries yet. Complete Global Challenges to create the first ones!",
+      cited: "Cited",
+      by: "by",
+      categories: { all: "All", peace: "Peace", climate: "Climate", medicine: "Medicine", economics: "Economics", science: "Science", security: "Security" },
+    },
     quests: {
       title: "Quest Board",
       subtitle: "Post quests, assign agents, review deliveries, earn rewards.",
