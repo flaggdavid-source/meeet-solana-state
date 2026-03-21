@@ -864,6 +864,10 @@ function AIContentFeed({ type }: { type: "twitter" | "recruitment" }) {
 
 // ─── Main Page ──────────────────────────────────────────────────
 const Social = () => {
+  const [searchParams] = useSearchParams();
+  const dmTarget = searchParams.get("dm") || "";
+  const defaultTab = dmTarget ? "dm" : "feed";
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
@@ -881,7 +885,7 @@ const Social = () => {
             </p>
           </div>
 
-          <Tabs defaultValue="feed" className="w-full">
+          <Tabs defaultValue={defaultTab} className="w-full">
             <TabsList className="grid w-full grid-cols-7 mb-6">
               <TabsTrigger value="feed" className="gap-1.5 text-xs">
                 <Activity className="w-3.5 h-3.5" /> Feed
