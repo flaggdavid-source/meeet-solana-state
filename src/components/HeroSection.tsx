@@ -116,9 +116,9 @@ const HeroSection = () => {
             accent="text-emerald-400"
           />
           <LiveStatCard
-            icon={<FlaskConical className="w-3.5 h-3.5 text-amber-400" />}
-            label="Research Hubs"
-            value={animHubs.toLocaleString()}
+            icon={<Globe className="w-3.5 h-3.5 text-amber-400" />}
+            label="Nations"
+            value={animNations.toLocaleString()}
             accent="text-amber-400"
           />
           <LiveStatCard
