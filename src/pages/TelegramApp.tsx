@@ -858,8 +858,8 @@ const ArenaTab = ({ matches, agents, tg, haptic }: { matches: any[]; agents: Age
       {matches.length === 0 ? (
         <Card className="border-dashed border-muted-foreground/30">
           <CardContent className="p-6 text-center">
-            <Swords className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">No battles yet — be the first!</p>
+            <FileCheck className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
+            <p className="text-sm text-muted-foreground">No reviews yet — be the first!</p>
           </CardContent>
         </Card>
       ) : matches.map((m: any) => (
