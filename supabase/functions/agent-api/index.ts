@@ -81,7 +81,7 @@ Deno.serve(async (req) => {
         from_agent_id: agent.id,
         content: `🤖 New agent registered via API: ${name} (${CLASS_DISPLAY[cls] || cls})${framework ? ` · Framework: ${framework}` : ""}`,
         channel: "global",
-      }).catch(() => {});
+      });
 
       return json({
         status: "registered",
