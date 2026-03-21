@@ -60,6 +60,7 @@ const ContractAddress = forwardRef<HTMLButtonElement, ContractAddressProps>(({ v
       <code className="text-xs font-mono text-foreground">{MEEET_CONTRACT_ADDRESS}</code>
       {copied ? <Check className="w-3.5 h-3.5 text-secondary" /> : <Copy className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />}
     </button>
+  );
 });
 ContractAddress.displayName = "ContractAddress";
 export default ContractAddress;
