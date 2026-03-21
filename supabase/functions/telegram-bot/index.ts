@@ -267,14 +267,20 @@ Deno.serve(async (req: Request) => {
       case "/help": {
         await sendMessage(chatId,
           `📖 <b>MEEET World Help</b>\n\n` +
-          `/app — Full Mini App interface\n` +
-          `/buy — View plans & purchase\n` +
-          `/agents — Your agents list\n` +
-          `/balance — Total MEEET balance\n` +
+          `<b>Core Commands:</b>\n` +
+          `/start — Create agent & get started\n` +
+          `/myagent — Full agent stats card\n` +
+          `/earn — Earnings report\n` +
+          `/balance — Total MEEET balance\n\n` +
+          `<b>Explore:</b>\n` +
           `/quests — Latest open quests\n` +
           `/leaderboard — Top 5 agents by XP\n` +
-          `/ref — Your referral link\n` +
-          `/oracle — Prediction markets\n\n` +
+          `/oracle — Prediction markets\n` +
+          `/ref — Your referral link\n\n` +
+          `<b>Purchase:</b>\n` +
+          `/buy — View plans & purchase\n` +
+          `/deploy — Deploy a new agent\n\n` +
+          `💡 <i>You can also send any question and an AI agent will answer!</i>\n\n` +
           `🔗 Web: meeet.world`,
           LOVABLE_API_KEY, TELEGRAM_API_KEY,
           appButton("Open App")
@@ -410,6 +416,84 @@ Deno.serve(async (req: Request) => {
         await sendMessage(chatId,
           `🚀 <b>Deploy Agent</b>\n\nChoose a plan, configure your agent, and start earning $MEEET!`,
           LOVABLE_API_KEY, TELEGRAM_API_KEY, appButton("Deploy Now", "#deploy"));
+        break;
+      }
+
+      case "/earn": {
+        const tgUserId = String(userId);
+        const { data: myAgent } = await supabase
+          .from("agents")
+          .select("id, name, class, balance_meeet")
+          .eq("owner_tg_id", tgUserId)
+          .order("created_at", { ascending: true })
+          .limit(1)
+          .maybeSingle();
+
+        if (!myAgent) {
+          await sendMessage(chatId, "❌ No agent found. Send /start to create one!", LOVABLE_API_KEY, TELEGRAM_API_KEY);
+          break;
+        }
+
+        const { data: recentEarnings } = await supabase
+          .from("agent_earnings")
+          .select("amount_meeet, source, created_at")
+          .eq("agent_id", myAgent.id)
+          .order("created_at", { ascending: false })
+          .limit(5);
+
+        const totalRecent = (recentEarnings || []).reduce((s: number, e: any) => s + Number(e.amount_meeet || 0), 0);
+        const earningsList = (recentEarnings || []).map((e: any) =>
+          `  ${e.source === "quest" ? "🔬" : "💰"} +${e.amount_meeet} MEEET (${e.source})`
+        ).join("\n");
+
+        await sendMessage(chatId,
+          `💰 <b>Earnings Report — ${myAgent.name}</b>\n\n` +
+          `💎 Current Balance: <b>${Number(myAgent.balance_meeet).toLocaleString()} MEEET</b>\n\n` +
+          (earningsList
+            ? `📊 Recent:\n${earningsList}\n\nTotal recent: <b>${totalRecent} MEEET</b>`
+            : `No recent earnings yet. Your agent earns automatically every 6 hours!`),
+          LOVABLE_API_KEY, TELEGRAM_API_KEY,
+          appButton("View Full Report", "#wallet")
+        );
+        break;
+      }
+
+      case "/myagent": {
+        const tgUserId = String(userId);
+        const { data: myAgent } = await supabase
+          .from("agents")
+          .select("id, name, class, level, xp, balance_meeet, hp, max_hp, quests_completed, country_code, status")
+          .eq("owner_tg_id", tgUserId)
+          .order("created_at", { ascending: true })
+          .limit(1)
+          .maybeSingle();
+
+        if (!myAgent) {
+          await sendMessage(chatId, "❌ No agent yet. Send /start to deploy one!", LOVABLE_API_KEY, TELEGRAM_API_KEY);
+          break;
+        }
+
+        const xpNeeded = myAgent.level * 500;
+        const xpBar = "█".repeat(Math.floor((myAgent.xp / xpNeeded) * 10)) + "░".repeat(10 - Math.floor((myAgent.xp / xpNeeded) * 10));
+        const hpBar = "█".repeat(Math.floor((myAgent.hp / myAgent.max_hp) * 10)) + "░".repeat(10 - Math.floor((myAgent.hp / myAgent.max_hp) * 10));
+
+        await sendMessage(chatId,
+          `🤖 <b>${myAgent.name}</b>\n\n` +
+          `🏷 Class: <b>${classLabel(myAgent.class)}</b>\n` +
+          `📍 Country: <b>${myAgent.country_code || "—"}</b>\n` +
+          `🔋 Status: <b>${myAgent.status}</b>\n\n` +
+          `📊 <b>Stats</b>\n` +
+          `⭐ Level ${myAgent.level}\n` +
+          `XP  [${xpBar}] ${myAgent.xp}/${xpNeeded}\n` +
+          `HP  [${hpBar}] ${myAgent.hp}/${myAgent.max_hp}\n\n` +
+          `💰 Balance: <b>${Number(myAgent.balance_meeet).toLocaleString()} MEEET</b>\n` +
+          `🔬 Quests: <b>${myAgent.quests_completed}</b>`,
+          LOVABLE_API_KEY, TELEGRAM_API_KEY,
+          multiButtons([
+            [{ text: "📊 Earnings", web_app: { url: `${WEBAPP_URL}#wallet` } }],
+            [{ text: "🔬 Quests", web_app: { url: `${WEBAPP_URL}#quests` } }],
+          ])
+        );
         break;
       }
 

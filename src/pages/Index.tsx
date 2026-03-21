@@ -9,6 +9,8 @@ import TokenSection from "@/components/TokenSection";
 import CTASection from "@/components/CTASection";
 import PetitionForm from "@/components/PetitionForm";
 import Footer from "@/components/Footer";
+import SocialProofSection from "@/components/SocialProofSection";
+import LiveStatsBanner from "@/components/LiveStatsBanner";
 
 const Index = () => {
   return (
@@ -21,7 +23,9 @@ const Index = () => {
       <Navbar />
       <main className="pt-16">
         <HeroSection />
+        <LiveStatsBanner />
         <MilestoneTracker />
+        <SocialProofSection />
         <AgentClassesSection />
         <AgentAPISection />
         <HowItWorksSection />
