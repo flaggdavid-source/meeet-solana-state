@@ -127,9 +127,9 @@ function useEmissionData() {
 
 // ─── Pie Chart (Recharts) ───────────────────────────────────────
 function TokenPieChart({ circulatingMeeet }: { circulatingMeeet: number }) {
-  const agentPct = Math.min(40, Math.round((circulatingMeeet / TOTAL_SUPPLY) * 100));
+  const realAgentPct = Math.round((circulatingMeeet / TOTAL_SUPPLY) * 100 * 100) / 100; // precise %
   const chartData = DISTRIBUTION.map((d) =>
-    d.label === "Circulating (Agents)" ? { ...d, value: agentPct || d.pct } : { ...d, value: d.pct }
+    d.label === "Circulating (Agents)" ? { ...d, value: d.pct, realValue: realAgentPct } : { ...d, value: d.pct, realValue: d.pct }
   );
 
   return (
