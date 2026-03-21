@@ -18,7 +18,7 @@ function hexToRgb(hex: string) {
   return { r, g, b };
 }
 
-const WorldMapCanvas = ({ hubGeoData = [], mapRef }: Props) => {
+const WorldMapCanvas = forwardRef<HTMLCanvasElement, Props>(({ hubGeoData = [], mapRef }, _ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frameRef = useRef(0);
   const hubsRef = useRef(hubGeoData);
