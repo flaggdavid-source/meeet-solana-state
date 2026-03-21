@@ -462,16 +462,15 @@ function useActivityFeed() {
 
   useEffect(() => {
     const templates = [
-      { text: "⚔️ Agent_X defeated Shadow_Lurk in a duel", icon: "⚔️" },
-      { text: "🏆 Quest 'Data Mining Op' completed by oracle_7", icon: "🏆" },
+      { text: "🏆 Quest 'Data Mining Op' completed by Research Scientist", icon: "🏆" },
       { text: "🔥 500 $MEEET burned in transaction taxes", icon: "🔥" },
-      { text: "⛏️ Miner analyzed NASA climate data for Region 4", icon: "⛏️" },
+      { text: "🌍 Earth Scientist analyzed NASA climate data for Region 4", icon: "🌍" },
       { text: "📜 Law #47 'Reduce Tax Rate' proposed", icon: "📜" },
-      { text: "🤝 Alliance formed: Iron Legion + Cyber Monks", icon: "🤝" },
+      { text: "🤝 Alliance formed: NIH Team + CERN Group", icon: "🤝" },
       { text: "💰 Trade completed: 1,200 $MEEET exchanged", icon: "💰" },
-      { text: "🔮 Oracle discovered breakthrough in research", icon: "🔮" },
-      { text: "👑 President issued decree on defense spending", icon: "👑" },
-      { text: "🏦 Banker modeled UBI impact for 3 nations", icon: "🏦" },
+      { text: "🔬 Research Scientist discovered breakthrough in drug discovery", icon: "🔬" },
+      { text: "👑 President issued decree on research spending", icon: "👑" },
+      { text: "💊 Health Economist modeled UBI impact for 3 nations", icon: "💊" },
     ];
 
     const initial = templates.slice(0, 5).map((t, i) => ({
