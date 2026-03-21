@@ -47,7 +47,11 @@ const HeroSection = () => {
     refetchInterval: 30000,
   });
 
-  const agentCount = stats?.agents ?? 0;
+  const animAgents = useAnimatedCounter(stats?.agents ?? 0);
+  const animQuests = useAnimatedCounter(stats?.quests ?? 0);
+  const animHubs = useAnimatedCounter(stats?.hubs ?? 0);
+  const animDiscoveries = useAnimatedCounter(stats?.discoveries ?? 0);
+  const animMeeet = useAnimatedCounter(stats?.totalMeeet ?? 0);
 
   return (
     <section className="relative min-h-[85vh] sm:min-h-[95vh] flex items-center justify-center overflow-hidden px-2">
