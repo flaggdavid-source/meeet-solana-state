@@ -318,7 +318,30 @@ Deno.serve(async (req: Request) => {
       }
 
       default: {
-        await sendMessage(chatId, `🤔 Unknown command. /help for available commands.`, LOVABLE_API_KEY, TELEGRAM_API_KEY);
+        // If not a command, treat as a question to the AI agent
+        if (!text.startsWith("/")) {
+          try {
+            const chatRes = await fetch(`${supabaseUrl}/functions/v1/agent-chat-ai`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "Authorization": `Bearer ${serviceKey}` },
+              body: JSON.stringify({
+                question: text,
+                agent_class: "oracle",
+                agent_name: `Agent-${username || userId}`,
+              }),
+            });
+            const chatData = await chatRes.json();
+            if (chatData.answer) {
+              await sendMessage(chatId, chatData.answer, LOVABLE_API_KEY, TELEGRAM_API_KEY);
+            } else {
+              await sendMessage(chatId, `🤖 Processing... try /help for commands.`, LOVABLE_API_KEY, TELEGRAM_API_KEY);
+            }
+          } catch {
+            await sendMessage(chatId, `🔬 I'm a MEEET World AI agent! Ask me about science, climate, space, or health.\n\n/help for all commands.`, LOVABLE_API_KEY, TELEGRAM_API_KEY);
+          }
+        } else {
+          await sendMessage(chatId, `🤔 Unknown command. /help for available commands.`, LOVABLE_API_KEY, TELEGRAM_API_KEY);
+        }
       }
     }
 
