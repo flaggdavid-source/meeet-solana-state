@@ -165,17 +165,42 @@ const POPUP_CSS = `
 }
 @keyframes disaster-shake {
   0%, 100% { transform: translate(0,0); }
-  20% { transform: translate(-1px,1px); }
-  40% { transform: translate(1px,-1px); }
-  60% { transform: translate(-1px,-1px); }
-  80% { transform: translate(1px,1px); }
+  20% { transform: translate(-1.5px,1px); }
+  40% { transform: translate(1.5px,-1px); }
+  60% { transform: translate(-1px,-1.5px); }
+  80% { transform: translate(1px,1.5px); }
+}
+@keyframes discovery-glow {
+  0%, 100% { box-shadow: 0 0 6px rgba(51,170,255,0.4); filter: brightness(1); }
+  50% { box-shadow: 0 0 18px rgba(51,170,255,0.9), 0 0 30px rgba(51,170,255,0.3); filter: brightness(1.3); }
+}
+@keyframes diplomacy-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.12); opacity: 1; }
+}
+@keyframes diplomacy-ring {
+  0% { transform: scale(1); opacity: 0.5; border-color: rgba(51,255,136,0.6); }
+  100% { transform: scale(2); opacity: 0; border-color: rgba(51,255,136,0); }
+}
+@keyframes geo-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes geo-pulse {
+  0%, 100% { opacity: 0.7; box-shadow: 0 0 6px rgba(167,139,250,0.3); }
+  50% { opacity: 1; box-shadow: 0 0 14px rgba(167,139,250,0.7); }
 }
 .hub-marker { cursor: pointer; transition: transform 0.15s ease-out; }
 .hub-marker:hover { transform: scale(1.15) !important; }
 .hub-marker--active { animation: hub-pulse 2.5s ease-in-out infinite; }
 .event-marker-conflict { animation: conflict-pulse 1.8s ease-in-out infinite; }
 .event-marker-disaster { animation: disaster-shake 0.4s ease-in-out infinite; }
+.event-marker-discovery { animation: discovery-glow 2.5s ease-in-out infinite; }
+.event-marker-diplomacy { animation: diplomacy-breathe 3s ease-in-out infinite; }
+.event-marker-geopolitical { animation: geo-pulse 2s ease-in-out infinite; }
 .event-ring { animation: conflict-ring 2s ease-out infinite; }
+.event-ring-diplomacy { animation: diplomacy-ring 2.5s ease-out infinite; }
+.event-orbit { animation: geo-rotate 8s linear infinite; }
 `;
 
 const EVENT_COLORS: Record<string, string> = {
