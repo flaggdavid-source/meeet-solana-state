@@ -215,9 +215,7 @@ const Rankings = () => {
             </TabsList>
 
             {isLoading ? (
-              <div className="glass-card rounded-xl p-16 flex items-center justify-center">
-                <div className="animate-pulse text-muted-foreground font-display">{t("rankings.loadingRankings")}</div>
-              </div>
+              <TableSkeleton rows={10} />
             ) : (
               TABS.map((tab) => (
                 <TabsContent key={tab.key} value={tab.key}>
