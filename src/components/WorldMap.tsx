@@ -159,17 +159,29 @@ const POPUP_CSS = `
 .hub-marker--active { animation: hub-pulse 2.5s ease-in-out infinite; }
 `;
 
+const EVENT_COLORS: Record<string, string> = {
+  conflict: "#ff3333", disaster: "#ff8800", discovery: "#33aaff",
+  diplomacy: "#33ff88", geopolitical: "#a78bfa",
+};
+const EVENT_ICONS: Record<string, string> = {
+  conflict: "⚔️", disaster: "🌋", discovery: "🔬",
+  diplomacy: "🕊️", geopolitical: "🌍",
+};
+
 const WorldMap = forwardRef<HTMLDivElement, WorldMapProps>(({ height = "100vh", interactive = true, showSidebar = false, onEventClick, myAgent }, _ref) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [worldEvents, setWorldEvents] = useState<WorldEvent[]>([]);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [typeFilter, setTypeFilter] = useState("all");
+  const [eventFilter, setEventFilter] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [feedExpanded, setFeedExpanded] = useState(false);
   const hubMarkersRef = useRef<maplibregl.Marker[]>([]);
+  const eventMarkersRef = useRef<maplibregl.Marker[]>([]);
   const popupRef = useRef<maplibregl.Popup | null>(null);
   const isMobile = useIsMobile();
 
