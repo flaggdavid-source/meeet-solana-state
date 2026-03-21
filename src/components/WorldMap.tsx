@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback, useState, useMemo, forwardRef } from "react";
+import { Link } from "react-router-dom";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { supabase } from "@/integrations/supabase/runtime-client";
@@ -7,7 +8,7 @@ import WorldMapCanvas from "./WorldMapCanvas";
 import WorldMapEventFeed from "./world/WorldMapEventFeed";
 import WorldMapRightPanel from "./world/WorldMapRightPanel";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, ArrowLeft, Home } from "lucide-react";
 
 // ── Strict color palette ──
 const TYPE_COLORS: Record<string, string> = {
@@ -472,6 +473,14 @@ const WorldMap = forwardRef<HTMLDivElement, WorldMapProps>(({ height = "100vh", 
 
       {/* ═══ TOP BAR: Stats + Filters + Search ═══ */}
       <div className="absolute top-3 left-3 right-3 z-20 flex flex-wrap items-center gap-2 pointer-events-none">
+        {/* Back / Home button */}
+        <Link
+          to="/"
+          className="pointer-events-auto flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[rgba(8,12,24,0.88)] backdrop-blur-xl border border-white/[0.06] text-[11px] font-medium text-slate-300 hover:text-white hover:border-white/[0.12] transition-colors"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Back</span>
+        </Link>
         {/* Stats */}
         <div className="pointer-events-auto flex items-center gap-3 px-3 py-2 rounded-lg bg-[rgba(8,12,24,0.88)] backdrop-blur-xl border border-white/[0.06] text-[11px] font-medium">
           <span><span className="text-amber-400 font-bold">{HUB_STATS.totalHubs}</span> <span className="text-slate-500">Hubs</span></span>
