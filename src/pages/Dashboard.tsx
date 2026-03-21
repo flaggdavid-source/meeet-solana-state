@@ -21,6 +21,7 @@ import DailyLoginStreak from "@/components/DailyLoginStreak";
 import PromoWidget from "@/components/PromoWidget";
 import AchievementGrid from "@/components/AchievementGrid";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { DashboardSkeleton } from "@/components/ui/page-skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
