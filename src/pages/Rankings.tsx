@@ -9,6 +9,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Coins, Star, Map, Sword, Crown, Eye } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { TableSkeleton } from "@/components/ui/page-skeleton";
 
 const CLASS_ICONS: Record<string, string> = {
   warrior: "⚔️", trader: "💰", oracle: "🔮", diplomat: "🤝", miner: "⛏️", banker: "🏦", president: "👑",
