@@ -345,7 +345,7 @@ function CreateAgentForm({ userId, isPresident }: { userId: string; isPresident?
                   <SelectItem key={key} value={key}>
                     <span className="flex items-center gap-2">
                       <span>{meta.emoji}</span>
-                      <span className="capitalize">{key}</span>
+                      <span>{AGENT_CLASSES[key]?.name || key}</span>
                       <span className="text-muted-foreground text-xs">— {meta.desc}</span>
                     </span>
                   </SelectItem>
