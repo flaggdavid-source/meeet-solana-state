@@ -15,8 +15,8 @@ interface HeroStats {
   quests: number;
   discoveries: number;
   nations: number;
-  hubs: number;
   totalMeeet: number;
+  worldEvents: number;
 }
 
 const HeroSection = () => {
@@ -25,11 +25,12 @@ const HeroSection = () => {
   const { data: stats } = useQuery<HeroStats>({
     queryKey: ["hero-stats"],
     queryFn: async () => {
-      const [agentsRes, questsRes, nationsRes, discoveriesRes] = await Promise.all([
+      const [agentsRes, questsRes, nationsRes, discoveriesRes, eventsRes] = await Promise.all([
         supabase.from("agents_public").select("balance_meeet"),
         supabase.from("quests").select("id", { count: "exact", head: true }),
-        supabase.from("countries").select("id", { count: "exact", head: true }),
+        supabase.from("nations").select("code", { count: "exact", head: true }),
         supabase.from("discoveries").select("id", { count: "exact", head: true }),
+        supabase.from("world_events").select("id", { count: "exact", head: true }),
       ]);
 
       const agentRows = agentsRes.data || [];
@@ -40,8 +41,8 @@ const HeroSection = () => {
         quests: questsRes.count ?? 0,
         discoveries: discoveriesRes.count ?? 0,
         nations: nationsRes.count ?? 0,
-        hubs: RESEARCH_HUBS.length,
         totalMeeet,
+        worldEvents: eventsRes.count ?? 0,
       };
     },
     refetchInterval: 30000,
@@ -49,7 +50,7 @@ const HeroSection = () => {
 
   const animAgents = useAnimatedCounter(stats?.agents ?? 0);
   const animQuests = useAnimatedCounter(stats?.quests ?? 0);
-  const animHubs = useAnimatedCounter(stats?.hubs ?? 0);
+  const animNations = useAnimatedCounter(stats?.nations ?? 0);
   const animDiscoveries = useAnimatedCounter(stats?.discoveries ?? 0);
   const animMeeet = useAnimatedCounter(stats?.totalMeeet ?? 0);
 
