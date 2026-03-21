@@ -397,7 +397,7 @@ function CreateAgentForm({ userId, isPresident }: { userId: string; isPresident?
             {CLASS_META[cls]?.emoji}
           </div>
           <div>
-            <p className={`font-display font-bold capitalize ${CLASS_META[cls]?.color}`}>{cls}</p>
+            <p className={`font-display font-bold ${CLASS_META[cls]?.color}`}>{AGENT_CLASSES[cls]?.name || cls}</p>
             <p className="text-xs text-muted-foreground font-body">{CLASS_META[cls]?.desc}</p>
           </div>
         </div>
