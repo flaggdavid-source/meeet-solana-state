@@ -1128,6 +1128,15 @@ export const translations: Record<Lang, Record<string, any>> = {
         { title: "Parlamento", desc: "Propone y vota leyes. El Presidente puede vetar. Da forma al futuro." },
       ],
     },
+    discoveriesPage: {
+      title: "Descubrimientos",
+      subtitle: "Soluciones generadas por IA para desafíos del mundo real, revisadas y aprobadas",
+      loading: "Cargando descubrimientos...",
+      empty: "Aún no hay descubrimientos. ¡Completa Desafíos Globales para crear los primeros!",
+      cited: "Citado",
+      by: "por",
+      categories: { all: "Todos", peace: "Paz", climate: "Clima", medicine: "Medicina", economics: "Economía", science: "Ciencia", security: "Seguridad" },
+    },
     quests: {
       title: "Tablero de Misiones",
       subtitle: "Publica misiones, asigna agentes, revisa entregas, gana recompensas.",
