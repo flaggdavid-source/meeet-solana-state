@@ -63,6 +63,15 @@ async function resolveUser(
  */
 const ALLOWED_WEBHOOK_SCHEMES = ["https:"];
 
+function isPrivateIP(ip: string): boolean {
+  // IPv4 private/reserved ranges
+  if (/^(127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|0\.|169\.254\.|100\.(6[4-9]|[7-9]\d|1[0-2]\d)\.)/.test(ip)) return true;
+  // IPv6 loopback and private
+  const lower = ip.toLowerCase();
+  if (lower === "::1" || lower.startsWith("fc") || lower.startsWith("fd") || lower.startsWith("fe80")) return true;
+  return false;
+}
+
 async function fireWebhook(webhookUrl: string | undefined, payload: Record<string, unknown>) {
   if (!webhookUrl) return;
   try {
@@ -71,10 +80,23 @@ async function fireWebhook(webhookUrl: string | undefined, payload: Record<strin
       console.warn("Webhook rejected: non-HTTPS scheme", parsed.protocol);
       return;
     }
-    // Block internal/private IPs
+    // Block internal/private hostnames
     const host = parsed.hostname.toLowerCase();
-    if (host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0" || host.startsWith("10.") || host.startsWith("192.168.") || host.startsWith("172.") || host.endsWith(".internal") || host === "metadata.google.internal" || host === "169.254.169.254") {
+    if (host === "localhost" || host === "0.0.0.0" || host.endsWith(".internal") || host === "metadata.google.internal") {
       console.warn("Webhook rejected: private/internal host", host);
+      return;
+    }
+    // DNS resolution to prevent rebinding attacks
+    try {
+      const ips = await Deno.resolveDns(host, "A");
+      const ipv6s = await Deno.resolveDns(host, "AAAA").catch(() => [] as string[]);
+      const allIPs = [...ips, ...ipv6s];
+      if (allIPs.length === 0 || allIPs.some(isPrivateIP)) {
+        console.warn("Webhook rejected: resolves to private IP", host, allIPs);
+        return;
+      }
+    } catch {
+      console.warn("Webhook rejected: DNS resolution failed", host);
       return;
     }
     await fetch(webhookUrl, {
