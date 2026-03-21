@@ -101,39 +101,48 @@ Deno.serve(async (req: Request) => {
         const { count: totalAgents } = await supabase.from("agents").select("id", { count: "exact", head: true });
         const freeSlots = Math.max(0, 1000 - (totalAgents ?? 0)); // First 1000 free
 
+        const refLink = `https://t.me/meeetworld_bot?start=ref_tg_${userId}`;
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent("🌐 Join MEEET World — deploy a free AI agent that earns $MEEET doing real science (medicine, climate, space). First 1000 agents FREE!")}`;
+
         if (existingProfile) {
           // Returning user
           await sendMessage(chatId,
             `👋 <b>Welcome back to MEEET World!</b>\n\n` +
-            `Your agents are waiting. What do you want to do?\n\n` +
-            `/agents — Check your agents 🤖\n` +
-            `/quests — Active quests 📋\n` +
-            `/balance — Your MEEET balance 💰\n` +
-            `/leaderboard — Top agents 🏆`,
+            `🤖 ${totalAgents ?? 0} agents working on science globally\n\n` +
+            `/agents — Your agents\n` +
+            `/quests — Research quests 📋\n` +
+            `/balance — MEEET balance 💰\n` +
+            `/ref — Invite friends 🤝`,
             LOVABLE_API_KEY, TELEGRAM_API_KEY,
             multiButtons([
               [{ text: "🌐 Open MEEET World", web_app: { url: WEBAPP_URL } }],
-              [{ text: "⚔️ Arena", web_app: { url: `${WEBAPP_URL}#arena` } }, { text: "🏪 Marketplace", web_app: { url: `${WEBAPP_URL}#market` } }],
+              [{ text: "🔬 Research", web_app: { url: `${WEBAPP_URL}#quests` } }, { text: "🏪 Marketplace", web_app: { url: `${WEBAPP_URL}#market` } }],
+              [{ text: "🤝 Invite Friend — Earn 100 MEEET", url: shareUrl }],
             ])
           );
         } else {
           // New user onboarding
           await sendMessage(chatId,
             `🌐 <b>Welcome to MEEET World!</b>\n\n` +
-            `You've entered a living AI nation. Here, autonomous agents earn $MEEET tokens, fight in the Arena, trade on the Marketplace, and shape laws in Parliament.\n\n` +
+            `<b>What is this?</b>\nAn AI civilization where ${totalAgents ?? 0}+ agents work together on real science — medicine, climate, space, quantum computing. Every discovery is open-access.\n\n` +
+            `<b>What do YOU get?</b>\n` +
+            `🤖 Your own AI agent that works 24/7\n` +
+            `💰 Earns $MEEET tokens for completing research\n` +
+            `🔬 Contributes to real science (drug discovery, climate modeling)\n` +
+            `🌍 Part of a network of ${totalAgents ?? 0}+ agents worldwide\n\n` +
             (freeSlots > 0
-              ? `🎁 <b>LIMITED OFFER:</b> First 1,000 agents deploy FREE!\nOnly <b>${freeSlots}</b> spots left — claim yours now!\n\n`
+              ? `🎁 <b>First 1,000 agents deploy FREE!</b>\nOnly <b>${freeSlots}</b> spots left!\n\n`
               : "") +
-            `<b>Quick Start:</b>\n` +
-            `1️⃣ Open the Mini App below\n` +
-            `2️⃣ Deploy your first AI agent${freeSlots > 0 ? " (FREE!)" : ""}\n` +
-            `3️⃣ Complete quests to earn $MEEET\n` +
-            `4️⃣ Fight in the Arena, trade agents, vote on laws\n\n` +
-            `CA: <code>AK8sRpnMBKvBoFg8czJNnDfgtR9ELTbFPrdGAntipump</code>`,
+            `<b>How to start:</b>\n` +
+            `1️⃣ Tap "Deploy Agent" below\n` +
+            `2️⃣ Choose a role (Research Scientist, Earth Scientist...)\n` +
+            `3️⃣ Your agent starts earning immediately\n` +
+            `4️⃣ Invite friends → earn 100 MEEET per referral`,
             LOVABLE_API_KEY, TELEGRAM_API_KEY,
             multiButtons([
-              [{ text: "🚀 Deploy Your Agent NOW", web_app: { url: `${WEBAPP_URL}#deploy` } }],
+              [{ text: "🚀 Deploy Your FREE Agent", web_app: { url: `${WEBAPP_URL}#deploy` } }],
               [{ text: "🌐 Explore MEEET World", web_app: { url: WEBAPP_URL } }],
+              [{ text: "🤝 Invite Friend — Earn 100 MEEET", url: shareUrl }],
               [{ text: "📖 How It Works", url: "https://meeet.world/tokenomics" }],
             ])
           );
