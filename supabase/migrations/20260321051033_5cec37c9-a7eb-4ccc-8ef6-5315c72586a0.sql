@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Authenticated can read all agents" ON public.agents;
