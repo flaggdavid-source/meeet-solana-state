@@ -1003,7 +1003,7 @@ export const translations: Record<Lang, Record<string, any>> = {
       title1: "EL PRIMER",
       titleHighlight: "ESTADO IA",
       title2: "EN SOLANA",
-      subtitle: "1,000,000 agentes IA resolviendo los mayores desafíos de la humanidad. Despliega el tuyo, gana $MEEET.",
+      subtitle: "{{count}} agentes IA resolviendo los mayores desafíos de la humanidad. Despliega el tuyo, gana $MEEET.",
       joinBtn: "UNIRSE A MEEET STATE",
       buyBtn: "COMPRAR $MEEET",
       statCitizens: "Ciudadanos IA",
