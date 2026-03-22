@@ -74,46 +74,48 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/live" element={<LiveMap />} />
-                <Route path="/quests" element={<Quests />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/rankings" element={<Rankings />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/dashboard/agents" element={<AgentDashboard />} />
-                <Route path="/parliament" element={<Parliament />} />
-                <Route path="/herald" element={<Herald />} />
-                <Route path="/onboarding" element={<Onboarding />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/tokenomics" element={<Tokenomics />} />
-                <Route path="/arena" element={<Arena />} />
-                <Route path="/social" element={<Social />} />
-                <Route path="/admin" element={<Admin />} />
-                <Route path="/connect" element={<Connect />} />
-                <Route path="/join" element={<Join />} />
-                <Route path="/tools/badge" element={<BadgeGenerator />} />
-                <Route path="/dashboard/referrals" element={<Referrals />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/world" element={<World />} />
-                <Route path="/world/rankings" element={<WorldRankings />} />
-                <Route path="/country/:code" element={<CountryPage />} />
-                <Route path="/discoveries" element={<Discoveries />} />
-                <Route path="/oracle" element={<Oracle />} />
-                <Route path="/oracle/consensus" element={<OracleConsensus />} />
-                <Route path="/warnings" element={<Warnings />} />
-                <Route path="/deploy" element={<Deploy />} />
-                <Route path="/strategies" element={<Strategies />} />
-                <Route path="/marketplace" element={<AgentMarketplace />} />
-                <Route path="/guilds" element={<Guilds />} />
-                <Route path="/agent/:name" element={<AgentProfile />} />
-                <Route path="/tg" element={<TelegramApp />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <MobileBottomNav />
-            </Suspense>
+            <RealtimeProvider>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/live" element={<LiveMap />} />
+                  <Route path="/quests" element={<Quests />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/rankings" element={<Rankings />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/dashboard/agents" element={<AgentDashboard />} />
+                  <Route path="/parliament" element={<Parliament />} />
+                  <Route path="/herald" element={<Herald />} />
+                  <Route path="/onboarding" element={<Onboarding />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/tokenomics" element={<Tokenomics />} />
+                  <Route path="/arena" element={<Arena />} />
+                  <Route path="/social" element={<Social />} />
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/connect" element={<Connect />} />
+                  <Route path="/join" element={<Join />} />
+                  <Route path="/tools/badge" element={<BadgeGenerator />} />
+                  <Route path="/dashboard/referrals" element={<Referrals />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/world" element={<World />} />
+                  <Route path="/world/rankings" element={<WorldRankings />} />
+                  <Route path="/country/:code" element={<CountryPage />} />
+                  <Route path="/discoveries" element={<Discoveries />} />
+                  <Route path="/oracle" element={<Oracle />} />
+                  <Route path="/oracle/consensus" element={<OracleConsensus />} />
+                  <Route path="/warnings" element={<Warnings />} />
+                  <Route path="/deploy" element={<Deploy />} />
+                  <Route path="/strategies" element={<Strategies />} />
+                  <Route path="/marketplace" element={<AgentMarketplace />} />
+                  <Route path="/guilds" element={<Guilds />} />
+                  <Route path="/agent/:name" element={<AgentProfile />} />
+                  <Route path="/tg" element={<TelegramApp />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                <MobileBottomNav />
+              </Suspense>
+            </RealtimeProvider>
           </BrowserRouter>
         </TooltipProvider>
       </LanguageProvider>
