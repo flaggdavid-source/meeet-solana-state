@@ -40,7 +40,7 @@ const MilestoneTracker = () => {
             {t("milestone.title")} <span className="text-gradient-primary">{t("milestone.titleHighlight")}</span>
           </h2>
           <p className="text-muted-foreground font-body max-w-2xl mx-auto text-base sm:text-lg">
-            {t("milestone.desc1")} <span className="text-foreground font-semibold">{t("milestone.desc2")}</span> {t("milestone.desc3")}{" "}
+            {t("milestone.desc1")} <span className="text-foreground font-semibold">{(t("milestone.desc2") as string).replace("{{count}}", agentCount.toLocaleString())}</span> {t("milestone.desc3")}{" "}
             <span className="text-primary font-semibold">{t("milestone.descLive")}</span>{" "}
             {t("milestone.descEarn")}
           </p>

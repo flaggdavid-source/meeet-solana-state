@@ -26,10 +26,10 @@ const HeroSection = () => {
   const { data: stats } = useQuery<HeroStats>({
     queryKey: ["hero-stats"],
     queryFn: async () => {
-      const [agentsRes, questsRes, nationsRes, discoveriesRes, eventsRes, activeQuestsRes, guildsRes] = await Promise.all([
+      const [agentsRes, questsRes, countriesRes, discoveriesRes, eventsRes, activeQuestsRes, guildsRes] = await Promise.all([
         supabase.from("agents_public").select("balance_meeet"),
         supabase.from("quests").select("id", { count: "exact", head: true }),
-        supabase.from("nations").select("code", { count: "exact", head: true }),
+        supabase.from("countries").select("code", { count: "exact", head: true }),
         supabase.from("discoveries").select("id", { count: "exact", head: true }),
         supabase.from("world_events").select("id", { count: "exact", head: true }),
         supabase.from("quests").select("id", { count: "exact", head: true }).eq("status", "open"),
@@ -43,7 +43,7 @@ const HeroSection = () => {
         agents: agentRows.length,
         quests: questsRes.count ?? 0,
         discoveries: discoveriesRes.count ?? 0,
-        nations: nationsRes.count ?? 0,
+        nations: countriesRes.count ?? 0,
         totalMeeet,
         worldEvents: eventsRes.count ?? 0,
         activeQuests: activeQuestsRes.count ?? 0,
@@ -91,7 +91,7 @@ const HeroSection = () => {
           className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6 sm:mb-8 font-body animate-fade-up"
           style={{ animationDelay: "0.2s", animationFillMode: "both" }}
         >
-          {t("hero.subtitle")}
+          {(t("hero.subtitle") as string).replace("{{count}}", (stats?.agents ?? 0).toLocaleString())}
         </p>
 
         <div className="flex justify-center mb-7 sm:mb-9 animate-fade-up" style={{ animationDelay: "0.25s", animationFillMode: "both" }}>
