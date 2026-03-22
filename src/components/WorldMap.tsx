@@ -110,22 +110,22 @@ const MAP_STYLE: maplibregl.StyleSpecification = {
   layers: [
     {
       id: "base", type: "raster", source: "carto-dark",
-      paint: { "raster-brightness-max": 0.25, "raster-brightness-min": 0.02, "raster-contrast": 0.3, "raster-saturation": -0.85 },
+      paint: { "raster-brightness-max": 0.55, "raster-brightness-min": 0.08, "raster-contrast": 0.2, "raster-saturation": -0.6 },
     },
     {
       id: "country-fill", type: "fill", source: "country-borders",
-      paint: { "fill-color": "#0B1120", "fill-opacity": 0.5 },
+      paint: { "fill-color": "#0E1628", "fill-opacity": 0.35 },
     },
     {
       id: "country-borders-line", type: "line", source: "country-borders",
-      paint: { "line-color": "#1A2744", "line-width": ["interpolate", ["linear"], ["zoom"], 1, 0.4, 3, 0.8, 6, 1.2] },
+      paint: { "line-color": "#2A3A5C", "line-width": ["interpolate", ["linear"], ["zoom"], 1, 0.6, 3, 1, 6, 1.5] },
     },
     {
       id: "labels", type: "raster", source: "carto-labels",
       minzoom: 3,
       paint: {
-        "raster-opacity": ["interpolate", ["linear"], ["zoom"], 3, 0, 4, 0.3, 6, 0.5],
-        "raster-brightness-max": 0.3, "raster-saturation": -0.7,
+        "raster-opacity": ["interpolate", ["linear"], ["zoom"], 3, 0, 4, 0.5, 6, 0.7],
+        "raster-brightness-max": 0.5, "raster-saturation": -0.5,
       },
     },
   ],
