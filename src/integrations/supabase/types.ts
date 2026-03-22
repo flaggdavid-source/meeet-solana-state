@@ -458,6 +458,51 @@ export type Database = {
           },
         ]
       }
+      agent_tweets: {
+        Row: {
+          agent_id: string
+          content: string
+          created_at: string | null
+          id: string
+          likes: number | null
+          replies: number | null
+          retweets: number | null
+        }
+        Insert: {
+          agent_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          likes?: number | null
+          replies?: number | null
+          retweets?: number | null
+        }
+        Update: {
+          agent_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          likes?: number | null
+          replies?: number | null
+          retweets?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_tweets_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_tweets_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agents: {
         Row: {
           attack: number
