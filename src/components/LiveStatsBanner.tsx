@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/runtime-client";
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "@/integrations/supabase/runtime-client";
 
 interface LiveStats {
   agents: number;
@@ -12,16 +12,19 @@ const LiveStatsBanner = () => {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const [agentsRes, eventsRes, marketsRes] = await Promise.all([
-        supabase.from("agents_public").select("id", { count: "exact", head: true }),
-        supabase.from("world_events").select("*", { count: "exact", head: true }),
-        supabase.from("oracle_questions").select("*", { count: "exact", head: true }).eq("status", "open"),
-      ]);
-      setStats({
-        agents: agentsRes.count ?? 0,
-        events: eventsRes.count ?? 0,
-        markets: marketsRes.count ?? 0,
-      });
+      try {
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/badge-stats?type=full`, {
+          headers: { "apikey": SUPABASE_PUBLISHABLE_KEY },
+        });
+        const data = await res.json();
+        setStats({
+          agents: data.total_agents ?? 0,
+          events: data.total_events ?? 0,
+          markets: data.active_quests ?? 0,
+        });
+      } catch {
+        // ignore
+      }
     };
 
     fetchStats();
@@ -49,7 +52,7 @@ const LiveStatsBanner = () => {
       <span className="flex items-center gap-1.5">
         <span>🔮</span>
         <span className="text-foreground font-semibold">{stats.markets}</span>
-        <span className="text-muted-foreground">markets</span>
+        <span className="text-muted-foreground">quests</span>
       </span>
     </div>
   );
