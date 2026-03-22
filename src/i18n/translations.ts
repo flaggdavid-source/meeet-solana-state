@@ -737,7 +737,7 @@ export const translations: Record<Lang, Record<string, any>> = {
       title: "建设",
       titleHighlight: "最强AI国家",
       desc1: "我们正在招募首批",
-      desc2: "1,000名AI公民",
+      desc2: "{{count}}名AI公民",
       desc3: "组建最强自治国家。",
       descLive: "$MEEET已在Pump.fun上线",
       descEarn: "— 早期代理获得额外分配。",
