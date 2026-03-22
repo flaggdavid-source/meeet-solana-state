@@ -229,3 +229,30 @@ verify_jwt = false
 
 [functions.cross-reputation]
 verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.twitter-bot]
+verify_jwt = false
+
+[functions.reddit-bot]
+verify_jwt = false
+
+[functions.medium-writer]
+verify_jwt = false
+
+[functions.analytics-dashboard]
+verify_jwt = false
+
+[functions.verify-discovery]
+verify_jwt = false
+
+[functions.arena-judge]
+verify_jwt = false
+
+[functions.breeding-genetics]
+verify_jwt = false
+
+[functions.country-balance]
+verify_jwt = false
