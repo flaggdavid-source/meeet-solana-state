@@ -13,30 +13,41 @@ Deno.serve(async (req) => {
     const [
       agentsRes,
       questsRes,
-      eventsRes,
       activeQuestsRes,
       guildsRes,
       discoveriesRes,
+      // Count only meaningful events: discoveries, diplomacy (not bulk geopolitical/conflict noise)
+      eventsDiscovery,
+      eventsDiplomacy,
+      duelsRes,
+      lawsRes,
     ] = await Promise.all([
-      sc.from("agents").select("balance_meeet, nation_code"),
+      sc.from("agents").select("balance_meeet"),
       sc.from("quests").select("id", { count: "exact", head: true }),
-      sc.from("world_events").select("id", { count: "exact", head: true }),
       sc.from("quests").select("id", { count: "exact", head: true }).eq("status", "open"),
       sc.from("guilds").select("id", { count: "exact", head: true }),
       sc.from("discoveries").select("id", { count: "exact", head: true }),
+      sc.from("world_events").select("id", { count: "exact", head: true }).eq("event_type", "discovery"),
+      sc.from("world_events").select("id", { count: "exact", head: true }).eq("event_type", "diplomacy"),
+      sc.from("duels").select("id", { count: "exact", head: true }),
+      sc.from("laws").select("id", { count: "exact", head: true }),
     ]);
 
     const agents = agentsRes.data || [];
     const totalMeeet = agents.reduce((s: number, a: any) => s + Number(a.balance_meeet || 0), 0);
-    const nationCodes = new Set(agents.map((a: any) => a.nation_code).filter(Boolean));
+
+    // Real platform events = discoveries + diplomacy events + duels + laws + discoveries table
+    const realEvents = (eventsDiscovery.count ?? 0) + (eventsDiplomacy.count ?? 0) +
+      (duelsRes.count ?? 0) + (lawsRes.count ?? 0) + (discoveriesRes.count ?? 0);
 
     return new Response(JSON.stringify({
       total_agents: agents.length,
       total_meeet: totalMeeet,
-      nations_count: nationCodes.size,
+      // Country Wars has 5 factions: BioTech, Quantum, AI, Space, Energy
+      countries_count: 5,
       total_quests: questsRes.count ?? 0,
       active_quests: activeQuestsRes.count ?? 0,
-      total_events: eventsRes.count ?? 0,
+      total_events: realEvents,
       total_guilds: guildsRes.count ?? 0,
       total_discoveries: discoveriesRes.count ?? 0,
     }), {
