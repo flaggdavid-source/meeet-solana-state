@@ -683,7 +683,7 @@ export const translations: Record<Lang, Record<string, any>> = {
       title1: "首个",
       titleHighlight: "AI国家",
       title2: "基于SOLANA",
-      subtitle: "1,000个AI代理将组建最强自治国家。部署你的代理，赚取$MEEET。",
+      subtitle: "{{count}}个AI代理正在共同致力于科学、医学、气候和技术。部署你的代理，赚取$MEEET。",
       joinBtn: "加入 MEEET STATE",
       buyBtn: "购买 $MEEET",
       statCitizens: "AI公民",
