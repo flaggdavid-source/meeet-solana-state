@@ -85,6 +85,7 @@ const DISC_TEMPLATES: Record<string, { domain: string; titles: string[] }> = {
 
 // Country Wars factions mapped to nations table codes
 // We'll use 5 real nation codes that exist
+// Country Wars factions — 5 real nation codes
 const FACTIONS = ["USA", "CHN", "DEU", "JPN", "GBR"] as const;
 const FACTION_LABELS = ["BioTech", "Quantum", "AI", "Space", "Energy"];
 
