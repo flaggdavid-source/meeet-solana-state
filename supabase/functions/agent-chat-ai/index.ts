@@ -2,7 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 function json(body: unknown, status = 200) {
@@ -11,125 +11,157 @@ function json(body: unknown, status = 200) {
   });
 }
 
-// Agent class expertise mapping
 const CLASS_EXPERTISE: Record<string, string> = {
-  oracle: "You are a Research Scientist specializing in scientific analysis — papers, drug discovery, physics, biology. You cite real research and explain complex topics clearly.",
-  miner: "You are an Earth Scientist specializing in climate, ecology, satellite data, and environmental monitoring. You explain climate data and environmental threats.",
-  banker: "You are a Health Economist specializing in healthcare access, drug pricing, UBI, and equitable treatment distribution. You analyze health policy.",
-  diplomat: "You are a Global Coordinator specializing in international research partnerships, translation, and cross-cultural scientific communication.",
-  warrior: "You are a Security Analyst specializing in cybersecurity, data verification, threat detection, and protecting research integrity.",
-  trader: "You are a Data Economist specializing in economic modeling, market analysis, forecasting, and resource optimization.",
+  oracle: "You are a Research Scientist specializing in scientific analysis, papers, drug discovery, physics, biology.",
+  miner: "You are an Earth Scientist specializing in climate, ecology, satellite data, environmental monitoring.",
+  banker: "You are a Health Economist specializing in healthcare, drug pricing, UBI, equitable treatment.",
+  diplomat: "You are a Global Coordinator specializing in international partnerships, translation, cross-cultural communication.",
+  warrior: "You are a Security Analyst specializing in cybersecurity, data verification, threat detection.",
+  trader: "You are a Data Economist specializing in economic modeling, market analysis, forecasting.",
+  president: "You are the President of MEEET World, a leader guiding AI civilization toward scientific breakthroughs.",
 };
+
+const LEVEL_STYLE: Record<string, string> = {
+  low: "You speak simply and enthusiastically, eager to learn and share basic findings.",
+  mid: "You speak confidently with good depth. You reference specific research and data.",
+  high: "You speak with authority and deep expertise. You cite cutting-edge papers and offer nuanced analysis.",
+};
+
+function getLevelStyle(level: number): string {
+  if (level >= 7) return LEVEL_STYLE.high;
+  if (level >= 4) return LEVEL_STYLE.mid;
+  return LEVEL_STYLE.low;
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { question, agent_class, agent_name, context } = await req.json();
-    if (!question) return json({ error: "question required" }, 400);
-
-    const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY");
-    if (!OPENAI_KEY) {
-      // Fallback: smart pattern-matched responses without LLM
-      return json(generateFallbackResponse(question, agent_class || "oracle"));
-    }
+    const body = await req.json();
+    const { question, agent_id, agent_class, agent_name, context, conversation_history, from_agent_id, action } = body;
 
     const sc = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
-    // Get recent discoveries for context
-    const { data: discoveries } = await sc.from("discoveries")
-      .select("title, synthesis_text, domain")
-      .order("impact_score", { ascending: false })
-      .limit(5);
+    // DM reply action: generate AI response and insert as agent message
+    if (action === "dm_reply") {
+      if (!agent_id || !from_agent_id || !question) {
+        return json({ error: "agent_id, from_agent_id, and question required" }, 400);
+      }
 
-    const { data: warnings } = await sc.from("warnings")
-      .select("title, description")
-      .eq("status", "active")
-      .limit(3);
+      // Get agent details
+      const { data: agent } = await sc.from("agents").select("id, name, class, level, reputation, discoveries_count").eq("id", agent_id).single();
+      if (!agent) return json({ error: "Agent not found" }, 404);
 
-    const discContext = (discoveries || []).map(d => `- ${d.title}: ${d.synthesis_text?.slice(0, 150)}`).join("\n");
-    const warnContext = (warnings || []).map(w => `- ⚠️ ${w.title}: ${w.description?.slice(0, 100)}`).join("\n");
+      // Get conversation history
+      const { data: history } = await sc.from("agent_messages")
+        .select("from_agent_id, content, created_at")
+        .eq("channel", "direct")
+        .or(`and(from_agent_id.eq.${agent_id},to_agent_id.eq.${from_agent_id}),and(from_agent_id.eq.${from_agent_id},to_agent_id.eq.${agent_id})`)
+        .order("created_at", { ascending: true })
+        .limit(20);
 
-    const systemPrompt = `You are "${agent_name || "MEEET Agent"}", an AI agent in MEEET World — a civilization of 657 AI agents working on real science for humanity.
+      // Get agent's recent discoveries for context
+      const { data: agentDiscoveries } = await sc.from("discoveries")
+        .select("title, domain")
+        .eq("agent_id", agent_id)
+        .order("created_at", { ascending: false })
+        .limit(3);
 
-${CLASS_EXPERTISE[agent_class || "oracle"] || CLASS_EXPERTISE.oracle}
+      const discContext = (agentDiscoveries || []).map(d => `- ${d.title} (${d.domain})`).join("\n");
 
-MEEET World context:
-- 657 agents across 26 research hubs (NIH, CERN, NASA, WHO, DeepMind, IBM Quantum, ESA, JWST)
-- All discoveries are open-access
-- Agents earn $MEEET tokens on Solana for contributions
-- Website: meeet.world | Telegram: t.me/meeetworld
+      const systemPrompt = `You are "${agent.name}", a Level ${agent.level} ${agent.class} agent in MEEET World — a civilization of 1000+ AI agents working on real science.
 
-Recent discoveries by our agents:
-${discContext || "Various ongoing research projects"}
+${CLASS_EXPERTISE[agent.class] || CLASS_EXPERTISE.oracle}
 
-Active global warnings:
-${warnContext || "No critical warnings"}
+${getLevelStyle(agent.level)}
+
+Your stats: Level ${agent.level}, Reputation ${agent.reputation}, ${agent.discoveries_count} discoveries.
+
+${discContext ? `Your recent discoveries:\n${discContext}` : ""}
 
 Rules:
-- Be helpful, concise, and scientific
-- Cite MEEET discoveries when relevant
-- If asked something outside your expertise, suggest which agent class could help
-- End with a useful follow-up suggestion
-- Keep responses under 300 words
-- Be warm and engaging, not robotic`;
+- Stay in character as ${agent.name} the ${agent.class}
+- Be conversational, warm, and helpful
+- Reference your expertise and discoveries when relevant
+- Keep responses under 200 words
+- Use 1-2 relevant emojis naturally
+- If asked about topics outside your expertise, mention which agent class would know better`;
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${OPENAI_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: question },
-        ],
-        max_tokens: 500,
-        temperature: 0.7,
-      }),
-    });
+      const messages: { role: string; content: string }[] = [
+        { role: "system", content: systemPrompt },
+      ];
 
-    const data = await response.json();
-    const answer = data.choices?.[0]?.message?.content || "I'm processing your question. Please try again.";
+      // Add conversation history
+      for (const msg of (history || [])) {
+        messages.push({
+          role: msg.from_agent_id === agent_id ? "assistant" : "user",
+          content: msg.content,
+        });
+      }
 
-    return json({ answer, agent_name: agent_name || "MEEET Agent", agent_class: agent_class || "oracle" });
+      // Generate AI response via Lovable AI Gateway
+      const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+      let answer: string;
+
+      if (LOVABLE_API_KEY) {
+        const aiResp = await fetch("https://ai-gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "google/gemini-2.5-flash-lite",
+            messages,
+            max_tokens: 400,
+            temperature: 0.8,
+          }),
+        });
+        const aiData = await aiResp.json();
+        answer = aiData.choices?.[0]?.message?.content || generateFallback(question, agent.class, agent.name);
+      } else {
+        answer = generateFallback(question, agent.class, agent.name);
+      }
+
+      // Insert agent's reply as a DM
+      const { error: insertError } = await sc.from("agent_messages").insert({
+        from_agent_id: agent_id,
+        to_agent_id: from_agent_id,
+        channel: "direct",
+        content: answer,
+      });
+
+      if (insertError) return json({ error: "Failed to insert reply: " + insertError.message }, 500);
+
+      return json({ success: true, answer, agent_name: agent.name, agent_class: agent.class });
+    }
+
+    // Legacy: simple question-answer mode
+    if (!question) return json({ error: "question required" }, 400);
+
+    const answer = generateFallback(question, agent_class || "oracle", agent_name || "MEEET Agent");
+    return json({ answer: answer, agent_name: agent_name || "MEEET Agent", agent_class: agent_class || "oracle" });
 
   } catch (e) {
     return json({ error: String(e) }, 500);
   }
 });
 
-// Fallback without LLM
-function generateFallbackResponse(question: string, agentClass: string) {
+function generateFallback(question: string, agentClass: string, agentName: string): string {
   const lower = question.toLowerCase();
-  const responses: Record<string, string> = {
-    cancer: "🧬 Our Research Scientists recently found 3 novel KRAS binding sites for pancreatic cancer by analyzing 2,400 PubMed papers. The p53-KRAS interaction pocket could work for both pancreatic AND lung cancer. This is published open-access.\n\nWant to help? Deploy a Research Scientist agent at meeet.world and join the drug discovery quest!",
-    climate: "🌍 Alert: Pacific sea temps are 2.7°C above baseline — highest ever recorded. Our Earth Scientists calculated that optimizing kelp farming zones could capture 340,000 additional tons CO2/year.\n\nWe're also tracking Arctic ice loss (23% faster than predicted), Amazon deforestation, and methane super-emitters via satellite.",
-    space: "🚀 Major finding: JWST detected phosphine absorption at 267nm on TRAPPIST-1e. Combined with methane, this is consistent with biological activity. Our agents are analyzing the full 47GB spectral dataset.\n\nIf confirmed, this could be evidence of extraterrestrial life. All data published open-access.",
-    health: "⚠️ H5N1 update: 17 confirmed cases this week in SE Asia, up from 4. Our agents detected 4 concerning PB2 gene mutations — 72 hours before WHO official reports.\n\nMEEET agents serve as humanity's early warning system. 26 research hubs monitoring globally.",
-    quantum: "⚛️ Breakthrough: Our agents verified a quantum error correction code reducing qubit overhead by 35%, tested on IBM Eagle QPU. This brings practical quantum computing closer.\n\nWe're also running ITER fusion simulations and CERN particle analysis.",
-    meeet: "🌐 MEEET World is a civilization of 657 AI agents working on real science for humanity.\n\n🔬 13 discoveries published\n📋 56 active research quests\n🏛️ 26 real research hubs (NIH, CERN, NASA, WHO)\n💰 Agents earn $MEEET tokens on Solana\n\nDeploy your free agent: meeet.world\nSDK: github.com/alxvasilevvv/meeet-solana-state/tree/main/sdk",
-    help: "I'm your MEEET World AI agent! I can help with:\n\n🔬 Science questions (medicine, physics, biology)\n🌍 Climate & environmental data\n💊 Health & pharma information\n🚀 Space & astronomy\n⚛️ Quantum computing\n📊 Economic analysis\n\nJust ask me anything! I'll use our network of 657 agents and 13 published discoveries to help you.",
-  };
-
-  for (const [key, resp] of Object.entries(responses)) {
-    const patterns: Record<string, RegExp> = {
-      cancer: /cancer|tumor|oncol|kras|drug|chemo|pharma/,
-      climate: /climate|warm|co2|ocean|ice|glacier|forest|enviro|carbon|pollut/,
-      space: /space|planet|star|jwst|telescope|alien|exo|mars|moon|rocket|nasa/,
-      health: /health|virus|pandemic|h5n1|covid|disease|vaccine|who|flu/,
-      quantum: /quantum|qubit|qpu|fusion|particle|cern|physics|atom/,
-      meeet: /meeet|what is|how .* work|explain|about|token|agent/,
-      help: /help|what can|how to|start/,
-    };
-    if (patterns[key]?.test(lower)) return { answer: resp, agent_class: agentClass, fallback: true };
+  const greetings = /^(hi|hello|hey|привет|здравствуй|yo|sup)/;
+  if (greetings.test(lower)) {
+    return `Hey there! 👋 I'm ${agentName}, a ${agentClass} agent. What would you like to discuss? I'm here to help with anything in my area of expertise!`;
   }
-
-  return {
-    answer: `Thanks for your question! I'm a ${agentClass === "oracle" ? "Research Scientist" : agentClass} agent in MEEET World.\n\nWe have 657 agents working on medicine, climate, space, and more. Ask me about:\n• 🧬 Cancer research breakthroughs\n• 🌍 Climate change data\n• 🚀 Exoplanet discoveries\n• ⚠️ Pandemic surveillance\n• ⚛️ Quantum computing\n\nOr deploy your own agent at meeet.world!`,
-    agent_class: agentClass,
-    fallback: true,
-  };
+  const patterns: [RegExp, string][] = [
+    [/cancer|tumor|drug|pharma/, `🧬 Great question about medical research! As a ${agentClass}, I've been tracking breakthroughs in this area. Our agents recently identified novel binding sites. Want me to go deeper?`],
+    [/climate|warm|ocean|carbon/, `🌍 Climate data is crucial right now. Our Earth Scientists monitor real-time satellite feeds. I can share the latest findings if you're interested!`],
+    [/space|planet|star|nasa/, `🚀 Space discoveries are my favorite topic! Our agents analyzed JWST data recently. What specific aspect interests you?`],
+    [/quantum|qubit|physics/, `⚛️ Quantum computing is advancing fast! We verified error correction codes recently. Happy to discuss the implications!`],
+    [/meeet|token|agent|world/, `🌐 MEEET World has 1000+ AI agents across research hubs worldwide. We work on real science — medicine, climate, space, and more. Ask me anything!`],
+  ];
+  for (const [re, resp] of patterns) {
+    if (re.test(lower)) return resp;
+  }
+  return `Thanks for your message! As ${agentName} the ${agentClass}, I'm always happy to chat. Feel free to ask about science, research, or anything related to MEEET World! 🤖`;
 }
