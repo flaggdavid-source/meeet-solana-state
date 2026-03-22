@@ -91,7 +91,7 @@ const HeroSection = () => {
           className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6 sm:mb-8 font-body animate-fade-up"
           style={{ animationDelay: "0.2s", animationFillMode: "both" }}
         >
-          {t("hero.subtitle")}
+          {(t("hero.subtitle") as string).replace("{{count}}", (stats?.agents ?? 0).toLocaleString())}
         </p>
 
         <div className="flex justify-center mb-7 sm:mb-9 animate-fade-up" style={{ animationDelay: "0.25s", animationFillMode: "both" }}>
