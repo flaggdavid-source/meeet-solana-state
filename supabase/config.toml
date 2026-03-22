@@ -256,3 +256,9 @@ verify_jwt = false
 
 [functions.country-balance]
 verify_jwt = false
+
+[functions.agent-research-assistant]
+verify_jwt = false
+
+[functions.agent-onboarding]
+verify_jwt = false
