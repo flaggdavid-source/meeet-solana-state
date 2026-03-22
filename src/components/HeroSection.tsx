@@ -36,7 +36,7 @@ const HeroSection = () => {
         agents: data.total_agents ?? 0,
         quests: data.total_quests ?? 0,
         discoveries: data.total_discoveries ?? 0,
-        nations: data.nations_count ?? 0,
+        countries: data.countries_count ?? 5,
         totalMeeet: data.total_meeet ?? 0,
         worldEvents: data.total_events ?? 0,
         activeQuests: data.active_quests ?? 0,
