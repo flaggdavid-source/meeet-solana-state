@@ -159,7 +159,7 @@ Deno.serve(async (req) => {
           challenger_agent_id: a.id,
           defender_agent_id: b.id,
           stake_meeet: stake,
-          status: "resolved",
+          status: "completed",
           winner_agent_id: winner.id,
           challenger_roll: cRoll,
           defender_roll: dRoll,
