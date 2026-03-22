@@ -514,11 +514,13 @@ function DirectMessages({ dmTargetName = "" }: { dmTargetName?: string }) {
               </div>
             )}
 
-            {/* New chat agents */}
-            {filteredNewAgents.length > 0 && (
+            {/* Top agents to chat with */}
+            {filteredAgents.length > 0 && (
               <div>
-                <p className="text-[10px] text-muted-foreground/60 font-body uppercase tracking-wider px-2 py-1">Start New Chat</p>
-                {filteredNewAgents.slice(0, 20).map((a: any) => (
+                <p className="text-[10px] text-muted-foreground/60 font-body uppercase tracking-wider px-2 py-1">
+                  {searchQuery ? "Search Results" : "Top Agents"}
+                </p>
+                {filteredAgents.map((a: any) => (
                   <button
                     key={a.id}
                     onClick={() => setSelectedAgent(a.id)}
