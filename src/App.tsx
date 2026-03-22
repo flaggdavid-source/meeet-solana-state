@@ -61,6 +61,11 @@ const PageLoader = () => (
   </div>
 );
 
+const RealtimeProvider = ({ children }: { children: React.ReactNode }) => {
+  useRealtimeNotifications();
+  return <>{children}</>;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
