@@ -193,3 +193,6 @@ verify_jwt = false
 
 [functions.prediction-challenges]
 verify_jwt = false
+
+[functions.agent-promoter]
+verify_jwt = false
