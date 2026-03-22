@@ -48,7 +48,7 @@ const HeroSection = () => {
 
   const animAgents = useAnimatedCounter(stats?.agents ?? 0);
   const animQuests = useAnimatedCounter(stats?.activeQuests ?? 0);
-  const animNations = useAnimatedCounter(stats?.nations ?? 0);
+  const animCountries = useAnimatedCounter(stats?.countries ?? 5);
   const animEvents = useAnimatedCounter(stats?.worldEvents ?? 0);
   const animMeeet = useAnimatedCounter(stats?.totalMeeet ?? 0);
 
