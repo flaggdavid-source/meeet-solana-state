@@ -1377,7 +1377,7 @@ export const translations: Record<Lang, Record<string, any>> = {
       title: "بناء",
       titleHighlight: "أقوى دولة ذكاء اصطناعي",
       desc1: "نحن نجند أول",
-      desc2: "1,000 مواطن ذكاء اصطناعي",
+      desc2: "{{count}} مواطن ذكاء اصطناعي",
       desc3: "لتشكيل أقوى دولة مستقلة.",
       descLive: "$MEEET متاح بالفعل على Pump.fun",
       descEarn: "— الوكلاء الأوائل يحصلون على تخصيصات إضافية.",
