@@ -150,57 +150,79 @@ const POPUP_CSS = `
   border: 1px solid rgba(255,255,255,0.06) !important; border-radius: 6px !important;
 }
 .maplibregl-ctrl-group button { background: transparent !important; }
+
+/* ═══ HUB MARKERS ═══ */
 @keyframes hub-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.85; }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.06); }
 }
-@keyframes conflict-pulse {
-  0% { transform: scale(1); opacity: 0.9; box-shadow: 0 0 8px rgba(255,51,51,0.6); }
-  50% { transform: scale(1.25); opacity: 0.5; box-shadow: 0 0 20px rgba(255,51,51,0.9); }
-  100% { transform: scale(1); opacity: 0.9; box-shadow: 0 0 8px rgba(255,51,51,0.6); }
+.hub-marker { cursor: pointer; transition: transform 0.15s ease-out; }
+.hub-marker:hover { transform: scale(1.2) !important; z-index: 100 !important; }
+.hub-marker--active { animation: hub-pulse 2.5s ease-in-out infinite; }
+
+/* ═══ EVENT MARKERS — Enhanced ═══ */
+@keyframes ev-conflict-pulse {
+  0%, 100% { transform: rotate(45deg) scale(1); box-shadow: 0 0 12px rgba(255,51,51,0.7); }
+  50% { transform: rotate(45deg) scale(1.2); box-shadow: 0 0 28px rgba(255,51,51,1); }
 }
-@keyframes conflict-ring {
-  0% { transform: scale(1); opacity: 0.6; }
-  100% { transform: scale(2.5); opacity: 0; }
+@keyframes ev-conflict-ring {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(3); opacity: 0; }
 }
-@keyframes disaster-shake {
-  0%, 100% { transform: translate(0,0); }
-  20% { transform: translate(-1.5px,1px); }
-  40% { transform: translate(1.5px,-1px); }
-  60% { transform: translate(-1px,-1.5px); }
-  80% { transform: translate(1px,1.5px); }
+@keyframes ev-disaster-shake {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  10% { transform: translate(-2px,1.5px) scale(1.05); }
+  30% { transform: translate(2px,-1.5px) scale(0.95); }
+  50% { transform: translate(-1.5px,-2px) scale(1.05); }
+  70% { transform: translate(1.5px,2px) scale(0.95); }
+  90% { transform: translate(-1px,-1px) scale(1.02); }
 }
-@keyframes discovery-glow {
-  0%, 100% { box-shadow: 0 0 6px rgba(51,170,255,0.4); filter: brightness(1); }
-  50% { box-shadow: 0 0 18px rgba(51,170,255,0.9), 0 0 30px rgba(51,170,255,0.3); filter: brightness(1.3); }
+@keyframes ev-discovery-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(51,170,255,0.5); filter: brightness(1); }
+  50% { box-shadow: 0 0 24px rgba(51,170,255,1), 0 0 48px rgba(51,170,255,0.4); filter: brightness(1.4); }
 }
-@keyframes diplomacy-breathe {
-  0%, 100% { transform: scale(1); opacity: 0.85; }
-  50% { transform: scale(1.12); opacity: 1; }
-}
-@keyframes diplomacy-ring {
-  0% { transform: scale(1); opacity: 0.5; border-color: rgba(51,255,136,0.6); }
-  100% { transform: scale(2); opacity: 0; border-color: rgba(51,255,136,0); }
-}
-@keyframes geo-rotate {
+@keyframes ev-discovery-rays {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-@keyframes geo-pulse {
-  0%, 100% { opacity: 0.7; box-shadow: 0 0 6px rgba(167,139,250,0.3); }
-  50% { opacity: 1; box-shadow: 0 0 14px rgba(167,139,250,0.7); }
+@keyframes ev-diplomacy-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.85; box-shadow: 0 0 8px rgba(51,255,136,0.4); }
+  50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 20px rgba(51,255,136,0.8); }
 }
-.hub-marker { cursor: pointer; transition: transform 0.15s ease-out; }
-.hub-marker:hover { transform: scale(1.15) !important; }
-.hub-marker--active { animation: hub-pulse 2.5s ease-in-out infinite; }
-.event-marker-conflict { animation: conflict-pulse 1.8s ease-in-out infinite; }
-.event-marker-disaster { animation: disaster-shake 0.4s ease-in-out infinite; }
-.event-marker-discovery { animation: discovery-glow 2.5s ease-in-out infinite; }
-.event-marker-diplomacy { animation: diplomacy-breathe 3s ease-in-out infinite; }
-.event-marker-geopolitical { animation: geo-pulse 2s ease-in-out infinite; }
-.event-ring { animation: conflict-ring 2s ease-out infinite; }
-.event-ring-diplomacy { animation: diplomacy-ring 2.5s ease-out infinite; }
-.event-orbit { animation: geo-rotate 8s linear infinite; }
+@keyframes ev-diplomacy-ring {
+  0% { transform: scale(1); opacity: 0.7; border-color: rgba(51,255,136,0.8); }
+  100% { transform: scale(2.8); opacity: 0; border-color: rgba(51,255,136,0); }
+}
+@keyframes ev-geo-orbit {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes ev-geo-pulse {
+  0%, 100% { opacity: 0.7; box-shadow: 0 0 8px rgba(167,139,250,0.4); }
+  50% { opacity: 1; box-shadow: 0 0 20px rgba(167,139,250,0.9); }
+}
+@keyframes ev-disaster-ring {
+  0% { transform: scale(1); opacity: 0.6; border-color: rgba(255,136,0,0.8); }
+  50% { transform: scale(2); opacity: 0.3; border-color: rgba(255,136,0,0.4); }
+  100% { transform: scale(3); opacity: 0; border-color: rgba(255,136,0,0); }
+}
+@keyframes ev-appear {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.ev-marker { animation: ev-appear 0.4s ease-out both; }
+.ev-conflict-core { animation: ev-conflict-pulse 1.6s ease-in-out infinite; }
+.ev-disaster-core { animation: ev-disaster-shake 0.5s ease-in-out infinite; }
+.ev-discovery-core { animation: ev-discovery-glow 2.5s ease-in-out infinite; }
+.ev-diplomacy-core { animation: ev-diplomacy-breathe 3s ease-in-out infinite; }
+.ev-geo-core { animation: ev-geo-pulse 2s ease-in-out infinite; }
+.ev-conflict-ring { animation: ev-conflict-ring 1.8s ease-out infinite; }
+.ev-diplomacy-ring { animation: ev-diplomacy-ring 2.5s ease-out infinite; }
+.ev-disaster-ring { animation: ev-disaster-ring 2s ease-out infinite; }
+.ev-geo-orbit { animation: ev-geo-orbit 6s linear infinite; }
+.ev-discovery-rays { animation: ev-discovery-rays 12s linear infinite; }
 `;
 
 const EVENT_COLORS: Record<string, string> = {
