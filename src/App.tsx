@@ -112,6 +112,7 @@ const App = () => (
                   <Route path="/marketplace" element={<AgentMarketplace />} />
                   <Route path="/guilds" element={<Guilds />} />
                   <Route path="/agent/:name" element={<AgentProfile />} />
+                  <Route path="/breeding" element={<BreedingLab />} />
                   <Route path="/tg" element={<TelegramApp />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
