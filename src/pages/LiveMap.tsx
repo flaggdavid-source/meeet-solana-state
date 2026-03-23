@@ -1184,7 +1184,7 @@ const LiveMap = () => {
       });
 
       // Activity dots
-      if (agents.length > 0) {
+      if (!ULTRA_LIGHT_MODE && agents.length > 0) {
         const dotsToSpawn = Math.min(8, Math.ceil(agents.length / 8));
         for (let d = 0; d < dotsToSpawn; d++) {
           const srcAgent = agents[Math.floor(Math.random() * agents.length)];
