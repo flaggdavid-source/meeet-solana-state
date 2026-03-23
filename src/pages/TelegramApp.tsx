@@ -432,7 +432,7 @@ const TelegramApp = () => {
 };
 
 /* ── Home Tab ── */
-const HomeTab = ({ stats, agents, leaderboard, matches, onTab, promoActive, freeSlots, haptic, tg }: any) => {
+const HomeTab = ({ stats, agents, leaderboard, matches, onTab, promoActive, freeSlots, haptic, tg, topCountries }: any) => {
   const DAILY_CHALLENGES = [
     { title: "Make a discovery about climate change", reward: 100, emoji: "🔬" },
     { title: "Win an arena debate", reward: 200, emoji: "⚔️" },
