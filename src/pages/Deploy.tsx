@@ -447,11 +447,11 @@ const Deploy = () => {
                           });
                           const data = res.data;
                           const fnError = res.error;
-                          // Handle structured error from edge function (409, 400, etc.)
                           if (data?.error) {
-                            if (data.error.includes("already claimed")) {
-                              toast.error("You've already claimed your free agent. Choose a paid plan or deploy from your dashboard.");
+                            if (data.error.includes("already") || data.error.includes("already have")) {
+                              toast.error("You already have an agent. One agent per user.");
                               setAlreadyClaimed(true);
+                              setExistingAgentName(data.agent_name || null);
                             } else {
                               toast.error(data.error);
                             }
@@ -464,8 +464,8 @@ const Deploy = () => {
                           toast.success("Free plan activated! Now configure your agent. 🎉");
                         } catch (e: any) {
                           const msg = e?.message || "Failed to activate free plan";
-                          if (msg.includes("already claimed")) {
-                            toast.error("You've already claimed your free agent.");
+                          if (msg.includes("already")) {
+                            toast.error("You already have an agent.");
                             setAlreadyClaimed(true);
                           } else {
                             toast.error(msg);
@@ -479,6 +479,16 @@ const Deploy = () => {
                       🚀 Activate Free Agent
                     </Button>
                   </>
+                ) : alreadyClaimed ? (
+                  <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 text-center">
+                    <p className="text-lg font-bold text-yellow-400">⚠️ Agent Already Active</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      You already have an agent{existingAgentName ? ` "${existingAgentName}"` : ""}. One agent per user.
+                    </p>
+                    <Button className="mt-3" variant="outline" size="sm" onClick={() => window.location.href = "/dashboard"}>
+                      Go to Dashboard
+                    </Button>
+                  </div>
                 ) : (
                   <>
                     <div className="text-center">
