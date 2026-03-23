@@ -713,8 +713,21 @@ const Dashboard = () => {
   const isLoading = authLoading || profileLoading || agentLoading;
   const totalIncome = MOCK_INCOME.reduce((s, v) => s + v, 0);
   const incomeChange = MOCK_INCOME[6] - MOCK_INCOME[5];
-  const xpProgress = agent ? Math.min(100, (agent.xp / (agent.level * 500)) * 100) : 0;
+  const xpForNextLevel = agent ? Math.round(100 * Math.pow(1.5, agent.level - 1)) : 500;
+  const xpProgress = agent ? Math.min(100, (agent.xp / xpForNextLevel) * 100) : 0;
   const hpProgress = agent ? (agent.hp / agent.max_hp) * 100 : 0;
+
+  // Faction mapping
+  const CLASS_TO_FACTION: Record<string, { emoji: string; name: string }> = {
+    oracle: { emoji: "🧬", name: "BioTech" },
+    diplomat: { emoji: "⚛️", name: "Quantum" },
+    miner: { emoji: "🤖", name: "AI" },
+    warrior: { emoji: "🚀", name: "Space" },
+    scout: { emoji: "🚀", name: "Space" },
+    trader: { emoji: "⚡", name: "Energy" },
+    banker: { emoji: "⚡", name: "Energy" },
+    president: { emoji: "👑", name: "President" },
+  };
 
   if (isLoading || !user) {
     return (
