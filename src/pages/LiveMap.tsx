@@ -1042,7 +1042,7 @@ const LiveMap = () => {
       }
 
       // ─── DATA STREAMS between interacting agents ──────────
-      const streams = dataStreamsRef.current;
+      const streams = ULTRA_LIGHT_MODE ? [] : dataStreamsRef.current;
       for (let i = streams.length - 1; i >= 0; i--) {
         const s = streams[i];
         s.progress += s.speed;
