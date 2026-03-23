@@ -813,7 +813,7 @@ const LiveMap = () => {
         const bw = b.w * TILE * z * 0.7;
         const bh = b.h * TILE * z * 0.5;
 
-        if (z > 0.3) {
+        if (!ULTRA_LIGHT_MODE && z > 0.3) {
           if (b.type === "parliament" || b.type === "embassy" || b.type === "senate" || b.type === "court") {
             // Classical columns + roof
             ctx.fillStyle = `rgba(10,15,25,${0.7 + pulse * 0.2})`;
