@@ -518,12 +518,12 @@ const HomeTab = ({ stats, agents, leaderboard, matches, onTab, promoActive, free
       <div>
         <h3 className="text-sm font-semibold mb-2">🌍 Country Wars</h3>
         <div className="grid grid-cols-5 gap-1.5">
-          {COUNTRY_WARS.map((c, i) => (
-            <Card key={c.name} className="border-border">
+          {topCountries.map((c, i) => (
+            <Card key={c.code || c.name} className="border-border">
               <CardContent className="p-2 text-center">
-                <p className="text-lg">{c.emoji}</p>
-                <p className={`text-[10px] font-bold ${c.color}`}>{c.name}</p>
-                <p className="text-[9px] text-muted-foreground">#{i + 1}</p>
+                <p className="text-lg">{c.flag}</p>
+                <p className="text-[10px] font-bold text-foreground truncate">{c.name}</p>
+                <p className="text-[9px] text-muted-foreground">#{i + 1} · {c.agents} 🤖</p>
               </CardContent>
             </Card>
           ))}
