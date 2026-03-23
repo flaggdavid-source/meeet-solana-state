@@ -353,7 +353,7 @@ const WorldMap = forwardRef<HTMLDivElement, WorldMapProps>(({ height = "100vh", 
     }
   }, [isOnLand]);
 
-  useEffect(() => { fetchWorldEvents(); const iv = setInterval(fetchWorldEvents, 60000); return () => clearInterval(iv); }, [fetchWorldEvents]);
+  useEffect(() => { fetchWorldEvents(); const iv = setInterval(fetchWorldEvents, 120000); return () => clearInterval(iv); }, [fetchWorldEvents]);
 
   // Trigger sync on mount (fire-and-forget)
   useEffect(() => {
