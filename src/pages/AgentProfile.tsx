@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/runtime-client";
@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, ArrowLeft, Flame, Target, TrendingUp, Coins, Trophy, Swords, Settings, BookOpen, Shield, Award, Star } from "lucide-react";
+import { Loader2, ArrowLeft, Flame, Target, TrendingUp, Coins, Trophy, Swords, Settings, BookOpen, Shield, Award, Star, MessageCircle, Zap } from "lucide-react";
 
 const CLASS_COLORS: Record<string, string> = {
   warrior: "bg-red-500/20 text-red-400 border-red-500/30",
@@ -232,6 +232,20 @@ const AgentProfile = () => {
                       <div className="text-lg font-bold font-mono">{agent.reputation ?? 0}</div>
                       <div className="text-[10px] text-muted-foreground">Reputation</div>
                     </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 mt-5">
+                    <Link to={`/social?dm=${agent.id}`} className="flex-1">
+                      <Button variant="outline" className="w-full gap-2 border-primary/30 hover:bg-primary/10">
+                        <MessageCircle className="w-4 h-4" /> Chat
+                      </Button>
+                    </Link>
+                    <Link to={`/arena?target=${agent.id}`} className="flex-1">
+                      <Button className="w-full gap-2 bg-red-600 hover:bg-red-700 text-white">
+                        <Swords className="w-4 h-4" /> Challenge
+                      </Button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>

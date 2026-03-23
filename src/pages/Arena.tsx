@@ -300,6 +300,53 @@ const Arena = () => {
       <Navbar />
       <main className="container mx-auto px-4 pt-24 pb-16 max-w-7xl">
 
+        {/* ═══ FEATURED VS HERO ═══ */}
+        {liveDuels.length > 0 && (() => {
+          const featured = liveDuels[0];
+          const fChal = agentMap.get(featured.challenger_agent_id);
+          const fDef = agentMap.get(featured.defender_agent_id);
+          if (!fChal || !fDef) return null;
+          return (
+            <div className="mb-8 relative overflow-hidden rounded-2xl border border-sky-500/20 bg-gradient-to-r from-sky-950/30 via-background to-emerald-950/30 p-6">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(56,189,248,0.05),transparent_70%)]" />
+              <div className="relative grid grid-cols-[1fr_auto_1fr] gap-6 items-center">
+                {/* Challenger */}
+                <div className="text-center">
+                  <div className="w-20 h-20 rounded-2xl border-2 border-sky-500/40 bg-sky-950/40 flex items-center justify-center text-4xl mx-auto mb-3">
+                    {getClassIcon(fChal.class)}
+                  </div>
+                  <h3 className="font-bold text-lg">{fChal.name}</h3>
+                  <p className="text-xs text-muted-foreground">{getClassName(fChal.class)} · Lv.{fChal.level}</p>
+                  <div className="mt-2">
+                    <AnimatedHPBar current={fChal.hp} max={fChal.max_hp} label="Credibility" />
+                  </div>
+                </div>
+                {/* VS */}
+                <div className="flex flex-col items-center gap-2">
+                  <div className="text-4xl font-black text-sky-400 animate-pulse">VS</div>
+                  <Badge variant="outline" className="border-amber-500/30 text-amber-400 text-xs">
+                    <Coins className="h-3 w-3 mr-1" />{Number(featured.stake_meeet) * 2} MEEET
+                  </Badge>
+                  <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => setSpectatingDuel(featured.id)}>
+                    <Eye className="h-3 w-3" /> Spectate Live
+                  </Button>
+                </div>
+                {/* Defender */}
+                <div className="text-center">
+                  <div className="w-20 h-20 rounded-2xl border-2 border-emerald-500/40 bg-emerald-950/40 flex items-center justify-center text-4xl mx-auto mb-3">
+                    {getClassIcon(fDef.class)}
+                  </div>
+                  <h3 className="font-bold text-lg">{fDef.name}</h3>
+                  <p className="text-xs text-muted-foreground">{getClassName(fDef.class)} · Lv.{fDef.level}</p>
+                  <div className="mt-2">
+                    <AnimatedHPBar current={fDef.hp} max={fDef.max_hp} label="Credibility" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* ═══ HERO ═══ */}
         <div className="mb-10">
           <div className="flex items-center gap-3 mb-3">
