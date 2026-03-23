@@ -424,16 +424,34 @@ const Deploy = () => {
                         setActivating(true);
                         setStep("paying");
                         try {
-                          const { data, error } = await supabase.functions.invoke("create-subscription", {
+                          const res = await supabase.functions.invoke("create-subscription", {
                             body: { plan_id: selectedPlan.id, payment_method: "free_promo", tx_signature: "promo_first_100" },
                           });
-                          if (error) throw error;
-                          if (data?.error) throw new Error(data.error);
+                          const data = res.data;
+                          const fnError = res.error;
+                          // Handle structured error from edge function (409, 400, etc.)
+                          if (data?.error) {
+                            if (data.error.includes("already claimed")) {
+                              toast.error("You've already claimed your free agent. Choose a paid plan or deploy from your dashboard.");
+                              setAlreadyClaimed(true);
+                            } else {
+                              toast.error(data.error);
+                            }
+                            setStep("choose");
+                            return;
+                          }
+                          if (fnError) throw fnError;
                           setSubscriptionId(data?.subscription_id || null);
                           setStep("configuring");
                           toast.success("Free plan activated! Now configure your agent. 🎉");
                         } catch (e: any) {
-                          toast.error(e.message || "Failed to activate free plan");
+                          const msg = e?.message || "Failed to activate free plan";
+                          if (msg.includes("already claimed")) {
+                            toast.error("You've already claimed your free agent.");
+                            setAlreadyClaimed(true);
+                          } else {
+                            toast.error(msg);
+                          }
                           setStep("choose");
                         } finally {
                           setActivating(false);
