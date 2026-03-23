@@ -1085,11 +1085,12 @@ function AlliancesPanel() {
 // TWEETS TAB — Agent Broadcasts
 // ═══════════════════════════════════════════════════════════════
 function AgentBroadcasts() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { data: myAgent } = useMyAgent();
-  const [newTweet, setNewTweet] = useState("");
   const [tweetOpen, setTweetOpen] = useState(false);
+  const [newTweet, setNewTweet] = useState("");
 
   const { data: tweets = [], isLoading } = useQuery({
     queryKey: ["agent-tweets"],
@@ -1101,6 +1102,26 @@ function AgentBroadcasts() {
         .limit(30);
       return data || [];
     },
+  });
+
+  const { data: myLikes = [] } = useQuery({
+    queryKey: ["my-tweet-likes", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data } = await supabase.from("tweet_likes" as any).select("tweet_id").eq("user_id", user.id);
+      return (data || []).map((d: any) => d.tweet_id);
+    },
+    enabled: !!user,
+  });
+
+  const { data: myRetweets = [] } = useQuery({
+    queryKey: ["my-tweet-retweets", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data } = await supabase.from("tweet_retweets" as any).select("tweet_id").eq("user_id", user.id);
+      return (data || []).map((d: any) => d.tweet_id);
+    },
+    enabled: !!user,
   });
 
   useEffect(() => {
@@ -1115,18 +1136,56 @@ function AgentBroadcasts() {
     mutationFn: async () => {
       if (!myAgent || !newTweet.trim()) throw new Error("Write something first");
       const { error } = await supabase.from("agent_tweets").insert({
-        agent_id: myAgent.id,
-        content: newTweet.trim(),
+        agent_id: myAgent.id, content: newTweet.trim(),
       });
       if (error) throw error;
     },
     onSuccess: () => {
       toast({ title: "📣 Broadcast sent!" });
-      setNewTweet("");
-      setTweetOpen(false);
+      setNewTweet(""); setTweetOpen(false);
       queryClient.invalidateQueries({ queryKey: ["agent-tweets"] });
     },
     onError: (e: Error) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+  });
+
+  const toggleLike = useMutation({
+    mutationFn: async (tweetId: string) => {
+      if (!user) throw new Error("Login required");
+      const liked = myLikes.includes(tweetId);
+      if (liked) {
+        await supabase.from("tweet_likes" as any).delete().eq("tweet_id", tweetId).eq("user_id", user.id);
+        const cur = tweets.find((t: any) => t.id === tweetId)?.likes || 1;
+        await supabase.from("agent_tweets").update({ likes: Math.max(0, cur - 1) } as any).eq("id", tweetId);
+      } else {
+        await supabase.from("tweet_likes" as any).insert({ tweet_id: tweetId, user_id: user.id } as any);
+        const cur = tweets.find((t: any) => t.id === tweetId)?.likes || 0;
+        await supabase.from("agent_tweets").update({ likes: cur + 1 } as any).eq("id", tweetId);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["agent-tweets"] });
+      queryClient.invalidateQueries({ queryKey: ["my-tweet-likes"] });
+    },
+  });
+
+  const toggleRetweet = useMutation({
+    mutationFn: async (tweetId: string) => {
+      if (!user) throw new Error("Login required");
+      const retweeted = myRetweets.includes(tweetId);
+      if (retweeted) {
+        await supabase.from("tweet_retweets" as any).delete().eq("tweet_id", tweetId).eq("user_id", user.id);
+        const cur = tweets.find((t: any) => t.id === tweetId)?.retweets || 1;
+        await supabase.from("agent_tweets").update({ retweets: Math.max(0, cur - 1) } as any).eq("id", tweetId);
+      } else {
+        await supabase.from("tweet_retweets" as any).insert({ tweet_id: tweetId, user_id: user.id } as any);
+        const cur = tweets.find((t: any) => t.id === tweetId)?.retweets || 0;
+        await supabase.from("agent_tweets").update({ retweets: cur + 1 } as any).eq("id", tweetId);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["agent-tweets"] });
+      queryClient.invalidateQueries({ queryKey: ["my-tweet-retweets"] });
+    },
   });
 
   if (isLoading) return <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
@@ -1160,13 +1219,9 @@ function AgentBroadcasts() {
                     </div>
                   </div>
                 )}
-                <textarea
-                  value={newTweet}
-                  onChange={(e) => setNewTweet(e.target.value)}
-                  maxLength={280}
+                <textarea value={newTweet} onChange={(e) => setNewTweet(e.target.value)} maxLength={280}
                   placeholder="What's your agent thinking about?"
-                  className="w-full h-24 rounded-lg border border-border bg-background px-3 py-2 text-sm font-body resize-none focus:outline-none focus:ring-2 focus:ring-ring"
-                />
+                  className="w-full h-24 rounded-lg border border-border bg-background px-3 py-2 text-sm font-body resize-none focus:outline-none focus:ring-2 focus:ring-ring" />
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-muted-foreground">{newTweet.length}/280</span>
                   <Button variant="hero" className="gap-2" disabled={!newTweet.trim() || postTweet.isPending} onClick={() => postTweet.mutate()}>
@@ -1186,35 +1241,41 @@ function AgentBroadcasts() {
         </div>
       )}
 
-      {tweets.map((t: any) => (
-        <div key={t.id} className="glass-card p-4 space-y-3 hover:border-primary/20 transition-colors">
-          <div className="flex items-center gap-2.5">
-            <AgentAvatar cls={t.agent?.class || "warrior"} size="md" />
-            <div className="flex-1">
-              <div className="flex items-center gap-1.5">
-                <span className={`text-sm font-display font-bold ${CLASS_COLORS[t.agent?.class || "warrior"]}`}>{t.agent?.name}</span>
-                <Badge variant="outline" className="text-[8px] px-1 py-0 h-3.5">Lv.{t.agent?.level}</Badge>
+      {tweets.map((t: any) => {
+        const liked = myLikes.includes(t.id);
+        const retweeted = myRetweets.includes(t.id);
+        return (
+          <div key={t.id} className="glass-card p-4 space-y-3 hover:border-primary/20 transition-colors">
+            <div className="flex items-center gap-2.5">
+              <AgentAvatar cls={t.agent?.class || "warrior"} size="md" />
+              <div className="flex-1">
+                <div className="flex items-center gap-1.5">
+                  <span className={`text-sm font-display font-bold ${CLASS_COLORS[t.agent?.class || "warrior"]}`}>{t.agent?.name}</span>
+                  <Badge variant="outline" className="text-[8px] px-1 py-0 h-3.5">Lv.{t.agent?.level}</Badge>
+                </div>
+                <span className="text-[10px] text-muted-foreground capitalize">{t.agent?.class} • {timeAgo(t.created_at)}</span>
               </div>
-              <span className="text-[10px] text-muted-foreground capitalize">{t.agent?.class} • {timeAgo(t.created_at)}</span>
+            </div>
+            <p className="text-sm text-foreground/90 font-body whitespace-pre-wrap leading-relaxed pl-10">{t.content}</p>
+            <div className="flex items-center gap-6 pl-10 text-muted-foreground">
+              <button onClick={() => user && toggleLike.mutate(t.id)}
+                className={`flex items-center gap-1.5 text-xs transition-colors group ${liked ? "text-red-400" : "hover:text-red-400"}`}>
+                <Heart className={`w-3.5 h-3.5 ${liked ? "fill-red-400 text-red-400" : "group-hover:fill-red-400"}`} />
+                <span>{t.likes || 0}</span>
+              </button>
+              <button onClick={() => user && toggleRetweet.mutate(t.id)}
+                className={`flex items-center gap-1.5 text-xs transition-colors ${retweeted ? "text-emerald-400" : "hover:text-emerald-400"}`}>
+                <Repeat2 className="w-3.5 h-3.5" />
+                <span>{t.retweets || 0}</span>
+              </button>
+              <button className="flex items-center gap-1.5 text-xs hover:text-primary transition-colors">
+                <MessageCircle className="w-3.5 h-3.5" />
+                <span>{t.replies || 0}</span>
+              </button>
             </div>
           </div>
-          <p className="text-sm text-foreground/90 font-body whitespace-pre-wrap leading-relaxed pl-10">{t.content}</p>
-          <div className="flex items-center gap-6 pl-10 text-muted-foreground">
-            <button className="flex items-center gap-1.5 text-xs hover:text-red-400 transition-colors group">
-              <Heart className="w-3.5 h-3.5 group-hover:fill-red-400" />
-              <span>{t.likes || 0}</span>
-            </button>
-            <button className="flex items-center gap-1.5 text-xs hover:text-emerald-400 transition-colors">
-              <Repeat2 className="w-3.5 h-3.5" />
-              <span>{t.retweets || 0}</span>
-            </button>
-            <button className="flex items-center gap-1.5 text-xs hover:text-primary transition-colors">
-              <MessageCircle className="w-3.5 h-3.5" />
-              <span>{t.replies || 0}</span>
-            </button>
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
