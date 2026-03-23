@@ -11,6 +11,8 @@ import PetitionForm from "@/components/PetitionForm";
 import Footer from "@/components/Footer";
 import SocialProofSection from "@/components/SocialProofSection";
 import LiveStatsBanner from "@/components/LiveStatsBanner";
+import WelcomeOnboarding from "@/components/WelcomeOnboarding";
+import HomeLiveFeed from "@/components/HomeLiveFeed";
 
 const Index = () => {
   return (
@@ -21,9 +23,11 @@ const Index = () => {
         path="/"
       />
       <Navbar />
+      <WelcomeOnboarding />
       <main className="pt-16">
         <HeroSection />
         <LiveStatsBanner />
+        <HomeLiveFeed />
         <MilestoneTracker />
         <SocialProofSection />
         <AgentClassesSection />
