@@ -655,22 +655,24 @@ const LiveMap = () => {
       }
 
       // ─── FOG PATCHES ──────────────────────────────────────
-      const fogs = fogPatchesRef.current;
-      fogs.forEach(f => {
-        f.x += f.vx; f.y += f.vy;
-        if (f.x < -f.r) f.x = MAP_W * TILE + f.r;
-        if (f.x > MAP_W * TILE + f.r) f.x = -f.r;
-        const sx = (f.x - cam.x) * z, sy = (f.y - cam.y) * z;
-        const fr = f.r * z;
-        if (sx > -fr && sx < w + fr && sy > -fr && sy < h + fr) {
-          const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, fr);
-          grad.addColorStop(0, `rgba(100,140,160,${f.alpha * (0.5 + nf * 0.5)})`);
-          grad.addColorStop(0.6, `rgba(60,80,100,${f.alpha * 0.3})`);
-          grad.addColorStop(1, "transparent");
-          ctx.fillStyle = grad;
-          ctx.beginPath(); ctx.arc(sx, sy, fr, 0, Math.PI * 2); ctx.fill();
-        }
-      });
+      if (!ULTRA_LIGHT_MODE) {
+        const fogs = fogPatchesRef.current;
+        fogs.forEach(f => {
+          f.x += f.vx; f.y += f.vy;
+          if (f.x < -f.r) f.x = MAP_W * TILE + f.r;
+          if (f.x > MAP_W * TILE + f.r) f.x = -f.r;
+          const sx = (f.x - cam.x) * z, sy = (f.y - cam.y) * z;
+          const fr = f.r * z;
+          if (sx > -fr && sx < w + fr && sy > -fr && sy < h + fr) {
+            const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, fr);
+            grad.addColorStop(0, `rgba(100,140,160,${f.alpha * (0.5 + nf * 0.5)})`);
+            grad.addColorStop(0.6, `rgba(60,80,100,${f.alpha * 0.3})`);
+            grad.addColorStop(1, "transparent");
+            ctx.fillStyle = grad;
+            ctx.beginPath(); ctx.arc(sx, sy, fr, 0, Math.PI * 2); ctx.fill();
+          }
+        });
+      }
 
       // ─── HOLOGRAPHIC GRID OVERLAY ─────────────────────────
       if (!ULTRA_LIGHT_MODE && z > 0.3) {
