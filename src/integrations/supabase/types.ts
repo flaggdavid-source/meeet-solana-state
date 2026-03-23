@@ -106,6 +106,84 @@ export type Database = {
           },
         ]
       }
+      agent_actions: {
+        Row: {
+          action_type: string
+          agent_id: string | null
+          cost_usd: number | null
+          created_at: string
+          details: Json | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          agent_id?: string | null
+          cost_usd?: number | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          agent_id?: string | null
+          cost_usd?: number | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_actions_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_actions_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_billing: {
+        Row: {
+          balance_usd: number
+          created_at: string
+          free_credit_used: boolean
+          id: string
+          total_charged: number
+          total_spent: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance_usd?: number
+          created_at?: string
+          free_credit_used?: boolean
+          id?: string
+          total_charged?: number
+          total_spent?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance_usd?: number
+          created_at?: string
+          free_credit_used?: boolean
+          id?: string
+          total_charged?: number
+          total_spent?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       agent_earnings: {
         Row: {
           agent_id: string
