@@ -1142,7 +1142,7 @@ const LiveMap = () => {
       }
 
       // Fireflies
-      if (nf > 0.4 && Math.random() < 0.05) {
+      if (!ULTRA_LIGHT_MODE && nf > 0.4 && Math.random() < 0.05) {
         particles.push({
           x: cam.x + Math.random() * w / z, y: cam.y + Math.random() * h / z,
           vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
