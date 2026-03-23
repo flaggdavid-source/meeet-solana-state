@@ -17,7 +17,7 @@ const Navbar = () => {
   const { t } = useLanguage();
 
   const NAV_LINKS = [
-    { href: "/about", label: "О проекте" },
+    { href: "/about", label: t("nav.world") === "Мир" ? "О проекте" : "About" },
     { href: "/world", label: t("nav.world") },
     { href: "/quests", label: t("nav.quests") },
     { href: "/oracle", label: "🔮 Oracle" },
@@ -109,7 +109,7 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop nav — hidden below md */}
-        <div className="hidden md:flex items-center gap-4 font-body text-sm text-muted-foreground whitespace-nowrap overflow-x-auto">
+        <div className="hidden md:flex items-center gap-2 lg:gap-4 font-body text-sm text-muted-foreground whitespace-nowrap overflow-x-auto scrollbar-hide">
           {NAV_LINKS.map((l) => (
             <Link key={l.href} to={l.href} className="hover:text-foreground transition-colors duration-150">
               {l.label}
