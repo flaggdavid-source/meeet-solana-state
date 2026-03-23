@@ -338,6 +338,60 @@ export type Database = {
           },
         ]
       }
+      agent_memories: {
+        Row: {
+          agent_id: string | null
+          category: string | null
+          content: string
+          created_at: string | null
+          id: string
+          importance: number | null
+          keywords: string[] | null
+          last_recalled: string | null
+          recalled_count: number | null
+          shared_from: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          category?: string | null
+          content: string
+          created_at?: string | null
+          id?: string
+          importance?: number | null
+          keywords?: string[] | null
+          last_recalled?: string | null
+          recalled_count?: number | null
+          shared_from?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          category?: string | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          importance?: number | null
+          keywords?: string[] | null
+          last_recalled?: string | null
+          recalled_count?: number | null
+          shared_from?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_memories_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_memories_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agent_messages: {
         Row: {
           channel: string
@@ -842,6 +896,51 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          agent_id: string | null
+          created_at: string | null
+          id: string
+          message: string
+          room_id: string | null
+          sender_id: string
+          sender_type: string
+        }
+        Insert: {
+          agent_id?: string | null
+          created_at?: string | null
+          id?: string
+          message: string
+          room_id?: string | null
+          sender_id: string
+          sender_type: string
+        }
+        Update: {
+          agent_id?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string
+          room_id?: string | null
+          sender_id?: string
+          sender_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       cis_history: {
         Row: {
@@ -1932,6 +2031,30 @@ export type Database = {
           },
         ]
       }
+      pricing: {
+        Row: {
+          action_type: string
+          base_cost: number
+          description: string | null
+          id: string
+          user_cost: number
+        }
+        Insert: {
+          action_type: string
+          base_cost: number
+          description?: string | null
+          id?: string
+          user_cost: number
+        }
+        Update: {
+          action_type?: string
+          base_cost?: number
+          description?: string | null
+          id?: string
+          user_cost?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -2866,6 +2989,42 @@ export type Database = {
           },
         ]
       }
+      usage_logs: {
+        Row: {
+          action_type: string
+          agent_id: string | null
+          cost_base: number | null
+          cost_user: number | null
+          created_at: string | null
+          details: Json | null
+          id: string
+          tokens_used: number | null
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          agent_id?: string | null
+          cost_base?: number | null
+          cost_user?: number | null
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          tokens_used?: number | null
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          agent_id?: string | null
+          cost_base?: number | null
+          cost_user?: number | null
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          tokens_used?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_achievements: {
         Row: {
           achievement_id: string | null
@@ -2942,6 +3101,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_balance: {
+        Row: {
+          balance: number | null
+          created_at: string | null
+          id: string
+          total_deposited: number | null
+          total_spent: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          balance?: number | null
+          created_at?: string | null
+          id?: string
+          total_deposited?: number | null
+          total_spent?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          balance?: number | null
+          created_at?: string | null
+          id?: string
+          total_deposited?: number | null
+          total_spent?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_bots: {
         Row: {
