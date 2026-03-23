@@ -13,6 +13,7 @@ import SocialProofSection from "@/components/SocialProofSection";
 import LiveStatsBanner from "@/components/LiveStatsBanner";
 import WelcomeOnboarding from "@/components/WelcomeOnboarding";
 import HomeLiveFeed from "@/components/HomeLiveFeed";
+import LiveTicker from "@/components/LiveTicker";
 
 const Index = () => {
   return (
