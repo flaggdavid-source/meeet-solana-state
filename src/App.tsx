@@ -49,6 +49,10 @@ const BreedingLab = React.lazy(() => import("./pages/BreedingLab.tsx"));
 const Guide = React.lazy(() => import("./pages/Guide.tsx"));
 const Pricing = React.lazy(() => import("./pages/Pricing.tsx"));
 const SystemMonitor = React.lazy(() => import("./pages/SystemMonitor.tsx"));
+const ProductHunt = React.lazy(() => import("./pages/ProductHunt.tsx"));
+const Press = React.lazy(() => import("./pages/Press.tsx"));
+const SocialContent = React.lazy(() => import("./pages/SocialContent.tsx"));
+const AgentsForSale = React.lazy(() => import("./pages/AgentsForSale.tsx"));
 const NotFound = React.lazy(() => import("./pages/NotFound.tsx"));
 
 const queryClient = new QueryClient({
@@ -121,6 +125,10 @@ const App = () => (
                   <Route path="/guide" element={<Guide />} />
                   <Route path="/pricing" element={<Pricing />} />
                   <Route path="/monitor" element={<SystemMonitor />} />
+                  <Route path="/product-hunt" element={<ProductHunt />} />
+                  <Route path="/press" element={<Press />} />
+                  <Route path="/social-content" element={<SocialContent />} />
+                  <Route path="/agents-for-sale" element={<AgentsForSale />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

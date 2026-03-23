@@ -13,6 +13,7 @@ import SocialProofSection from "@/components/SocialProofSection";
 import LiveStatsBanner from "@/components/LiveStatsBanner";
 import WelcomeOnboarding from "@/components/WelcomeOnboarding";
 import HomeLiveFeed from "@/components/HomeLiveFeed";
+import LiveTicker from "@/components/LiveTicker";
 
 const Index = () => {
   return (
@@ -26,6 +27,7 @@ const Index = () => {
       <WelcomeOnboarding />
       <main className="pt-16">
         <HeroSection />
+        <LiveTicker />
         <LiveStatsBanner />
         <HomeLiveFeed />
         <MilestoneTracker />
