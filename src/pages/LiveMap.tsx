@@ -386,7 +386,7 @@ const LiveMap = () => {
         .order("created_at", { ascending: true })
         .limit(MAX_RENDER_AGENTS);
       const real = dbAgents ?? [];
-      const agents: Agent[] = real.map((db, i) => {
+      const agents: Agent[] = real.slice(0, MAX_RENDER_AGENTS).map((db, i) => {
         const cls = db.class || "warrior";
         const cfg = CLASS_CONFIG[cls] || CLASS_CONFIG.warrior;
         let x = (db.pos_x || 50) * TILE, y = (db.pos_y || 50) * TILE;
