@@ -133,6 +133,10 @@ const App = () => (
                   <Route path="/press" element={<Press />} />
                   <Route path="/social-content" element={<SocialContent />} />
                   <Route path="/agents-for-sale" element={<AgentsForSale />} />
+                  <Route path="/academy" element={<Academy />} />
+                  <Route path="/launch" element={<Launch />} />
+                  <Route path="/partners" element={<Partners />} />
+                  <Route path="/discord" element={<Discord />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
