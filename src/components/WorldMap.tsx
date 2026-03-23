@@ -266,7 +266,7 @@ const WorldMap = forwardRef<HTMLDivElement, WorldMapProps>(({ height = "100vh", 
     const { data } = await supabase
       .from("agents_public")
       .select("id, name, class, lat, lng, reputation, balance_meeet, level, status, nation_code")
-      .not("lat", "is", null).not("lng", "is", null).limit(800);
+      .not("lat", "is", null).not("lng", "is", null).limit(400);
     if (data) setAgents(data as Agent[]);
   }, []);
 
