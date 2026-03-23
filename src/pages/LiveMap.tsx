@@ -263,7 +263,7 @@ const LiveMap = () => {
   const navigate = useNavigate();
   const [agentCount, setAgentCount] = useState(0);
   const [events, setEvents] = useState<GameEvent[]>([]);
-  const [showEvents, setShowEvents] = useState(true);
+  const [showEvents, setShowEvents] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(null);
   const [zoom, setZoom] = useState(1);
