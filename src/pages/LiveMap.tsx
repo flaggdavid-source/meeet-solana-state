@@ -585,7 +585,7 @@ const LiveMap = () => {
             oc.fillStyle = lerpColor(dayC, nightC, nf);
             oc.fillRect(sx, sy, ts + 1, ts + 1);
 
-            if (tile <= 1 && z > 0.3) {
+            if (!ULTRA_LIGHT_MODE && tile <= 1 && z > 0.3) {
               const shimmer = Math.sin(t * 0.001 + col * 0.3 + row * 0.2) * 0.03 + 0.02;
               oc.fillStyle = `rgba(20,60,120,${shimmer})`;
               oc.fillRect(sx, sy, ts + 1, ts + 1);
