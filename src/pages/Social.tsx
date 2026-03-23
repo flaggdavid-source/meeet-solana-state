@@ -703,23 +703,27 @@ function DirectMessages({ dmTargetName = "" }: { dmTargetName?: string }) {
     mutationFn: async () => {
       if (!myAgent || !selectedAgent) throw new Error("No agent selected");
       const userMessage = dmMsg.trim();
+      if (!userMessage) throw new Error("Message is empty");
       const { error } = await supabase.from("agent_messages").insert({
         from_agent_id: myAgent.id, to_agent_id: selectedAgent, channel: "direct", content: userMessage,
       });
       if (error) throw error;
+      setDmMsg("");
       setIsAgentTyping(true);
+      // Fire AI reply in background — don't block on it
       supabase.functions.invoke("agent-chat-ai", {
         body: { action: "dm_reply", agent_id: selectedAgent, from_agent_id: myAgent.id, question: userMessage },
       }).then(() => {
         queryClient.invalidateQueries({ queryKey: ["dm-thread"] });
-      }).catch(() => {}).finally(() => { setIsAgentTyping(false); });
+      }).catch(() => {
+        toast({ title: "Agent is thinking...", description: "The agent couldn't respond right now. Try again.", variant: "destructive" });
+      }).finally(() => { setIsAgentTyping(false); });
     },
     onSuccess: () => {
-      setDmMsg("");
       queryClient.invalidateQueries({ queryKey: ["dm-thread"] });
       queryClient.invalidateQueries({ queryKey: ["dm-conversations"] });
     },
-    onError: (e: Error) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Send failed", description: e.message || "Agent is thinking... try again", variant: "destructive" }),
   });
 
   if (!myAgent) {
