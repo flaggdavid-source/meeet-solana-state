@@ -28,6 +28,7 @@ const Index = () => {
         <HeroSection />
         <LiveStatsBanner />
         <HomeLiveFeed />
+        <MilestoneTracker />
         <SocialProofSection />
         <AgentClassesSection />
         <AgentAPISection />
