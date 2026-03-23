@@ -673,7 +673,7 @@ const LiveMap = () => {
       });
 
       // ─── HOLOGRAPHIC GRID OVERLAY ─────────────────────────
-      if (z > 0.3) {
+      if (!ULTRA_LIGHT_MODE && z > 0.3) {
         const gridSpacing = 80 * z;
         const gridAlpha = 0.04 + Math.sin(t * 0.001) * 0.015;
         ctx.strokeStyle = `rgba(20,241,149,${gridAlpha})`;
