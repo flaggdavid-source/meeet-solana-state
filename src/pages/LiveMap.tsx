@@ -425,6 +425,7 @@ const LiveMap = () => {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'agents' }, (payload) => {
         const agents = agentsRef.current;
         if (payload.eventType === 'INSERT') {
+          if (agents.length >= MAX_RENDER_AGENTS) return;
           const db = payload.new as any;
           const cls = db.class || 'warrior';
           const cfg = CLASS_CONFIG[cls] || CLASS_CONFIG.warrior;
