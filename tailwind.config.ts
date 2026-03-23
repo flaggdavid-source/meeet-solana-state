@@ -101,6 +101,10 @@ export default {
           from: { opacity: "0", transform: "scale(0.95)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
+        "scroll-x": {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -111,6 +115,7 @@ export default {
         shimmer: "shimmer 2s linear infinite",
         "slide-in-right": "slide-in-right 0.5s ease-out forwards",
         "scale-in": "scale-in 0.3s ease-out forwards",
+        "scroll-x": "scroll-x 30s linear infinite",
       },
     },
   },
