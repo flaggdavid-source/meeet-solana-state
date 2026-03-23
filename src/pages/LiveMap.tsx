@@ -638,7 +638,7 @@ const LiveMap = () => {
       }
 
       // ─── AURORA BOREALIS (night) ──────────────────────────
-      if (nf > 0.4) {
+      if (!ULTRA_LIGHT_MODE && nf > 0.4) {
         const auroraAlpha = (nf - 0.4) * 0.12;
         for (let i = 0; i < 4; i++) {
           const ax = w * (0.1 + i * 0.25 + Math.sin(t * 0.0003 + i * 2) * 0.1);
