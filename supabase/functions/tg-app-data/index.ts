@@ -99,6 +99,46 @@ Deno.serve(async (req) => {
       .select("id", { count: "exact", head: true })
       .in("status", ["proposed", "voting"]);
 
+    // Top 5 countries by agent count
+    const { data: countryRows } = await sc.rpc("get_top_countries_war") as any;
+    // Fallback: manual aggregation if RPC doesn't exist
+    let topCountries: any[] = [];
+    if (countryRows && countryRows.length > 0) {
+      topCountries = countryRows;
+    } else {
+      // Aggregate from countries table + agents
+      const { data: countriesData } = await sc
+        .from("countries")
+        .select("code, name_en, flag_emoji")
+        .limit(200);
+      const countriesMap: Record<string, any> = {};
+      for (const c of countriesData || []) {
+        countriesMap[c.code] = c;
+      }
+      // Count agents per country
+      const agentCountMap: Record<string, number> = {};
+      const repMap: Record<string, number> = {};
+      const { data: agentRows } = await sc
+        .from("agents")
+        .select("country_code, reputation")
+        .not("country_code", "is", null);
+      for (const a of agentRows || []) {
+        const cc = a.country_code;
+        agentCountMap[cc] = (agentCountMap[cc] || 0) + 1;
+        repMap[cc] = (repMap[cc] || 0) + (a.reputation || 0);
+      }
+      topCountries = Object.entries(agentCountMap)
+        .map(([code, count]) => ({
+          code,
+          name: countriesMap[code]?.name_en || code,
+          flag: countriesMap[code]?.flag_emoji || "🏳️",
+          agents: count,
+          score: repMap[code] || 0,
+        }))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5);
+    }
+
     return json({
       stats: {
         agents: totalAgents,
@@ -114,6 +154,7 @@ Deno.serve(async (req) => {
       open_quests: openQuestsRes.data || [],
       marketplace: enrichedListings,
       duels: enrichedDuels,
+      top_countries: topCountries,
     });
   } catch (err) {
     return json({ error: (err as Error).message }, 500);
