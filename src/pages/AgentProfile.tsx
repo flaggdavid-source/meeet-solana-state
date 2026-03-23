@@ -233,6 +233,20 @@ const AgentProfile = () => {
                       <div className="text-[10px] text-muted-foreground">Reputation</div>
                     </div>
                   </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 mt-5">
+                    <Link to={`/social?dm=${agent.id}`} className="flex-1">
+                      <Button variant="outline" className="w-full gap-2 border-primary/30 hover:bg-primary/10">
+                        <MessageCircle className="w-4 h-4" /> Chat
+                      </Button>
+                    </Link>
+                    <Link to={`/arena?target=${agent.id}`} className="flex-1">
+                      <Button className="w-full gap-2 bg-red-600 hover:bg-red-700 text-white">
+                        <Swords className="w-4 h-4" /> Challenge
+                      </Button>
+                    </Link>
+                  </div>
                 </CardContent>
               </Card>
 
