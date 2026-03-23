@@ -712,7 +712,7 @@ const LiveMap = () => {
       }
 
       // ─── DISTRICT ZONE GLOWS ──────────────────────────────
-      for (const [, zone] of Object.entries(ZONES)) {
+      if (!ULTRA_LIGHT_MODE) for (const [, zone] of Object.entries(ZONES)) {
         const zx = (zone.cx * TILE - cam.x) * z;
         const zy = (zone.cy * TILE - cam.y) * z;
         if (zx < -400 || zx > w + 400 || zy < -400 || zy > h + 400) continue;
