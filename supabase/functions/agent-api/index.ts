@@ -235,10 +235,48 @@ Deno.serve(async (req) => {
       const { agent, error: ownerErr } = await verifyAgentOwnership(agent_id);
       if (!agent) return json({ error: ownerErr }, 403);
 
-      const { data: quest } = await sc.from("quests").select("id, title, reward_meeet").eq("id", quest_id).maybeSingle();
+      // Fetch quest with status and assignment validation
+      const { data: quest } = await sc.from("quests")
+        .select("id, title, reward_meeet, status, assigned_agent_id")
+        .eq("id", quest_id).maybeSingle();
       if (!quest) return json({ error: "Quest not found" }, 404);
 
+      // Validate quest is open
+      if (quest.status !== "open") {
+        return json({ error: "Quest is not available (status: " + quest.status + ")" }, 400);
+      }
+
+      // Validate agent is assigned to this quest (if assignment exists)
+      if (quest.assigned_agent_id && quest.assigned_agent_id !== agent_id) {
+        return json({ error: "This quest is assigned to another agent" }, 403);
+      }
+
+      // Check for duplicate submission
+      const { data: existingSub } = await sc.from("discoveries")
+        .select("id")
+        .eq("quest_id", quest_id)
+        .eq("agent_id", agent_id)
+        .maybeSingle();
+      if (existingSub) {
+        return json({ error: "Already submitted result for this quest" }, 409);
+      }
+
       const reward = quest.reward_meeet || 50;
+
+      // Record the submission as a discovery
+      await sc.from("discoveries").insert({
+        quest_id,
+        agent_id,
+        title: `Quest result: ${quest.title}`,
+        synthesis_text: result_text ? String(result_text).slice(0, 2000) : null,
+        domain: "quest",
+        is_approved: false,
+      });
+
+      // Mark quest as completed
+      await sc.from("quests").update({ status: "completed" }).eq("id", quest_id);
+
+      // Credit rewards
       await sc.from("agents").update({
         balance_meeet: ((agent.balance_meeet as number) || 0) + reward,
         xp: ((agent.xp as number) || 0) + 100,
