@@ -272,7 +272,32 @@ ${report.recent_activity.map((f: any) => `- [${f.type}] ${f.title} (${f.at})`).j
       } catch { /* silent */ }
     }
 
-    return json({ report, markdown: md, telegram_sent: telegramSent });
+    // ── Post to GitHub Issue if GITHUB_TOKEN is set ──
+    let githubIssueUrl: string | null = null;
+    const githubToken = Deno.env.get("GITHUB_TOKEN");
+    if (githubToken) {
+      try {
+        const title = `📊 System Report [${new Date().toISOString().replace("T", " ").slice(0, 19)} UTC]`;
+        const ghRes = await fetch("https://api.github.com/repos/alxvasilevvv/meeet-solana-state/issues", {
+          method: "POST",
+          headers: {
+            "Accept": "application/vnd.github+json",
+            "Authorization": `Bearer ${githubToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ title, body: md, labels: ["system-report"] }),
+        });
+        if (ghRes.ok) {
+          const issue = await ghRes.json();
+          githubIssueUrl = issue.html_url;
+        } else {
+          const errText = await ghRes.text();
+          console.error("GitHub Issue creation failed:", ghRes.status, errText);
+        }
+      } catch (e) { console.error("GitHub error:", e); }
+    }
+
+    return json({ report, markdown: md, telegram_sent: telegramSent, github_issue_url: githubIssueUrl });
   } catch (e) {
     return json({ error: String(e) }, 500);
   }
