@@ -333,7 +333,7 @@ const WorldMap = forwardRef<HTMLDivElement, WorldMapProps>(({ height = "100vh", 
     if (data) {
       // Filter to land-only and limit per type to avoid clutter
       const landEvents = (data as WorldEvent[]).filter(e => e.lat && e.lng && isOnLand(e.lat, e.lng));
-      const MAX_PER_TYPE: Record<string, number> = { conflict: 25, geopolitical: 20, disaster: 15, diplomacy: 15, discovery: 15 };
+      const MAX_PER_TYPE: Record<string, number> = { conflict: 8, geopolitical: 8, disaster: 6, diplomacy: 6, discovery: 6 };
       const counts: Record<string, number> = {};
       const balanced = landEvents.filter(e => {
         const t = e.event_type;
