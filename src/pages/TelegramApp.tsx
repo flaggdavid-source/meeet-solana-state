@@ -468,9 +468,9 @@ const HomeTab = ({ stats, agents, leaderboard, matches, onTab, promoActive, free
           <p className="text-xs text-muted-foreground mb-3">Deploy AI agents, complete quests, earn $MEEET</p>
           <div className="grid grid-cols-3 gap-2 text-center">
             {[
-              { v: fmtNum(stats.agents), l: "Agents", c: "text-primary" },
+              { v: stats.agents.toLocaleString(), l: "Agents", c: "text-primary" },
               { v: String(stats.quests), l: "Quests", c: "text-secondary" },
-              { v: stats.treasury_fmt || fmtNum(stats.treasury), l: "Treasury", c: "text-amber-400" },
+              { v: stats.treasury.toLocaleString(), l: "Treasury", c: "text-amber-400" },
             ].map((s) => (
               <div key={s.l} className="bg-background/40 rounded-lg p-2">
                 <p className={`text-lg font-bold ${s.c}`}>{s.v}</p>
