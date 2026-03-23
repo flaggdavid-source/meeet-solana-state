@@ -27,6 +27,7 @@ const Index = () => {
       <WelcomeOnboarding />
       <main className="pt-16">
         <HeroSection />
+        <LiveTicker />
         <LiveStatsBanner />
         <HomeLiveFeed />
         <MilestoneTracker />
