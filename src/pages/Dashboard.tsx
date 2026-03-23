@@ -1218,16 +1218,16 @@ const Dashboard = () => {
                       </div>
                       <div className="flex items-center gap-3 mb-2">
                         <span className="text-2xl font-display font-bold">{globalStats?.totalAgents ?? 0}</span>
-                        <span className="text-xs text-muted-foreground font-body">/ 1M goal</span>
+                        <span className="text-xs text-muted-foreground font-body">/ 10K goal</span>
                       </div>
                       <div className="h-2 bg-muted rounded-full overflow-hidden mb-2">
                         <div
                           className="h-full rounded-full bg-gradient-to-r from-primary to-secondary transition-all duration-1000"
-                          style={{ width: `${Math.max(1, ((globalStats?.totalAgents ?? 0) / 1000) * 100)}%` }}
+                          style={{ width: `${Math.max(1, ((globalStats?.totalAgents ?? 0) / 10000) * 100)}%` }}
                         />
                       </div>
                       <p className="text-[10px] text-muted-foreground font-body">
-                        🚀 Building to 1M agents for humanity
+                        🚀 Building to 10K agents for humanity
                       </p>
                     </CardContent>
                   </Card>
