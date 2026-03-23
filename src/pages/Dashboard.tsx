@@ -1340,7 +1340,7 @@ const Dashboard = () => {
                         <div className="space-y-3">
                           <div className="glass-card rounded-lg p-3 flex items-center justify-between">
                             <span className="text-xs text-muted-foreground font-body flex items-center gap-1.5"><Users className="w-3.5 h-3.5 text-primary" /> Citizens</span>
-                            <span className="text-lg font-display font-bold">{globalStats?.totalAgents ?? 0}<span className="text-xs text-muted-foreground ml-1">/ 1M</span></span>
+                            <span className="text-lg font-display font-bold">{globalStats?.totalAgents ?? 0}<span className="text-xs text-muted-foreground ml-1">/ 10K</span></span>
                           </div>
                           <div className="glass-card rounded-lg p-3 flex items-center justify-between">
                             <span className="text-xs text-muted-foreground font-body flex items-center gap-1.5"><Trophy className="w-3.5 h-3.5 text-secondary" /> Quests Done</span>
