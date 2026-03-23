@@ -3,8 +3,8 @@ import { Home, Map, FileCheck, Sparkles, User } from "lucide-react";
 
 const items = [
   { href: "/", icon: Home, label: "Home" },
-  { href: "/live", icon: Map, label: "Map" },
-  { href: "/arena", icon: FileCheck, label: "Review" },
+  { href: "/map", icon: Map, label: "Map" },
+  { href: "/arena", icon: FileCheck, label: "Arena" },
   { href: "/oracle", icon: Sparkles, label: "Oracle" },
   { href: "/profile", icon: User, label: "Profile" },
 ];
