@@ -76,12 +76,12 @@ const PLANS = [
   { name: "Nation", sol: 4.99, meeet: 124750, agents: 50, quests: 200, tier: "enterprise" },
 ];
 
-const COUNTRY_WARS = [
-  { name: "BioTech", emoji: "🧬", color: "text-green-400" },
-  { name: "Quantum", emoji: "⚛️", color: "text-violet-400" },
-  { name: "AI", emoji: "🤖", color: "text-sky-400" },
-  { name: "Space", emoji: "🚀", color: "text-orange-400" },
-  { name: "Energy", emoji: "⚡", color: "text-amber-400" },
+const COUNTRY_WARS_FALLBACK = [
+  { name: "Nigeria", flag: "🇳🇬", code: "NG", agents: 65, score: 0 },
+  { name: "Germany", flag: "🇩🇪", code: "DE", agents: 65, score: 0 },
+  { name: "India", flag: "🇮🇳", code: "IN", agents: 64, score: 0 },
+  { name: "South Africa", flag: "🇿🇦", code: "ZA", agents: 63, score: 0 },
+  { name: "Japan", flag: "🇯🇵", code: "JP", agents: 63, score: 0 },
 ];
 
 function fmtNum(n: number): string {
@@ -117,6 +117,7 @@ const TelegramApp = () => {
   const [arenaMatches, setArenaMatches] = useState<any[]>([]);
   const [showCreateAgent, setShowCreateAgent] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [topCountries, setTopCountries] = useState<any[]>(COUNTRY_WARS_FALLBACK);
   const [newAgentName, setNewAgentName] = useState("");
   const [newAgentClass, setNewAgentClass] = useState("oracle");
 
@@ -166,6 +167,8 @@ const TelegramApp = () => {
         setLeaderboard(data.leaderboard || []);
         setQuests(data.open_quests || []);
         setMarketListings(data.marketplace || []);
+        setArenaMatches(data.duels || []);
+        if (data.top_countries?.length) setTopCountries(data.top_countries);
         setArenaMatches(data.duels || []);
 
         const { data: userAgents } = await supabase.from("agents")
@@ -305,7 +308,7 @@ const TelegramApp = () => {
 
       {/* Content */}
       <main className="flex-1 overflow-y-auto px-3 pb-20 space-y-3">
-        {tab === "home" && <HomeTab stats={stats} agents={agents} leaderboard={leaderboard} matches={arenaMatches} onTab={switchTab} promoActive={promoActive} freeSlots={freeSlots} haptic={haptic} tg={tg} />}
+        {tab === "home" && <HomeTab stats={stats} agents={agents} leaderboard={leaderboard} matches={arenaMatches} onTab={switchTab} promoActive={promoActive} freeSlots={freeSlots} haptic={haptic} tg={tg} topCountries={topCountries} />}
         {tab === "agents" && <AgentsTab agents={agents} />}
         {tab === "deploy" && <DeployTab onBuy={setBuyPlan} promoActive={promoActive} freeSlots={freeSlots} haptic={haptic} />}
         {tab === "quests" && <QuestsTab quests={quests} />}
@@ -429,7 +432,7 @@ const TelegramApp = () => {
 };
 
 /* ── Home Tab ── */
-const HomeTab = ({ stats, agents, leaderboard, matches, onTab, promoActive, freeSlots, haptic, tg }: any) => {
+const HomeTab = ({ stats, agents, leaderboard, matches, onTab, promoActive, freeSlots, haptic, tg, topCountries }: any) => {
   const DAILY_CHALLENGES = [
     { title: "Make a discovery about climate change", reward: 100, emoji: "🔬" },
     { title: "Win an arena debate", reward: 200, emoji: "⚔️" },
@@ -515,12 +518,12 @@ const HomeTab = ({ stats, agents, leaderboard, matches, onTab, promoActive, free
       <div>
         <h3 className="text-sm font-semibold mb-2">🌍 Country Wars</h3>
         <div className="grid grid-cols-5 gap-1.5">
-          {COUNTRY_WARS.map((c, i) => (
-            <Card key={c.name} className="border-border">
+          {topCountries.map((c, i) => (
+            <Card key={c.code || c.name} className="border-border">
               <CardContent className="p-2 text-center">
-                <p className="text-lg">{c.emoji}</p>
-                <p className={`text-[10px] font-bold ${c.color}`}>{c.name}</p>
-                <p className="text-[9px] text-muted-foreground">#{i + 1}</p>
+                <p className="text-lg">{c.flag}</p>
+                <p className="text-[10px] font-bold text-foreground truncate">{c.name}</p>
+                <p className="text-[9px] text-muted-foreground">#{i + 1} · {c.agents} 🤖</p>
               </CardContent>
             </Card>
           ))}
