@@ -1257,7 +1257,7 @@ const LiveMap = () => {
       }
       if (z > 0.4) {
         agents.forEach(a => {
-          if ((a.state === "move" || a.state === "visiting") && Math.random() < 0.3) {
+          if (!ULTRA_LIGHT_MODE && (a.state === "move" || a.state === "visiting") && Math.random() < 0.12) {
             trails.push({ x: a.x, y: a.y, age: 0, color: a.color });
           }
         });
