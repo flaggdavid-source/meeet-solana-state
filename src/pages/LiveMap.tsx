@@ -458,13 +458,13 @@ const LiveMap = () => {
       ctx.font = "bold 14px 'JetBrains Mono', monospace";
       ctx.textAlign = "center";
       ctx.fillStyle = "rgba(180,140,255,0.85)";
-      ctx.fillText("CORTEX", CX, CY - 14);
-      ctx.font = "11px 'JetBrains Mono', monospace";
-      ctx.fillStyle = "rgba(255,255,255,0.5)";
-      ctx.fillText(`${agentCount} neurons`, CX, CY + 4);
+      ctx.fillText("CORTEX", CX, CY - 18);
+      ctx.font = "bold 12px 'JetBrains Mono', monospace";
+      ctx.fillStyle = "rgba(255,255,255,0.65)";
+      ctx.fillText(`${agentCount.toLocaleString()} agents`, CX, CY + 1);
       ctx.font = "9px 'JetBrains Mono', monospace";
       ctx.fillStyle = "rgba(20,241,149,0.55)";
-      ctx.fillText(`${totalDiscoveries} discoveries`, CX, CY + 18);
+      ctx.fillText(`${totalDiscoveries.toLocaleString()} discoveries`, CX, CY + 16);
 
       // ══════ ZONES ══════
       ZONE_LAYOUT.forEach(zone => {
