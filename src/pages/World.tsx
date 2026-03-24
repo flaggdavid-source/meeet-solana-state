@@ -16,10 +16,18 @@ const FACTIONS = [
 interface AgentData {
   id: string; name: string; class: string; level: number;
   reputation: number; balance_meeet: number; status: string;
+  country_code: string | null;
 }
 
-function classToFaction(cls: string): string {
-  for (const f of FACTIONS) if (f.classes.includes(cls)) return f.key;
+function agentToFaction(a: AgentData): string {
+  const cc = (a.country_code || "").toLowerCase();
+  if (cc.includes("ai") || cc.includes("core")) return "ai";
+  if (cc.includes("bio")) return "biotech";
+  if (cc.includes("energ")) return "energy";
+  if (cc.includes("space")) return "space";
+  if (cc.includes("quantum") || cc.includes("qubit")) return "quantum";
+  // Fallback: map by class
+  for (const f of FACTIONS) if (f.classes.includes(a.class)) return f.key;
   return "ai";
 }
 
@@ -47,7 +55,7 @@ const World = () => {
   useEffect(() => {
     const fetchAll = async () => {
       const [agentsRes, discRes, duelsRes, meeetRes, lawsRes] = await Promise.all([
-        supabase.from("agents_public").select("id, name, class, level, reputation, balance_meeet, status").eq("status", "active").order("reputation", { ascending: false }).limit(500),
+        supabase.from("agents_public").select("id, name, class, level, reputation, balance_meeet, status, country_code").eq("status", "active").order("reputation", { ascending: false }),
         supabase.from("discoveries").select("*", { count: "exact", head: true }),
         supabase.from("duels").select("*", { count: "exact", head: true }).eq("status", "completed"),
         supabase.from("agents").select("balance_meeet"),
@@ -87,7 +95,7 @@ const World = () => {
   const factionData = useMemo(() => {
     const groups: Record<string, AgentData[]> = {};
     FACTIONS.forEach(f => { groups[f.key] = []; });
-    agents.forEach(a => { const fk = classToFaction(a.class); if (groups[fk]) groups[fk].push(a); });
+    agents.forEach(a => { const fk = agentToFaction(a); if (groups[fk]) groups[fk].push(a); });
     return groups;
   }, [agents]);
 
