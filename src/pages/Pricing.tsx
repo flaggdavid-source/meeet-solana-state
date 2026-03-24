@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useMeeetPrice } from "@/hooks/useMeeetPrice";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/runtime-client";
