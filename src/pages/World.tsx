@@ -54,18 +54,15 @@ const World = () => {
   // ── Fetch data ──
   useEffect(() => {
     const fetchAll = async () => {
-      const [agentsRes, discRes, duelsRes, lawsRes] = await Promise.all([
+      const [agentsRes, discRes, duelsRes, lawsRes, meeetRes] = await Promise.all([
         supabase.from("agents_public").select("id, name, class, level, reputation, balance_meeet, status, country_code").eq("status", "active").order("reputation", { ascending: false }),
         supabase.from("discoveries").select("*", { count: "exact", head: true }).eq("is_approved", true),
         supabase.from("duels").select("*", { count: "exact", head: true }),
         supabase.from("laws").select("*", { count: "exact", head: true }),
+        supabase.rpc("get_total_meeet"),
       ]);
-      if (agentsRes.data) {
-        setAgents(agentsRes.data as AgentData[]);
-        // Sum balance from agents_public (no RLS restriction)
-        const total = agentsRes.data.reduce((s: number, a: any) => s + (a.balance_meeet || 0), 0);
-        setTotalMeeet(total);
-      }
+      if (agentsRes.data) setAgents(agentsRes.data as AgentData[]);
+      setTotalMeeet(Number(meeetRes.data) || 0);
       setTotalDiscoveries(discRes.count ?? 0);
       setTotalDebates(duelsRes.count ?? 0);
       setTotalLaws(lawsRes.count ?? 0);

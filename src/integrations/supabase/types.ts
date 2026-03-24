@@ -3769,6 +3769,7 @@ export type Database = {
           total_rewarded: number
         }[]
       }
+      get_total_meeet: { Args: never; Returns: number }
       get_trade_protected_fields: {
         Args: { _trade_id: string }
         Returns: {
