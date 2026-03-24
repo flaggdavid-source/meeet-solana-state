@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Bot, Pause, Play, Coins, Trophy, ChevronRight } from "lucide-react";
+import { Loader2, Bot, Trash2, MessageCircle, Coins, Trophy, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -40,18 +40,14 @@ export default function MyDeployedAgents() {
     },
   });
 
-  const toggleAgent = async (deployedId: string, currentStatus: string) => {
+  const deleteAgent = async (deployedId: string) => {
+    if (!confirm("Delete this agent? This action cannot be undone.")) return;
     setTogglingId(deployedId);
     try {
-      const action = currentStatus === "running" ? "pause" : "resume";
-      const { data, error } = await supabase.functions.invoke("pause-agent", {
-        body: { deployed_agent_id: deployedId, action },
-      });
+      const { error } = await supabase.from("deployed_agents").delete().eq("id", deployedId).eq("user_id", user!.id);
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-
       queryClient.invalidateQueries({ queryKey: ["my-deployed-agents"] });
-      toast({ title: action === "resume" ? "Agent resumed ▶️" : "Agent paused ⏸️" });
+      toast({ title: "Agent deleted 🗑️" });
     } catch (e: any) {
       toast({ title: "Error", description: e.message, variant: "destructive" });
     } finally {
@@ -129,25 +125,22 @@ export default function MyDeployedAgents() {
                     {agent?.class} · Lv.{agent?.level || 1}
                   </p>
                 </div>
-                <Button
-                  size="sm"
-                  variant={da.status === "running" ? "outline" : "default"}
-                  className="shrink-0 text-xs gap-1.5"
-                  disabled={togglingId === da.id || da.status === "stopped"}
-                  onClick={() => toggleAgent(da.id, da.status)}
-                >
-                  {togglingId === da.id ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : da.status === "running" ? (
-                    <>
-                      <Pause className="w-3.5 h-3.5" /> Pause
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-3.5 h-3.5" /> Resume
-                    </>
-                  )}
-                </Button>
+                <div className="flex gap-1.5 shrink-0">
+                  <Link to={`/dashboard?chat=${agent?.id}`}>
+                    <Button size="sm" variant="default" className="text-xs gap-1.5">
+                      <MessageCircle className="w-3.5 h-3.5" /> Chat
+                    </Button>
+                  </Link>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="text-xs gap-1.5"
+                    disabled={togglingId === da.id}
+                    onClick={() => deleteAgent(da.id)}
+                  >
+                    {togglingId === da.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                  </Button>
+                </div>
               </div>
 
               {/* Stats row */}
