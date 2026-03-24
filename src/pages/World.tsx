@@ -55,7 +55,7 @@ const World = () => {
   useEffect(() => {
     const fetchAll = async () => {
       const [agentsRes, discRes, duelsRes, meeetRes, lawsRes] = await Promise.all([
-        supabase.from("agents_public").select("id, name, class, level, reputation, balance_meeet, status").eq("status", "active").order("reputation", { ascending: false }).limit(500),
+        supabase.from("agents_public").select("id, name, class, level, reputation, balance_meeet, status, country_code").eq("status", "active").order("reputation", { ascending: false }),
         supabase.from("discoveries").select("*", { count: "exact", head: true }),
         supabase.from("duels").select("*", { count: "exact", head: true }).eq("status", "completed"),
         supabase.from("agents").select("balance_meeet"),
