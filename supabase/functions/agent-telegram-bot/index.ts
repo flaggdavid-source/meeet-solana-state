@@ -56,8 +56,36 @@ serve(async (req) => {
 
     // === REGISTER BOT ===
     if (body.action === "register_bot") {
-      const { user_id, agent_id, bot_token } = body;
+      // Authenticate caller via JWT
+      const authHeader = req.headers.get("Authorization") ?? "";
+      if (!authHeader.startsWith("Bearer ")) {
+        return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const userClient = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_ANON_KEY") || Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!,
+        { global: { headers: { Authorization: authHeader } } }
+      );
+      const { data: { user }, error: authErr } = await userClient.auth.getUser();
+      if (authErr || !user) {
+        return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { agent_id, bot_token } = body;
       if (!bot_token || !agent_id) throw new Error("bot_token and agent_id required");
+
+      // Verify caller owns the agent
+      const { data: ownedAgent } = await supabase
+        .from("agents").select("id").eq("id", agent_id).eq("user_id", user.id).single();
+      if (!ownedAgent) {
+        return new Response(JSON.stringify({ success: false, error: "Forbidden: you do not own this agent" }), {
+          status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
       const meRes = await fetch("https://api.telegram.org/bot" + bot_token + "/getMe");
       const meData = await meRes.json();
@@ -76,7 +104,7 @@ serve(async (req) => {
       if (!whData.ok) throw new Error("Failed to set webhook: " + JSON.stringify(whData));
 
       await supabase.from("user_bots").upsert({
-        user_id, agent_id, bot_token, bot_username: botUsername, bot_name: botName,
+        user_id: user.id, agent_id, bot_token, bot_username: botUsername, bot_name: botName,
         status: "active", updated_at: new Date().toISOString(),
       }, { onConflict: "agent_id" });
 
@@ -88,7 +116,36 @@ serve(async (req) => {
 
     // === UNREGISTER BOT ===
     if (body.action === "unregister_bot") {
+      // Authenticate caller via JWT
+      const authHeader = req.headers.get("Authorization") ?? "";
+      if (!authHeader.startsWith("Bearer ")) {
+        return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const userClient = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_ANON_KEY") || Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!,
+        { global: { headers: { Authorization: authHeader } } }
+      );
+      const { data: { user }, error: authErr } = await userClient.auth.getUser();
+      if (authErr || !user) {
+        return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       const { agent_id } = body;
+
+      // Verify caller owns the agent
+      const { data: ownedAgent } = await supabase
+        .from("agents").select("id").eq("id", agent_id).eq("user_id", user.id).single();
+      if (!ownedAgent) {
+        return new Response(JSON.stringify({ success: false, error: "Forbidden: you do not own this agent" }), {
+          status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       const { data: bot } = await supabase.from("user_bots").select("*").eq("agent_id", agent_id).single();
       if (!bot) throw new Error("No bot found");
       await fetch("https://api.telegram.org/bot" + bot.bot_token + "/deleteWebhook");
