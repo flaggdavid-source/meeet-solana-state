@@ -519,6 +519,9 @@ export default function Pricing() {
             ))}
           </div>
 
+          {/* ─── Subscription Tiers ─── */}
+          <SubscriptionTiers userId={user?.id} />
+
           {/* Comparison */}
           <div className="bg-card border border-border rounded-2xl p-8 mb-16">
             <h2 className="text-2xl font-display font-bold mb-6 text-center">Our Cost vs Doing It Yourself</h2>
