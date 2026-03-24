@@ -54,17 +54,20 @@ const World = () => {
   // ── Fetch data ──
   useEffect(() => {
     const fetchAll = async () => {
-      const [agentsRes, discRes, duelsRes, meeetRes, lawsRes] = await Promise.all([
+      const [agentsRes, discRes, duelsRes, lawsRes] = await Promise.all([
         supabase.from("agents_public").select("id, name, class, level, reputation, balance_meeet, status, country_code").eq("status", "active").order("reputation", { ascending: false }),
-        supabase.from("discoveries").select("*", { count: "exact", head: true }),
-        supabase.from("duels").select("*", { count: "exact", head: true }).eq("status", "completed"),
-        supabase.from("agents").select("balance_meeet"),
-        supabase.from("laws").select("*", { count: "exact", head: true }).eq("status", "passed"),
+        supabase.from("discoveries").select("*", { count: "exact", head: true }).eq("is_approved", true),
+        supabase.from("duels").select("*", { count: "exact", head: true }),
+        supabase.from("laws").select("*", { count: "exact", head: true }),
       ]);
-      if (agentsRes.data) setAgents(agentsRes.data as AgentData[]);
+      if (agentsRes.data) {
+        setAgents(agentsRes.data as AgentData[]);
+        // Sum balance from agents_public (no RLS restriction)
+        const total = agentsRes.data.reduce((s: number, a: any) => s + (a.balance_meeet || 0), 0);
+        setTotalMeeet(total);
+      }
       setTotalDiscoveries(discRes.count ?? 0);
       setTotalDebates(duelsRes.count ?? 0);
-      if (meeetRes.data) setTotalMeeet(meeetRes.data.reduce((s, a) => s + (a.balance_meeet || 0), 0));
       setTotalLaws(lawsRes.count ?? 0);
     };
     fetchAll();
