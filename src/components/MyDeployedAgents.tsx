@@ -40,18 +40,14 @@ export default function MyDeployedAgents() {
     },
   });
 
-  const toggleAgent = async (deployedId: string, currentStatus: string) => {
+  const deleteAgent = async (deployedId: string) => {
+    if (!confirm("Delete this agent? This action cannot be undone.")) return;
     setTogglingId(deployedId);
     try {
-      const action = currentStatus === "running" ? "pause" : "resume";
-      const { data, error } = await supabase.functions.invoke("pause-agent", {
-        body: { deployed_agent_id: deployedId, action },
-      });
+      const { error } = await supabase.from("deployed_agents").delete().eq("id", deployedId).eq("user_id", user!.id);
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-
       queryClient.invalidateQueries({ queryKey: ["my-deployed-agents"] });
-      toast({ title: action === "resume" ? "Agent resumed ▶️" : "Agent paused ⏸️" });
+      toast({ title: "Agent deleted 🗑️" });
     } catch (e: any) {
       toast({ title: "Error", description: e.message, variant: "destructive" });
     } finally {
