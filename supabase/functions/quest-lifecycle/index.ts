@@ -265,7 +265,7 @@ Deno.serve(async (req) => {
                     headers: {
                       "Content-Type": "application/json",
                       Authorization: `Bearer ${anonKey}`,
-                      "x-internal-service": serviceRoleKey.slice(-16),
+                      "x-internal-service": Deno.env.get("INTERNAL_SERVICE_SECRET") ?? "",
                     },
                     body: JSON.stringify({
                       recipient_wallet: executorProfile.wallet_address,
