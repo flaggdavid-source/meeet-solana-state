@@ -48,7 +48,7 @@ const World = () => {
   const [selectedFaction, setSelectedFaction] = useState<string | null>(null);
   const [hoveredAgent, setHoveredAgent] = useState<{ agent: AgentData; x: number; y: number } | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<AgentData | null>(null);
-  const [recentEvents, setRecentEvents] = useState<Array<{ title: string }>>([]);
+  const [recentEvents, setRecentEvents] = useState<Array<{ title: string; agentName: string }>>([]);
   const particlesRef = useRef<Array<{ x: number; y: number; vx: number; vy: number; life: number; maxLife: number; color: string; size: number }>>([]);
 
   // ── Fetch data ──
