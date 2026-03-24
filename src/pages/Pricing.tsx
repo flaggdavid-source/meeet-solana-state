@@ -909,16 +909,18 @@ function SubscriptionTiers({ userId }: { userId?: string }) {
     }
   };
 
-  const MEEET_PRICES: Record<string, number> = { pro: 50000, enterprise: 150000 };
+  const MEEET_PRICES: Record<string, number> = { pro: 9990, enterprise: 29990 };
 
   const tiers = [
     {
       id: "free",
       name: "Free",
-      price: "0 SOL",
-      priceNote: "forever",
+      price: "Free",
+      priceNote: "",
+      oldPrice: "",
       icon: <Rocket className="w-6 h-6" />,
       highlight: false,
+      badge: "",
       features: [
         "1 AI agent",
         "1,000 MEEET credits ($1.00)",
@@ -932,27 +934,31 @@ function SubscriptionTiers({ userId }: { userId?: string }) {
     {
       id: "pro",
       name: "Pro",
-      price: "0.5 SOL",
+      price: "0.07 SOL",
       priceNote: "/month",
+      oldPrice: "0.21 SOL",
       icon: <Crown className="w-6 h-6" />,
       highlight: true,
+      badge: "Beta Price",
       features: [
         "Up to 5 agents",
         "Unlimited messages",
         "Custom Telegram bot",
         "Agent memory system",
+        "7-day free trial",
         "Priority support",
-        "Advanced analytics",
       ],
       locked: ["Phone calls", "Email/SMS", "API access"],
     },
     {
       id: "enterprise",
       name: "Enterprise",
-      price: "1.5 SOL",
+      price: "0.21 SOL",
       priceNote: "/month",
+      oldPrice: "0.7 SOL",
       icon: <Shield className="w-6 h-6" />,
       highlight: false,
+      badge: "Beta Price",
       features: [
         "Up to 50 agents",
         "Everything in Pro",
@@ -1002,9 +1008,10 @@ function SubscriptionTiers({ userId }: { userId?: string }) {
                 t.highlight ? "border-primary shadow-lg shadow-primary/10" : "border-border"
               }`}
             >
-              {t.highlight && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-primary text-primary-foreground px-4 py-1">Most Popular</Badge>
+              {(t.highlight || t.badge) && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex gap-1">
+                  {t.highlight && <Badge className="bg-primary text-primary-foreground px-3 py-1">Most Popular</Badge>}
+                  {t.badge && <Badge className="bg-amber-500 text-black px-3 py-1">{t.badge}</Badge>}
                 </div>
               )}
               <div className="flex items-center gap-3 mb-4">
@@ -1019,7 +1026,10 @@ function SubscriptionTiers({ userId }: { userId?: string }) {
                     <p className="text-2xl font-bold text-primary">Free<span className="text-sm text-muted-foreground font-normal"> forever</span></p>
                   ) : payMethod === "sol" ? (
                     <div>
-                      <p className="text-2xl font-bold text-primary">{t.price}<span className="text-sm text-muted-foreground font-normal">/month</span></p>
+                      <div className="flex items-baseline gap-2">
+                        <p className="text-2xl font-bold text-primary">{t.price}<span className="text-sm text-muted-foreground font-normal">/mo</span></p>
+                        {t.oldPrice && <span className="text-sm line-through text-muted-foreground">{t.oldPrice}</span>}
+                      </div>
                       <p className="text-[10px] text-muted-foreground">or {meeetPrice.toLocaleString()} MEEET</p>
                     </div>
                   ) : (
