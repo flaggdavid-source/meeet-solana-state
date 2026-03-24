@@ -3065,6 +3065,36 @@ export type Database = {
           },
         ]
       }
+      token_price_history: {
+        Row: {
+          id: string
+          liquidity_usd: number | null
+          market_cap: number | null
+          price_sol: number
+          price_usd: number
+          recorded_at: string
+          volume_24h: number | null
+        }
+        Insert: {
+          id?: string
+          liquidity_usd?: number | null
+          market_cap?: number | null
+          price_sol?: number
+          price_usd?: number
+          recorded_at?: string
+          volume_24h?: number | null
+        }
+        Update: {
+          id?: string
+          liquidity_usd?: number | null
+          market_cap?: number | null
+          price_sol?: number
+          price_usd?: number
+          recorded_at?: string
+          volume_24h?: number | null
+        }
+        Relationships: []
+      }
       tournaments: {
         Row: {
           created_at: string | null
