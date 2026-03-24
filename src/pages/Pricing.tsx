@@ -460,6 +460,7 @@ function TelegramBotGuide() {
 
 // ─── Agent Hub (stats + in-app chat + TG bot) ──────────────────
 function AgentHubSection({ userId }: { userId: string }) {
+  const { usdToMeeet } = useMeeetPrice();
   const [chatOpen, setChatOpen] = useState(false);
   const navigate = useNavigate();
 
