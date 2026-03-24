@@ -5,7 +5,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 const useNavItems = () => {
   const { t } = useLanguage();
   return [
-    { href: "/", icon: Home, label: t("nav.dashboard") || "Home" },
+    { href: "/dashboard", icon: Home, label: t("nav.dashboard") || "Home" },
     { href: "/map", icon: Map, label: t("nav.map") || "Map" },
     { href: "/arena", icon: FileCheck, label: t("nav.arena") || "Arena" },
     { href: "/oracle", icon: Sparkles, label: "Oracle" },
