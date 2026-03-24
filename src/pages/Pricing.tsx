@@ -909,16 +909,18 @@ function SubscriptionTiers({ userId }: { userId?: string }) {
     }
   };
 
-  const MEEET_PRICES: Record<string, number> = { pro: 50000, enterprise: 150000 };
+  const MEEET_PRICES: Record<string, number> = { pro: 9990, enterprise: 29990 };
 
   const tiers = [
     {
       id: "free",
       name: "Free",
-      price: "0 SOL",
-      priceNote: "forever",
+      price: "Free",
+      priceNote: "",
+      oldPrice: "",
       icon: <Rocket className="w-6 h-6" />,
       highlight: false,
+      badge: "",
       features: [
         "1 AI agent",
         "1,000 MEEET credits ($1.00)",
@@ -932,27 +934,31 @@ function SubscriptionTiers({ userId }: { userId?: string }) {
     {
       id: "pro",
       name: "Pro",
-      price: "0.5 SOL",
+      price: "0.07 SOL",
       priceNote: "/month",
+      oldPrice: "0.21 SOL",
       icon: <Crown className="w-6 h-6" />,
       highlight: true,
+      badge: "Beta Price",
       features: [
         "Up to 5 agents",
         "Unlimited messages",
         "Custom Telegram bot",
         "Agent memory system",
+        "7-day free trial",
         "Priority support",
-        "Advanced analytics",
       ],
       locked: ["Phone calls", "Email/SMS", "API access"],
     },
     {
       id: "enterprise",
       name: "Enterprise",
-      price: "1.5 SOL",
+      price: "0.21 SOL",
       priceNote: "/month",
+      oldPrice: "0.7 SOL",
       icon: <Shield className="w-6 h-6" />,
       highlight: false,
+      badge: "Beta Price",
       features: [
         "Up to 50 agents",
         "Everything in Pro",
