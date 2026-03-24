@@ -18,7 +18,8 @@ import {
 import {
   Phone, Mail, MessageSquare, Zap, Brain, Swords, FlaskConical,
   Calculator, Plus, Sparkles, Loader2, Bot, BarChart3, Coins,
-  TrendingUp, Activity, Shield, Crown,
+  TrendingUp, Activity, Shield, Crown, Lock, Check, Tag, Rocket,
+  MessageCircle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AGENT_CLASSES } from "@/data/agent-classes";
