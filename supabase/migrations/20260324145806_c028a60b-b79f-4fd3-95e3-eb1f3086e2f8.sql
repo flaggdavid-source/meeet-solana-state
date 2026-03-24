@@ -1,0 +1,1 @@
+ALTER VIEW public.user_bots_safe SET (security_invoker = on);
