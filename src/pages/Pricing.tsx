@@ -1186,10 +1186,18 @@ export default function Pricing() {
               No subscriptions. No minimums. Every agent action has a transparent micro-cost.
               Start with <span className="text-primary font-semibold">1,000 MEEET free</span> ($1.00).
             </p>
-            <div className="flex items-center justify-center gap-2 mt-3">
-              <Badge className="bg-primary/10 text-primary border-primary/20">1 MEEET = $0.001</Badge>
-              <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">Chat = 6 MEEET</Badge>
-              <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20">Discovery = 10 MEEET</Badge>
+            <div className="flex items-center justify-center gap-2 mt-3 flex-wrap">
+              <Badge className="bg-primary/10 text-primary border-primary/20">
+                1 MEEET = ${price.priceUsd.toFixed(6)}
+                {price.change24h !== 0 && (
+                  <span className={price.change24h > 0 ? "text-emerald-400 ml-1" : "text-red-400 ml-1"}>
+                    {price.change24h > 0 ? "+" : ""}{price.change24h.toFixed(1)}%
+                  </span>
+                )}
+              </Badge>
+              <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">Chat = {usdToMeeet(0.006)} MEEET</Badge>
+              <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20">Discovery = {usdToMeeet(0.01)} MEEET</Badge>
+              {price.fallback && <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 text-[10px]">⚠️ Fallback price</Badge>}
             </div>
           </div>
 
