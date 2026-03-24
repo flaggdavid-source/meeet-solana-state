@@ -95,7 +95,7 @@ const World = () => {
   const factionData = useMemo(() => {
     const groups: Record<string, AgentData[]> = {};
     FACTIONS.forEach(f => { groups[f.key] = []; });
-    agents.forEach(a => { const fk = classToFaction(a.class); if (groups[fk]) groups[fk].push(a); });
+    agents.forEach(a => { const fk = agentToFaction(a); if (groups[fk]) groups[fk].push(a); });
     return groups;
   }, [agents]);
 
