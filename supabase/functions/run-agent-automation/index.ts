@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
   try {
     // Auth: require internal service secret
     const secret = req.headers.get("x-internal-service");
-    const expected = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.slice(-16);
+    const expected = Deno.env.get("INTERNAL_SERVICE_SECRET");
     if (!secret || secret !== expected) {
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }

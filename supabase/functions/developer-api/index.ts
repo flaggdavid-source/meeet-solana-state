@@ -65,6 +65,15 @@ Deno.serve(async (req) => {
     if (action === "webhook_test") {
       const { url } = body;
       if (!url) return json({ error: "url required" }, 400);
+
+      // SSRF protection: validate URL
+      let parsed: URL;
+      try { parsed = new URL(url); } catch { return json({ error: "Invalid URL" }, 400); }
+      if (parsed.protocol !== "https:") return json({ error: "Only HTTPS URLs permitted" }, 400);
+      const blocked = ["localhost", "127.", "169.254.", "10.", "192.168.", "172.16.", "::1", "0.0.0.0", "[::1]"];
+      if (blocked.some(b => parsed.hostname.startsWith(b) || parsed.hostname === b))
+        return json({ error: "Private/internal addresses not permitted" }, 400);
+
       try {
         const resp = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ event: "test", timestamp: new Date().toISOString(), source: "meeet-platform" }) });
         return json({ success: true, status: resp.status, message: "Webhook test sent" });

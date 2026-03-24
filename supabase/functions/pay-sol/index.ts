@@ -90,7 +90,7 @@ Deno.serve(async (req) => {
   try {
     // Only allow internal calls
     const internalSecret = req.headers.get("x-internal-service");
-    const expectedSecret = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.slice(-16);
+    const expectedSecret = Deno.env.get("INTERNAL_SERVICE_SECRET");
     if (!internalSecret || internalSecret !== expectedSecret) {
       return json({ error: "Internal only" }, 403);
     }

@@ -20,7 +20,7 @@ Deno.serve(async (req: Request) => {
 
   // Internal service authentication — prevent unauthorized oracle resolution
   const secret = req.headers.get("x-internal-service");
-  const expected = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.slice(-16);
+  const expected = Deno.env.get("INTERNAL_SERVICE_SECRET");
   if (!secret || secret !== expected) {
     return json({ error: "Forbidden" }, 403);
   }

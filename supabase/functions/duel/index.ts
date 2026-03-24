@@ -176,7 +176,7 @@ Deno.serve(async (req) => {
               "Content-Type": "application/json",
               Authorization: authHeader,
               apikey: Deno.env.get("SUPABASE_ANON_KEY")!,
-              "x-internal-service": Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!.slice(-16),
+              "x-internal-service": Deno.env.get("INTERNAL_SERVICE_SECRET") ?? "",
             },
             body: JSON.stringify({
               type: "duel_reward",

@@ -153,7 +153,7 @@ Deno.serve(async (req) => {
       // SECURITY: Only allow credit-only from trusted internal service calls
       // Check for internal service header to prevent external abuse
       const internalSecret = req.headers.get("x-internal-service");
-      const expectedSecret = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.slice(-16);
+      const expectedSecret = Deno.env.get("INTERNAL_SERVICE_SECRET");
       if (!internalSecret || internalSecret !== expectedSecret) {
         return json({ error: "Credit-only transactions require a sender (from_agent_id)" }, 403);
       }

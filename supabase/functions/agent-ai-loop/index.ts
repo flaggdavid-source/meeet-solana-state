@@ -108,20 +108,12 @@ Deno.serve(async (req) => {
       return json({ error: "LOVABLE_API_KEY not configured" }, 500);
     }
 
-    // Verify internal call or president
+    // Verify internal call only via dedicated secret
     const internalHeader = req.headers.get("x-internal-service");
-    const authHeader = req.headers.get("Authorization");
+    const internalSecret = Deno.env.get("INTERNAL_SERVICE_SECRET");
     
-    let isAuthorized = internalHeader === serviceRoleKey;
-    
-    if (!isAuthorized && authHeader?.startsWith("Bearer ")) {
-      // Also allow cron calls with anon key
-      const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
-      isAuthorized = authHeader === `Bearer ${anonKey}`;
-    }
-
-    if (!isAuthorized) {
-      return json({ error: "Unauthorized — internal or cron only" }, 403);
+    if (!internalSecret || internalHeader !== internalSecret) {
+      return json({ error: "Unauthorized — internal only" }, 403);
     }
 
     const db = createClient(supabaseUrl, serviceRoleKey);

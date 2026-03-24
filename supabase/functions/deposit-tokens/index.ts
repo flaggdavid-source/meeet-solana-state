@@ -36,9 +36,8 @@ Deno.serve(async (req) => {
 
     // ── Internal-service gate (same pattern as process-transaction) ──
     const internalHeader = req.headers.get("x-internal-service") ?? "";
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-    const expectedToken = serviceKey.slice(-16);
-    const isInternalCall = internalHeader === expectedToken;
+    const expectedToken = Deno.env.get("INTERNAL_SERVICE_SECRET") ?? "";
+    const isInternalCall = internalHeader === expectedToken && expectedToken !== "";
 
     const { data: { user }, error: authErr } = await supabase.auth.getUser();
     if (authErr || !user) return json({ error: "Unauthorized" }, 401);
