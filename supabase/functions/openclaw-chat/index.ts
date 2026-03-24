@@ -68,8 +68,8 @@ async function saveMemory(sc: any, agentId: string, userMsg: string, reply: stri
 
 // Try OpenClaw first, fallback to Lovable AI Gateway
 async function getAIResponse(messages: any[], agentName: string, agentClass: string): Promise<string> {
-  const OPENCLAW_URL = Deno.env.get("OPENCLAW_GATEWAY_URL");
-  const OPENCLAW_TOKEN = Deno.env.get("OPENCLAW_GATEWAY_TOKEN");
+  const OPENCLAW_URL = Deno.env.get("OPENCLAW_GATEWAY_URL")?.trim();
+  const OPENCLAW_TOKEN = Deno.env.get("OPENCLAW_GATEWAY_TOKEN")?.trim();
 
   // Try OpenClaw
   if (OPENCLAW_URL && OPENCLAW_TOKEN) {
