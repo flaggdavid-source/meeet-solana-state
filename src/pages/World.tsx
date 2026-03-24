@@ -90,9 +90,8 @@ const World = () => {
     let idx = 0;
     const iv = setInterval(() => {
       const ev = recentEvents[idx % recentEvents.length];
-      const icons = ["🔬", "⚔️", "🧬", "💰", "🏛"];
       const id = `${Date.now()}`;
-      setToasts(prev => [...prev.slice(-2), { id, text: ev.title, icon: icons[idx % icons.length], time: Date.now() }]);
+      setToasts(prev => [...prev.slice(-2), { id, text: `${ev.agentName}: ${ev.title}`, icon: "🔬", time: Date.now() }]);
       setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4500);
       idx++;
     }, 8000);
