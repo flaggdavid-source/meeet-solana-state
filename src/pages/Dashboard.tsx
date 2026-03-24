@@ -15,6 +15,10 @@ import RaidClaimForm from "@/components/RaidClaimForm";
 import DeployedAgentsWidget from "@/components/MyDeployedAgents";
 import MySubscriptionCard from "@/components/MySubscription";
 import DashboardAnalytics from "@/components/DashboardAnalytics";
+import SubscriptionBar from "@/components/dashboard/SubscriptionBar";
+import TelegramBotWizard from "@/components/dashboard/TelegramBotWizard";
+import SpixPanel from "@/components/dashboard/SpixPanel";
+import UsdBalanceCard from "@/components/dashboard/UsdBalanceCard";
 import RaidClaimsAdmin from "@/components/RaidClaimsAdmin";
 import FeedbackWidget from "@/components/FeedbackWidget";
 import DailyLoginStreak from "@/components/DailyLoginStreak";
@@ -249,6 +253,33 @@ function CreateAgentForm({ userId, isPresident }: { userId: string; isPresident?
   const [showCountryList, setShowCountryList] = useState(false);
   const queryClient = useQueryClient();
 
+  // Check if user already has agent(s) and subscription tier
+  const { data: existingAgentCount = 0 } = useQuery({
+    queryKey: ["agent-count-check", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { count } = await supabase.from("agents").select("id", { count: "exact", head: true }).eq("user_id", userId);
+      return count ?? 0;
+    },
+  });
+  const { data: subTier } = useQuery({
+    queryKey: ["sub-tier-check", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("subscriptions")
+        .select("tier, plan, max_agents")
+        .eq("user_id", userId)
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(1);
+      return (data && data.length > 0) ? data[0] : null;
+    },
+  });
+  const tier = (subTier as any)?.tier || (subTier as any)?.plan || "free";
+  const maxAgents = (subTier as any)?.max_agents || (tier === "pro" ? 5 : tier === "enterprise" ? 50 : 1);
+  const canCreateAgent = existingAgentCount < maxAgents;
+
   const { data: countries = [] } = useQuery({
     queryKey: ["countries-list"],
     queryFn: async () => {
@@ -404,7 +435,15 @@ function CreateAgentForm({ userId, isPresident }: { userId: string; isPresident?
             <p className="text-xs text-muted-foreground font-body">{CLASS_META[cls]?.desc}</p>
           </div>
         </div>
-        <Button variant="hero" className="w-full" disabled={!name.trim() || mutation.isPending} onClick={() => mutation.mutate()}>
+        {!canCreateAgent && (
+          <div className="glass-card rounded-lg p-3 text-center border-amber-500/20 bg-amber-500/5">
+            <p className="text-xs text-amber-400 font-body">
+              {tier === "free" ? "Free tier limit: 1 agent. " : tier === "pro" ? "Pro limit: 5 agents. " : "Enterprise limit reached. "}
+              <a href="/pricing" className="text-primary underline font-semibold">Upgrade →</a>
+            </p>
+          </div>
+        )}
+        <Button variant="hero" className="w-full" disabled={!name.trim() || mutation.isPending || !canCreateAgent} onClick={() => mutation.mutate()}>
           {mutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
           {isPresident ? "Deploy Presidential Agent" : "Deploy Agent"}
         </Button>
@@ -680,6 +719,23 @@ const Dashboard = () => {
   const { data: impactScore } = useImpactScore(agent?.id);
   const activityFeed = useActivityFeed();
 
+  // Subscription tier
+  const { data: subscription } = useQuery({
+    queryKey: ["my-sub-tier", user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("subscriptions")
+        .select("*")
+        .eq("user_id", user!.id)
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(1);
+      return (data && data.length > 0) ? data[0] : null;
+    },
+  });
+  const currentTier: string = (subscription as any)?.tier || (subscription as any)?.plan || "free";
+
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
   }, [authLoading, user, navigate]);
@@ -782,6 +838,9 @@ const Dashboard = () => {
               )}
             </div>
           </div>
+          {/* Subscription + Balance Bar */}
+          <SubscriptionBar userId={user!.id} />
+          <UsdBalanceCard userId={user!.id} />
 
           {/* Global Stats Banner */}
           {globalStats && (
@@ -1006,13 +1065,27 @@ const Dashboard = () => {
               {agent.nation_code && <NationCard nationCode={agent.nation_code} />}
 
               {/* Quick Actions */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <QuickAction icon={<Activity className="w-5 h-5" />} label="💬 Chat with Agent" to={`/agent/${agent.name}`} badge="DM" />
+                <QuickAction icon={<Sparkles className="w-5 h-5" />} label="🔬 Make Discovery" to="/discoveries" badge="New" />
+                <QuickAction icon={<Sword className="w-5 h-5" />} label="⚔️ Enter Arena" to="/arena" />
+                <QuickAction icon={<Star className="w-5 h-5" />} label="🔮 Oracle" to="/oracle" />
+              </div>
+
+              {/* Telegram Bot Wizard + Spix Panel */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <TelegramBotWizard userId={user!.id} agentId={agent.id} tier={currentTier} />
+                <SpixPanel userId={user!.id} agentId={agent.id} tier={currentTier} />
+              </div>
+
+              {/* More Quick Actions */}
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 <QuickAction icon={<Rocket className="w-5 h-5" />} label="Deploy Agent" to="/deploy" badge="🚀" />
-                <QuickAction icon={<Star className="w-5 h-5" />} label="Oracle Markets" to="/oracle" badge="🔮" />
                 <QuickAction icon={<Shield className="w-5 h-5" />} label="Warnings" to="/warnings" badge="⚠️" />
                 <QuickAction icon={<Scroll className="w-5 h-5" />} label="Quests" to="/quests" badge="New" />
                 <QuickAction icon={<Globe className="w-5 h-5" />} label="World" to="/world" />
                 <QuickAction icon={<BarChart3 className="w-5 h-5" />} label="Rankings" to="/world/rankings" />
+                <QuickAction icon={<Target className="w-5 h-5" />} label="Breeding" to="/breeding" />
               </div>
 
               {/* Analytics Charts */}

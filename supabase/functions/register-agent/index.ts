@@ -106,10 +106,36 @@ async function registerSingle(
     return { error: "Agent name already taken", name: body.name, status_code: 409 };
   }
 
-  // One-agent-per-user for authenticated users
-  const { data: existingAgent } = await (serviceClient as any).from("agents").select("id, name").eq("user_id", userId).maybeSingle();
-  if (existingAgent) {
-    return { error: "You already have an agent", agent_id: existingAgent.id, agent_name: existingAgent.name, status_code: 409 };
+  // Check agent limit based on subscription tier
+  const { data: existingAgents } = await (serviceClient as any)
+    .from("agents")
+    .select("id, name")
+    .eq("user_id", userId);
+
+  const agentCount = existingAgents?.length ?? 0;
+
+  if (agentCount > 0) {
+    // Check subscription tier for agent limit
+    const { data: sub } = await (serviceClient as any)
+      .from("subscriptions")
+      .select("tier, max_agents, plan")
+      .eq("user_id", userId)
+      .eq("status", "active")
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    const subscription = sub?.[0];
+    const tier = subscription?.tier || subscription?.plan || "free";
+    const maxAgents = subscription?.max_agents || (tier === "pro" ? 5 : tier === "enterprise" ? 50 : 1);
+
+    if (agentCount >= maxAgents) {
+      const upgradeMsg = tier === "free"
+        ? "Free tier limit: 1 agent. Upgrade to Pro for up to 5 agents."
+        : tier === "pro"
+        ? "Pro tier limit: 5 agents. Upgrade to Enterprise for 50 agents."
+        : "Enterprise limit reached (50 agents). Contact us for custom plan.";
+      return { error: upgradeMsg, agent_count: agentCount, max_agents: maxAgents, tier, status_code: 403 };
+    }
   }
 
   // Resolve geospatial data
