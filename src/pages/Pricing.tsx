@@ -1157,6 +1157,7 @@ export default function Pricing() {
   const [discoveries, setDiscoveries] = useState(10);
   const [calls, setCalls] = useState(5);
   const [emails, setEmails] = useState(20);
+  const { price, usdToMeeet, meeetToUsd } = useMeeetPrice();
 
   const estimated = chats * 0.006 + discoveries * 0.01 + calls * 0.10 + emails * 0.02;
   const estimatedMeeet = usdToMeeet(estimated);
