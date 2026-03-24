@@ -968,11 +968,33 @@ function SubscriptionTiers({ userId }: { userId?: string }) {
   return (
     <div className="mb-16" id="plans">
       <h2 className="text-3xl font-display font-bold text-center mb-3">Choose Your Plan</h2>
-      <p className="text-center text-muted-foreground mb-8">All plans include pay-per-use AI actions. Upgrade to unlock more agents and features.</p>
+      <p className="text-center text-muted-foreground mb-4">All plans include pay-per-use AI actions. Upgrade to unlock more agents and features.</p>
+
+      {/* Payment Method Toggle */}
+      <div className="flex items-center justify-center gap-2 mb-8">
+        <span className="text-xs text-muted-foreground">Pay with:</span>
+        <div className="inline-flex bg-muted rounded-lg p-0.5">
+          <button
+            onClick={() => setPayMethod("sol")}
+            className={`px-4 py-1.5 rounded-md text-xs font-medium transition-colors ${payMethod === "sol" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+          >◎ SOL</button>
+          <button
+            onClick={() => setPayMethod("meeet")}
+            className={`px-4 py-1.5 rounded-md text-xs font-medium transition-colors ${payMethod === "meeet" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+          >🪙 MEEET</button>
+        </div>
+        {payMethod === "meeet" && myAgent && (
+          <Badge className="bg-muted text-muted-foreground border-border text-[10px]">
+            Balance: {agentMeeet.toLocaleString()} MEEET
+          </Badge>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {tiers.map((t) => {
           const isCurrent = currentTier === t.id;
+          const meeetPrice = MEEET_PRICES[t.id] ?? 0;
+          const canAffordMeeet = agentMeeet >= meeetPrice;
           return (
             <div
               key={t.id}
@@ -993,7 +1015,19 @@ function SubscriptionTiers({ userId }: { userId?: string }) {
                 </div>
                 <div>
                   <h3 className="font-display font-bold text-lg">{t.name}</h3>
-                  <p className="text-2xl font-bold text-primary">{t.price}<span className="text-sm text-muted-foreground font-normal">{t.priceNote}</span></p>
+                  {t.id === "free" ? (
+                    <p className="text-2xl font-bold text-primary">Free<span className="text-sm text-muted-foreground font-normal"> forever</span></p>
+                  ) : payMethod === "sol" ? (
+                    <div>
+                      <p className="text-2xl font-bold text-primary">{t.price}<span className="text-sm text-muted-foreground font-normal">/month</span></p>
+                      <p className="text-[10px] text-muted-foreground">or {meeetPrice.toLocaleString()} MEEET</p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-2xl font-bold text-primary">{meeetPrice.toLocaleString()} <span className="text-sm">MEEET</span><span className="text-sm text-muted-foreground font-normal">/mo</span></p>
+                      <p className="text-[10px] text-muted-foreground">or {t.price} SOL</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1020,13 +1054,19 @@ function SubscriptionTiers({ userId }: { userId?: string }) {
                 <Button variant="outline" className="w-full" asChild>
                   <a href="/auth"><Sparkles className="w-4 h-4 mr-2" /> Get Started Free</a>
                 </Button>
+              ) : payMethod === "sol" ? (
+                <Button variant={t.highlight ? "default" : "outline"} className="w-full" onClick={() => purchaseWithSol(t.id)}>
+                  <Coins className="w-4 h-4 mr-2" /> Pay {t.price} SOL
+                </Button>
               ) : (
                 <Button
                   variant={t.highlight ? "default" : "outline"}
                   className="w-full"
-                  onClick={() => purchaseWithSol(t.id)}
+                  onClick={() => purchaseWithMeeet(t.id)}
+                  disabled={!canAffordMeeet || purchasing}
                 >
-                  <Coins className="w-4 h-4 mr-2" /> Pay {t.price}
+                  {purchasing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Coins className="w-4 h-4 mr-2" />}
+                  {canAffordMeeet ? `Pay ${meeetPrice.toLocaleString()} MEEET` : "Insufficient MEEET"}
                 </Button>
               )}
             </div>
