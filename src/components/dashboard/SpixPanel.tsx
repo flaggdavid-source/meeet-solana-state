@@ -6,30 +6,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Phone, Mail, MessageSquare, Loader2, Lock, Send, DollarSign } from "lucide-react";
+import { Phone, Mail, MessageSquare, Loader2, Send, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function SpixPanel({ userId, agentId, tier }: { userId: string; agentId?: string; tier: string }) {
+  const { t } = useLanguage();
   const isEnterprise = tier === "enterprise";
-  const isPro = tier === "pro" || isEnterprise;
   const { toast } = useToast();
 
   const { data: balance } = useQuery({
     queryKey: ["user-balance", userId],
     enabled: !!userId,
     queryFn: async () => {
-      const { data } = await supabase
-        .from("user_balance")
-        .select("*")
-        .eq("user_id", userId)
-        .limit(1);
+      const { data } = await supabase.from("user_balance").select("*").eq("user_id", userId).limit(1);
       return (data && data.length > 0) ? data[0] : null;
     },
   });
 
   const usdBalance = Number((balance as any)?.balance ?? 0);
 
-  // Call state
   const [phone, setPhone] = useState("");
   const [callMsg, setCallMsg] = useState("");
   const [email, setEmail] = useState("");
@@ -47,10 +43,8 @@ export default function SpixPanel({ userId, agentId, tier }: { userId: string; a
       if (res.data?.error) throw new Error(res.data.error);
       return res.data;
     },
-    onSuccess: (data) => {
-      toast({ title: "✅ Action completed", description: data?.message || "Success" });
-    },
-    onError: (e: any) => toast({ title: "Action failed", description: e.message, variant: "destructive" }),
+    onSuccess: (data) => toast({ title: "✅", description: data?.message || "Success" }),
+    onError: (e: any) => toast({ title: t("common.error"), description: e.message, variant: "destructive" }),
   });
 
   if (!isEnterprise) {
@@ -62,13 +56,11 @@ export default function SpixPanel({ userId, agentId, tier }: { userId: string; a
             <Phone className="w-6 h-6 text-muted-foreground" />
           </div>
           <div>
-            <p className="font-display font-bold text-foreground">Communications Hub</p>
-            <p className="text-xs text-muted-foreground font-body mt-1">
-              🔒 Enterprise plan required for calls, email & SMS
-            </p>
+            <p className="font-display font-bold text-foreground">{t("spix.commHub")}</p>
+            <p className="text-xs text-muted-foreground font-body mt-1">{t("spix.lockMsg")}</p>
           </div>
           <Button variant="outline" size="sm" className="gap-1.5" asChild>
-            <a href="/pricing">Upgrade to Enterprise →</a>
+            <a href="/pricing">{t("spix.upgradeEnterprise")}</a>
           </Button>
         </CardContent>
       </Card>
@@ -82,7 +74,7 @@ export default function SpixPanel({ userId, agentId, tier }: { userId: string; a
         <div className="flex items-center justify-between">
           <CardTitle className="font-display text-sm flex items-center gap-2">
             <Phone className="w-4 h-4 text-violet-400" />
-            Communications
+            {t("spix.communications")}
           </CardTitle>
           <Badge variant="outline" className="text-[10px]">
             <DollarSign className="w-3 h-3 mr-0.5" />${usdBalance.toFixed(2)}
@@ -92,29 +84,29 @@ export default function SpixPanel({ userId, agentId, tier }: { userId: string; a
       <CardContent>
         <Tabs defaultValue="call" className="w-full">
           <TabsList className="w-full grid grid-cols-3 mb-3">
-            <TabsTrigger value="call" className="text-xs gap-1"><Phone className="w-3 h-3" /> Call</TabsTrigger>
-            <TabsTrigger value="email" className="text-xs gap-1"><Mail className="w-3 h-3" /> Email</TabsTrigger>
+            <TabsTrigger value="call" className="text-xs gap-1"><Phone className="w-3 h-3" /> {t("spix.call")}</TabsTrigger>
+            <TabsTrigger value="email" className="text-xs gap-1"><Mail className="w-3 h-3" /> {t("pricing.email")}</TabsTrigger>
             <TabsTrigger value="sms" className="text-xs gap-1"><MessageSquare className="w-3 h-3" /> SMS</TabsTrigger>
           </TabsList>
 
           <TabsContent value="call" className="space-y-2">
             <Input placeholder="+1 555 123 4567" value={phone} onChange={(e) => setPhone(e.target.value)} className="text-xs" />
-            <Input placeholder="Message for the call" value={callMsg} onChange={(e) => setCallMsg(e.target.value)} className="text-xs" />
+            <Input placeholder={t("spix.msgForCall")} value={callMsg} onChange={(e) => setCallMsg(e.target.value)} className="text-xs" />
             <Button
               variant="hero" size="sm" className="w-full text-xs gap-1"
               disabled={!phone || !callMsg || spixAction.isPending}
               onClick={() => spixAction.mutate({ action: "call", payload: { phone, message: callMsg } })}
             >
               {spixAction.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Phone className="w-3 h-3" />}
-              Call — $0.10/min
+              {t("spix.callCost")}
             </Button>
           </TabsContent>
 
           <TabsContent value="email" className="space-y-2">
             <Input placeholder="recipient@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="text-xs" />
-            <Input placeholder="Subject" value={subject} onChange={(e) => setSubject(e.target.value)} className="text-xs" />
+            <Input placeholder={t("spix.subject")} value={subject} onChange={(e) => setSubject(e.target.value)} className="text-xs" />
             <textarea
-              placeholder="Email body..."
+              placeholder={t("spix.emailBody")}
               value={body}
               onChange={(e) => setBody(e.target.value)}
               className="w-full h-20 rounded-md border border-input bg-background px-3 py-2 text-xs resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -125,20 +117,20 @@ export default function SpixPanel({ userId, agentId, tier }: { userId: string; a
               onClick={() => spixAction.mutate({ action: "email", payload: { to: email, subject, body } })}
             >
               {spixAction.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
-              Send Email — $0.02
+              {t("spix.emailCost")}
             </Button>
           </TabsContent>
 
           <TabsContent value="sms" className="space-y-2">
             <Input placeholder="+1 555 123 4567" value={smsPhone} onChange={(e) => setSmsPhone(e.target.value)} className="text-xs" />
-            <Input placeholder="SMS message" value={smsMsg} onChange={(e) => setSmsMsg(e.target.value)} className="text-xs" />
+            <Input placeholder={t("spix.smsMessage")} value={smsMsg} onChange={(e) => setSmsMsg(e.target.value)} className="text-xs" />
             <Button
               variant="hero" size="sm" className="w-full text-xs gap-1"
               disabled={!smsPhone || !smsMsg || spixAction.isPending}
               onClick={() => spixAction.mutate({ action: "sms", payload: { phone: smsPhone, message: smsMsg } })}
             >
               {spixAction.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <MessageSquare className="w-3 h-3" />}
-              Send SMS — $0.04
+              {t("spix.smsCost")}
             </Button>
           </TabsContent>
         </Tabs>

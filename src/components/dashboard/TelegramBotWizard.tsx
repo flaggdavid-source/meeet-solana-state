@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Bot, Check, Loader2, Unplug, X, MessageSquare, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function TelegramBotWizard({ userId, agentId, tier }: { userId: string; agentId?: string; tier: string }) {
+  const { t } = useLanguage();
   const [token, setToken] = useState("");
   const [step, setStep] = useState<"intro" | "input" | "connected">("intro");
   const { toast } = useToast();
@@ -41,11 +43,11 @@ export default function TelegramBotWizard({ userId, agentId, tier }: { userId: s
     },
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ["my-telegram-bot"] });
-      toast({ title: "✅ Bot connected!", description: `@${data?.bot_username || "your bot"} is now online` });
+      toast({ title: "✅", description: `@${data?.bot_username || "bot"} online` });
       setStep("connected");
       setToken("");
     },
-    onError: (e: any) => toast({ title: "Connection failed", description: e.message, variant: "destructive" }),
+    onError: (e: any) => toast({ title: t("common.error"), description: e.message, variant: "destructive" }),
   });
 
   const disconnectMutation = useMutation({
@@ -58,10 +60,10 @@ export default function TelegramBotWizard({ userId, agentId, tier }: { userId: s
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["my-telegram-bot"] });
-      toast({ title: "Bot disconnected" });
+      toast({ title: t("tgBot.disconnect") });
       setStep("intro");
     },
-    onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+    onError: (e: any) => toast({ title: t("common.error"), description: e.message, variant: "destructive" }),
   });
 
   if (botLoading) return null;
@@ -74,8 +76,8 @@ export default function TelegramBotWizard({ userId, agentId, tier }: { userId: s
         <CardHeader className="pb-2">
           <CardTitle className="font-display text-sm flex items-center gap-2">
             <Bot className="w-4 h-4 text-sky-400" />
-            Telegram Bot
-            <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/20 text-[10px]">Online</Badge>
+            {t("tgBot.telegramBot")}
+            <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/20 text-[10px]">{t("tgBot.online")}</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -83,24 +85,23 @@ export default function TelegramBotWizard({ userId, agentId, tier }: { userId: s
             <div>
               <p className="font-display font-bold text-foreground">@{(botData as any).bot_username || "connected"}</p>
               <p className="text-[10px] text-muted-foreground font-body flex items-center gap-1">
-                <MessageSquare className="w-3 h-3" /> {(botData as any).total_messages ?? 0} messages
+                <MessageSquare className="w-3 h-3" /> {(botData as any).total_messages ?? 0} {t("tgBot.messages")}
               </p>
             </div>
             <div className="flex items-center gap-1.5">
               <a href={`https://t.me/${(botData as any).bot_username}`} target="_blank" rel="noopener">
                 <Button variant="outline" size="sm" className="text-xs gap-1">
-                  <ExternalLink className="w-3 h-3" /> Open
+                  <ExternalLink className="w-3 h-3" /> {t("tgBot.open")}
                 </Button>
               </a>
               <Button
-                variant="outline"
-                size="sm"
+                variant="outline" size="sm"
                 className="text-xs gap-1 text-red-400 border-red-500/20 hover:bg-red-500/10"
                 onClick={() => disconnectMutation.mutate()}
                 disabled={disconnectMutation.isPending}
               >
                 {disconnectMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Unplug className="w-3 h-3" />}
-                Disconnect
+                {t("tgBot.disconnect")}
               </Button>
             </div>
           </div>
@@ -109,7 +110,7 @@ export default function TelegramBotWizard({ userId, agentId, tier }: { userId: s
     );
   }
 
-  // Not Pro — show locked
+  // Not Pro — locked
   if (!isPro) {
     return (
       <Card className="glass-card border-border overflow-hidden relative opacity-75">
@@ -119,20 +120,18 @@ export default function TelegramBotWizard({ userId, agentId, tier }: { userId: s
             <Bot className="w-6 h-6 text-muted-foreground" />
           </div>
           <div>
-            <p className="font-display font-bold text-foreground">Connect Telegram Bot</p>
-            <p className="text-xs text-muted-foreground font-body mt-1">
-              🔒 Pro plan required to connect your own Telegram bot
-            </p>
+            <p className="font-display font-bold text-foreground">{t("tgBot.connectBot")}</p>
+            <p className="text-xs text-muted-foreground font-body mt-1">{t("tgBot.proRequired")}</p>
           </div>
           <Button variant="outline" size="sm" className="gap-1.5" asChild>
-            <a href="/pricing">Upgrade to Pro →</a>
+            <a href="/pricing">{t("tgBot.upgradePro")}</a>
           </Button>
         </CardContent>
       </Card>
     );
   }
 
-  // Setup wizard
+  // Intro
   if (step === "intro") {
     return (
       <Card className="glass-card border-border overflow-hidden relative">
@@ -142,13 +141,11 @@ export default function TelegramBotWizard({ userId, agentId, tier }: { userId: s
             <Bot className="w-6 h-6 text-sky-400" />
           </div>
           <div>
-            <p className="font-display font-bold text-foreground">Give your agent a Telegram bot</p>
-            <p className="text-xs text-muted-foreground font-body mt-1">
-              Your agent will respond 24/7 via its own bot
-            </p>
+            <p className="font-display font-bold text-foreground">{t("tgBot.giveAgentBot")}</p>
+            <p className="text-xs text-muted-foreground font-body mt-1">{t("tgBot.agentResponds")}</p>
           </div>
           <Button variant="hero" size="sm" className="gap-1.5" onClick={() => setStep("input")}>
-            <Bot className="w-3.5 h-3.5" /> Connect Bot
+            <Bot className="w-3.5 h-3.5" /> {t("tgBot.connectBotBtn")}
           </Button>
         </CardContent>
       </Card>
@@ -161,14 +158,14 @@ export default function TelegramBotWizard({ userId, agentId, tier }: { userId: s
       <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-sky-500 via-primary to-sky-500" />
       <CardHeader className="pb-2">
         <CardTitle className="font-display text-sm flex items-center gap-2">
-          <Bot className="w-4 h-4 text-sky-400" /> Connect Telegram Bot
+          <Bot className="w-4 h-4 text-sky-400" /> {t("tgBot.connectBot")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="glass-card rounded-lg p-3 space-y-2 text-xs text-muted-foreground font-body">
-          <p>1. Open <a href="https://t.me/BotFather" target="_blank" className="text-primary hover:underline">@BotFather</a> in Telegram</p>
-          <p>2. Send <code className="bg-muted px-1 rounded">/newbot</code> and follow instructions</p>
-          <p>3. Copy the token and paste below</p>
+          <p>1. {t("tgBot.step1")} <a href="https://t.me/BotFather" target="_blank" className="text-primary hover:underline">{t("tgBot.step1Link")}</a> {t("tgBot.step1Desc")}</p>
+          <p>2. {t("tgBot.step2")} <code className="bg-muted px-1 rounded">{t("tgBot.step2Cmd")}</code> {t("tgBot.step2Desc")}</p>
+          <p>3. {t("tgBot.step3")}</p>
         </div>
         <div className="flex gap-2">
           <Input
@@ -178,8 +175,7 @@ export default function TelegramBotWizard({ userId, agentId, tier }: { userId: s
             className="font-mono text-xs"
           />
           <Button
-            variant="hero"
-            size="sm"
+            variant="hero" size="sm"
             disabled={!token.trim() || connectMutation.isPending}
             onClick={() => connectMutation.mutate()}
           >

@@ -4,8 +4,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DollarSign, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function UsdBalanceCard({ userId }: { userId: string }) {
+  const { t } = useLanguage();
+
   const { data: balance } = useQuery({
     queryKey: ["user-balance", userId],
     enabled: !!userId,
@@ -30,17 +33,17 @@ export default function UsdBalanceCard({ userId }: { userId: string }) {
             <DollarSign className={`w-4 h-4 ${isLow ? "text-amber-400" : "text-emerald-400"}`} />
           </div>
           <div>
-            <p className="text-xs text-muted-foreground font-body">AI Credits</p>
+            <p className="text-xs text-muted-foreground font-body">{t("balance.aiCredits")}</p>
             <p className={`text-lg font-display font-bold ${isLow ? "text-amber-400" : "text-foreground"}`}>
               ${usdBalance.toFixed(2)}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-muted-foreground font-body">~{Math.floor(usdBalance / 0.006)} msgs</span>
+          <span className="text-[10px] text-muted-foreground font-body">~{Math.floor(usdBalance / 0.006)} {t("balance.msgs")}</span>
           <Link to="/pricing">
             <Button variant="outline" size="sm" className="text-xs gap-1">
-              <Plus className="w-3 h-3" /> Add Funds
+              <Plus className="w-3 h-3" /> {t("balance.addFunds")}
             </Button>
           </Link>
         </div>
