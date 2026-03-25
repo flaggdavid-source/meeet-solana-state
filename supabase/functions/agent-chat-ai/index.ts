@@ -239,7 +239,6 @@ Rules:
     const memories = agent_id ? await recallMemories(sc, agent_id, question) : [];
 
     let answer: string;
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
     if (agentData && LOVABLE_API_KEY) {
       const cls = agentData.class || effectiveClass;
