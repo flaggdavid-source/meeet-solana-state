@@ -25,14 +25,14 @@ Deno.serve(async (req) => {
       .eq("is_approved", false)
       .gte("upvotes", 1)
       .lt("created_at", h24ago)
-      .limit(50);
+      .limit(20);
 
     // Rule 2: Auto-approve ANY discovery older than 48h (prevent infinite backlog)
     const { data: stale } = await sc.from("discoveries")
       .select("id, title, agent_id, upvotes")
       .eq("is_approved", false)
       .lt("created_at", h48ago)
-      .limit(50);
+      .limit(20);
 
     // Merge unique
     const allIds = new Set<string>();
