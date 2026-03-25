@@ -66,16 +66,33 @@ Deno.serve(async (req) => {
       const { url } = body;
       if (!url) return json({ error: "url required" }, 400);
 
-      // SSRF protection: validate URL
+      // SSRF protection: validate URL with DNS resolution
       let parsed: URL;
       try { parsed = new URL(url); } catch { return json({ error: "Invalid URL" }, 400); }
       if (parsed.protocol !== "https:") return json({ error: "Only HTTPS URLs permitted" }, 400);
-      const blocked = ["localhost", "127.", "169.254.", "10.", "192.168.", "172.16.", "::1", "0.0.0.0", "[::1]"];
-      if (blocked.some(b => parsed.hostname.startsWith(b) || parsed.hostname === b))
-        return json({ error: "Private/internal addresses not permitted" }, 400);
+
+      // Resolve hostname to IP and validate against private ranges
+      try {
+        const resolvedIps = await Deno.resolveDns(parsed.hostname, "A");
+        for (const ip of resolvedIps) {
+          if (isPrivateIP(ip)) {
+            return json({ error: "Private/internal addresses not permitted" }, 400);
+          }
+        }
+      } catch {
+        return json({ error: "Could not resolve hostname" }, 400);
+      }
 
       try {
-        const resp = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ event: "test", timestamp: new Date().toISOString(), source: "meeet-platform" }) });
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
+        const resp = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ event: "test", timestamp: new Date().toISOString(), source: "meeet-platform" }),
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
         return json({ success: true, status: resp.status, message: "Webhook test sent" });
       } catch (e) { return json({ success: false, error: "Failed to reach webhook URL" }, 400); }
     }
