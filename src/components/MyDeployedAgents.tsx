@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Bot, Trash2, MessageCircle, Coins, Trophy, ChevronRight, Zap, ZapOff } from "lucide-react";
+import { Loader2, Bot, Trash2, MessageCircle, Coins, Trophy, ChevronRight, Zap, ZapOff, Users, UsersRound } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -41,7 +41,7 @@ export default function MyDeployedAgents() {
   });
 
   const toggleAutoMode = async (deployedId: string, currentMode: boolean) => {
-    setTogglingId(deployedId);
+    setTogglingId("auto-" + deployedId);
     try {
       const { data, error } = await supabase.functions.invoke("toggle-auto-mode", {
         body: { deployed_agent_id: deployedId, enable: !currentMode },
@@ -53,6 +53,27 @@ export default function MyDeployedAgents() {
         description: !currentMode
           ? "Агент начнёт взаимодействие с системой и зарабатывать $MEEET"
           : "Агент остановлен",
+      });
+    } catch (e: any) {
+      toast({ title: "Ошибка", description: e.message, variant: "destructive" });
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
+  const toggleSocialMode = async (deployedId: string, currentMode: boolean) => {
+    setTogglingId("social-" + deployedId);
+    try {
+      const { data, error } = await supabase.functions.invoke("toggle-social-mode", {
+        body: { deployed_agent_id: deployedId, enable: !currentMode },
+      });
+      if (error || data?.error) throw new Error(data?.error || error?.message);
+      queryClient.invalidateQueries({ queryKey: ["my-deployed-agents"] });
+      toast({
+        title: !currentMode ? "🤝 Социальный режим включён" : "Социальный режим выключен",
+        description: !currentMode
+          ? "Агент начнёт общаться с другими агентами, обсуждать открытия и зарабатывать $MEEET"
+          : "Взаимодействие с другими агентами остановлено",
       });
     } catch (e: any) {
       toast({ title: "Ошибка", description: e.message, variant: "destructive" });
@@ -165,22 +186,41 @@ export default function MyDeployedAgents() {
               </div>
 
               {/* Auto-mode toggle */}
-              <Button
-                size="sm"
-                variant={da.auto_mode ? "default" : "outline"}
-                className={`w-full text-xs gap-2 ${da.auto_mode ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "border-primary/30 hover:bg-primary/10"}`}
-                disabled={togglingId === da.id}
-                onClick={() => toggleAutoMode(da.id, !!da.auto_mode)}
-              >
-                {togglingId === da.id ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : da.auto_mode ? (
-                  <Zap className="w-3.5 h-3.5" />
-                ) : (
-                  <ZapOff className="w-3.5 h-3.5" />
-                )}
-                {da.auto_mode ? "⚡ Взаимодействие с системой включено" : "Разрешить взаимодействие с системой"}
-              </Button>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  size="sm"
+                  variant={da.auto_mode ? "default" : "outline"}
+                  className={`text-xs gap-1.5 ${da.auto_mode ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "border-primary/30 hover:bg-primary/10"}`}
+                  disabled={togglingId === "auto-" + da.id}
+                  onClick={() => toggleAutoMode(da.id, !!da.auto_mode)}
+                >
+                  {togglingId === "auto-" + da.id ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : da.auto_mode ? (
+                    <Zap className="w-3.5 h-3.5" />
+                  ) : (
+                    <ZapOff className="w-3.5 h-3.5" />
+                  )}
+                  {da.auto_mode ? "⚡ Система" : "Система"}
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant={da.social_mode ? "default" : "outline"}
+                  className={`text-xs gap-1.5 ${da.social_mode ? "bg-blue-600 hover:bg-blue-700 text-white" : "border-blue-500/30 hover:bg-blue-500/10"}`}
+                  disabled={togglingId === "social-" + da.id}
+                  onClick={() => toggleSocialMode(da.id, !!da.social_mode)}
+                >
+                  {togglingId === "social-" + da.id ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : da.social_mode ? (
+                    <UsersRound className="w-3.5 h-3.5" />
+                  ) : (
+                    <Users className="w-3.5 h-3.5" />
+                  )}
+                  {da.social_mode ? "🤝 Агенты" : "Агенты"}
+                </Button>
+              </div>
 
               {/* Stats row */}
               <div className="grid grid-cols-2 gap-2">
