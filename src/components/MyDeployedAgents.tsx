@@ -14,6 +14,7 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
+import AgentChat from "@/components/AgentChat";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -36,6 +37,7 @@ export default function MyDeployedAgents() {
   const queryClient = useQueryClient();
   const [actingId, setActingId] = useState<string | null>(null);
   const [settingsAgent, setSettingsAgent] = useState<any | null>(null);
+  const [chatAgent, setChatAgent] = useState<any | null>(null);
 
   const { data: deployedAgents = [], isLoading } = useQuery({
     queryKey: ["my-deployed-agents", user?.id],
@@ -181,11 +183,14 @@ export default function MyDeployedAgents() {
 
                 {/* Action buttons */}
                 <div className="grid grid-cols-3 gap-2">
-                  <Link to={`/dashboard?chat=${agent?.id}`} className="contents">
-                    <Button size="sm" variant="default" className="text-xs gap-1.5 w-full">
-                      <MessageCircle className="w-3.5 h-3.5" /> Chat
-                    </Button>
-                  </Link>
+                  <Button
+                    size="sm"
+                    variant="default"
+                    className="text-xs gap-1.5 w-full"
+                    onClick={() => setChatAgent(da)}
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" /> Chat
+                  </Button>
                   <Button
                     size="sm"
                     variant="outline"
@@ -315,6 +320,26 @@ export default function MyDeployedAgents() {
                 </Button>
               </div>
             </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Chat Dialog */}
+      <Dialog open={!!chatAgent} onOpenChange={(open) => !open && setChatAgent(null)}>
+        <DialogContent className="sm:max-w-lg max-h-[80vh] p-0 overflow-hidden">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Chat with {chatAgent?.agents?.name}</DialogTitle>
+            <DialogDescription>Send messages to your agent</DialogDescription>
+          </DialogHeader>
+          {chatAgent && (
+            <AgentChat
+              agentId={chatAgent.agents?.id || chatAgent.agent_id}
+              agentName={chatAgent.agents?.name || "Agent"}
+              agentClass={chatAgent.agents?.class || "oracle"}
+              agentLevel={chatAgent.agents?.level || 1}
+              inline
+              onClose={() => setChatAgent(null)}
+            />
           )}
         </DialogContent>
       </Dialog>
