@@ -1591,7 +1591,7 @@ const Dashboard = () => {
       {/* My Deployed Agents & Oracle Predictions */}
       {user && (
         <div className="container max-w-5xl mx-auto px-4 pb-8 space-y-6">
-          <MyDeployedAgents userId={user.id} />
+          <DeployedAgentsWidget />
           <MyOraclePredictions userId={user.id} />
           <MyImpactScore userId={user.id} />
           {/* Feedback */}
@@ -1604,93 +1604,7 @@ const Dashboard = () => {
 };
 
 
-// ─── My Deployed Agents & Oracle Predictions sections ─────────────────
-function MyDeployedAgents({ userId }: { userId: string }) {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  const { data: deployedAgents = [], isLoading } = useQuery({
-    queryKey: ["deployed_agents", userId],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("deployed_agents")
-        .select("*, agents(*)")
-        .eq("user_id", userId)
-        .order("deployed_at", { ascending: false });
-      return data ?? [];
-    },
-    enabled: !!userId,
-  });
-
-  const toggleStatus = useMutation({
-    mutationFn: async ({ id, currentStatus }: { id: string; currentStatus: string }) => {
-      const newStatus = currentStatus === "running" ? "paused" : "running";
-      const { error } = await supabase.from("deployed_agents").update({ status: newStatus }).eq("id", id);
-      if (error) throw error;
-      return newStatus;
-    },
-    onSuccess: (newStatus) => {
-      toast({ title: `Agent ${newStatus === "running" ? "resumed" : "paused"}` });
-      queryClient.invalidateQueries({ queryKey: ["deployed_agents", userId] });
-    },
-    onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
-  });
-
-  if (isLoading) return <div className="text-center py-8 text-muted-foreground">Loading agents...</div>;
-
-  return (
-    <Card className="glass-card">
-      <CardHeader>
-        <CardTitle className="font-display flex items-center gap-2">
-          <Zap className="w-5 h-5 text-primary" /> My Deployed Agents
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {deployedAgents.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground text-sm">
-            No deployed agents yet. <a href="/deploy" className="text-primary underline">Deploy one</a>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {deployedAgents.map((da: any) => {
-              const agent = da.agents;
-              if (!agent) return null;
-              const isRunning = da.status === "running";
-              return (
-                <div key={da.id} className="flex items-center gap-4 glass-card rounded-lg px-4 py-3 border border-border">
-                  <div className="text-2xl">{CLASS_META[agent.class]?.emoji ?? "🤖"}</div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-display font-semibold text-sm truncate">{agent.name}</p>
-                      <Badge
-                        variant="outline"
-                        className={isRunning ? "text-emerald-400 border-emerald-400/30 text-xs" : "text-yellow-400 border-yellow-400/30 text-xs"}
-                      >
-                        {isRunning ? "● running" : "⏸ paused"}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {CLASS_META[agent.class]?.desc ?? agent.class} · {Number(da.total_meeet_earned ?? 0).toLocaleString()} MEEET earned
-                    </p>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => toggleStatus.mutate({ id: da.id, currentStatus: da.status })}
-                    disabled={toggleStatus.isPending}
-                    className="shrink-0 text-xs"
-                  >
-                    {isRunning ? "Pause" : "Resume"}
-                  </Button>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
+// ─── Oracle Predictions & Impact sections ─────────────────
 
 function MyOraclePredictions({ userId }: { userId: string }) {
   const { data: bets = [], isLoading } = useQuery({
