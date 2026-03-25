@@ -94,18 +94,20 @@ serve(async (req) => {
       const botUsername = meData.result.username;
       const botName = meData.result.first_name;
 
-      const webhookUrl = Deno.env.get("SUPABASE_URL") + "/functions/v1/agent-telegram-bot?bot_token=" + bot_token;
+      // Generate a unique webhook_secret instead of passing bot_token in URL
+      const webhookSecret = crypto.randomUUID();
+      const webhookUrl = Deno.env.get("SUPABASE_URL") + "/functions/v1/agent-telegram-bot?agent_id=" + agent_id;
       const whRes = await fetch("https://api.telegram.org/bot" + bot_token + "/setWebhook", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: webhookUrl }),
+        body: JSON.stringify({ url: webhookUrl, secret_token: webhookSecret }),
       });
       const whData = await whRes.json();
       if (!whData.ok) throw new Error("Failed to set webhook: " + JSON.stringify(whData));
 
       await supabase.from("user_bots").upsert({
         user_id: user.id, agent_id, bot_token, bot_username: botUsername, bot_name: botName,
-        status: "active", updated_at: new Date().toISOString(),
+        status: "active", webhook_secret: webhookSecret, updated_at: new Date().toISOString(),
       }, { onConflict: "agent_id" });
 
       return new Response(JSON.stringify({
