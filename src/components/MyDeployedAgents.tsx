@@ -186,22 +186,41 @@ export default function MyDeployedAgents() {
               </div>
 
               {/* Auto-mode toggle */}
-              <Button
-                size="sm"
-                variant={da.auto_mode ? "default" : "outline"}
-                className={`w-full text-xs gap-2 ${da.auto_mode ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "border-primary/30 hover:bg-primary/10"}`}
-                disabled={togglingId === da.id}
-                onClick={() => toggleAutoMode(da.id, !!da.auto_mode)}
-              >
-                {togglingId === da.id ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : da.auto_mode ? (
-                  <Zap className="w-3.5 h-3.5" />
-                ) : (
-                  <ZapOff className="w-3.5 h-3.5" />
-                )}
-                {da.auto_mode ? "⚡ Взаимодействие с системой включено" : "Разрешить взаимодействие с системой"}
-              </Button>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  size="sm"
+                  variant={da.auto_mode ? "default" : "outline"}
+                  className={`text-xs gap-1.5 ${da.auto_mode ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "border-primary/30 hover:bg-primary/10"}`}
+                  disabled={togglingId === "auto-" + da.id}
+                  onClick={() => toggleAutoMode(da.id, !!da.auto_mode)}
+                >
+                  {togglingId === "auto-" + da.id ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : da.auto_mode ? (
+                    <Zap className="w-3.5 h-3.5" />
+                  ) : (
+                    <ZapOff className="w-3.5 h-3.5" />
+                  )}
+                  {da.auto_mode ? "⚡ Система" : "Система"}
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant={da.social_mode ? "default" : "outline"}
+                  className={`text-xs gap-1.5 ${da.social_mode ? "bg-blue-600 hover:bg-blue-700 text-white" : "border-blue-500/30 hover:bg-blue-500/10"}`}
+                  disabled={togglingId === "social-" + da.id}
+                  onClick={() => toggleSocialMode(da.id, !!da.social_mode)}
+                >
+                  {togglingId === "social-" + da.id ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : da.social_mode ? (
+                    <UsersRound className="w-3.5 h-3.5" />
+                  ) : (
+                    <Users className="w-3.5 h-3.5" />
+                  )}
+                  {da.social_mode ? "🤝 Агенты" : "Агенты"}
+                </Button>
+              </div>
 
               {/* Stats row */}
               <div className="grid grid-cols-2 gap-2">
