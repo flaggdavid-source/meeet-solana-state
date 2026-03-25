@@ -46,6 +46,18 @@ const STARS = Array.from({ length: 50 }, (_, i) => ({
   size: Math.random() > 0.85 ? 1.5 : 1,
 }));
 
+// Ambient drifting particles (25, pre-generated)
+const AMBIENT_PARTICLES = Array.from({ length: 25 }, (_, i) => ({
+  x: Math.random(),
+  y: Math.random(),
+  vx: (Math.random() - 0.5) * 0.0003,
+  vy: (Math.random() - 0.5) * 0.0003,
+  size: 1 + Math.random() * 2,
+  opacity: 0.2 + Math.random() * 0.3,
+  color: ["#fff", "#A855F7", "#06B6D4", "#FFD700"][i % 4],
+  phase: Math.random() * Math.PI * 2,
+}));
+
 const World = () => {
   const isMobile = useIsMobile();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -126,6 +138,14 @@ const World = () => {
     return () => window.removeEventListener("mousemove", handler);
   }, []);
 
+  // Pause when tab hidden
+  const visibleRef = useRef(true);
+  useEffect(() => {
+    const onVis = () => { visibleRef.current = document.visibilityState === "visible"; };
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, []);
+
   // ═══ CANVAS ═══
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -140,6 +160,7 @@ const World = () => {
 
     const animate = (timestamp: number) => {
       if (!running) return;
+      if (!visibleRef.current) { requestAnimationFrame(animate); return; }
       if (timestamp - lastTime < FRAME_TIME) { requestAnimationFrame(animate); return; }
       lastTime = timestamp;
       frameRef.current++;
@@ -175,6 +196,26 @@ const World = () => {
         ng.addColorStop(0, nebulaColors[n]); ng.addColorStop(1, "transparent");
         ctx.fillStyle = ng;
         ctx.fillRect(nx - nr, ny - nr, nr * 2, nr * 2);
+      }
+
+      // Cyan nebula center-top
+      const cnx = rw * 0.5, cny = rh * 0.15, cnr = 300 * dpr;
+      const cnGrad = ctx.createRadialGradient(cnx, cny, 0, cnx, cny, cnr);
+      cnGrad.addColorStop(0, "rgba(6,182,212,0.025)");
+      cnGrad.addColorStop(0.4, "rgba(6,182,212,0.012)");
+      cnGrad.addColorStop(1, "transparent");
+      ctx.fillStyle = cnGrad;
+      ctx.fillRect(cnx - cnr, cny - cnr, cnr * 2, cnr * 2);
+
+      // Subtle grid pattern (opacity 0.03)
+      ctx.strokeStyle = "rgba(255,255,255,0.03)";
+      ctx.lineWidth = 0.5 * dpr;
+      const gridSize = 80 * dpr;
+      for (let gx = 0; gx < rw; gx += gridSize) {
+        ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, rh); ctx.stroke();
+      }
+      for (let gy = 0; gy < rh; gy += gridSize) {
+        ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(rw, gy); ctx.stroke();
       }
 
       // Static star field
@@ -459,6 +500,18 @@ const World = () => {
         const alpha = Math.min(1, p.life / 10) * Math.max(0, 1 - p.life / p.maxLife);
         ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fillStyle = p.color + Math.round(alpha * 0.55 * 255).toString(16).padStart(2, "0");
+        ctx.fill();
+      }
+
+      // ── Ambient drifting particles ──
+      for (const ap of AMBIENT_PARTICLES) {
+        ap.x += ap.vx; ap.y += ap.vy;
+        if (ap.x < -0.05) ap.x = 1.05; if (ap.x > 1.05) ap.x = -0.05;
+        if (ap.y < -0.05) ap.y = 1.05; if (ap.y > 1.05) ap.y = -0.05;
+        const fadeAlpha = ap.opacity * (0.7 + 0.3 * Math.sin(frame * 0.015 + ap.phase));
+        ctx.beginPath();
+        ctx.arc(ap.x * rw, ap.y * rh, ap.size * dpr, 0, Math.PI * 2);
+        ctx.fillStyle = ap.color + Math.round(fadeAlpha * 255).toString(16).padStart(2, "0");
         ctx.fill();
       }
 
