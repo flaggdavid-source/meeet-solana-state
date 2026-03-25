@@ -274,25 +274,32 @@ function SubscriptionSection({ userId }: { userId?: string }) {
     }
   };
 
-  const MEEET_PRICES: Record<string, number> = { pro: 9990, enterprise: 29990 };
+  const SOL_PRICES_MAP: Record<string, number> = { scout: 0.19, warrior: 0.49, commander: 1.49, nation: 4.99 };
+  const MEEET_PRICES_MAP: Record<string, number> = { scout: 4750, warrior: 12250, commander: 37250, nation: 124750 };
 
   const tiers = [
     {
-      id: "free", name: "Free", price: "Free", priceNote: "", oldPrice: "",
+      id: "scout", name: "Scout", price: "0.19 SOL", priceNote: "/month", oldPrice: "",
       icon: <Rocket className="w-6 h-6" />, highlight: false, badge: "",
-      features: ["1 AI agent", "1,000 MEEET credits ($1.00)", "~166 chat messages", "Discoveries & Arena", "Oracle bets", "World map access"],
-      locked: ["Telegram bot", "Phone calls", "Email/SMS", "API access"],
+      features: ["1 AI agent", "5 quests/day", "Basic Compute", "1,000 MEEET credits ($1.00)", "Discoveries & Arena", "World map access"],
+      locked: ["Telegram bot", "Phone calls", "Email/SMS"],
     },
     {
-      id: "pro", name: "Pro", price: "0.07 SOL", priceNote: "/month", oldPrice: "0.21 SOL",
-      icon: <Crown className="w-6 h-6" />, highlight: true, badge: "Beta Price",
-      features: ["Up to 5 agents", "Unlimited messages", "Custom Telegram bot", "Agent memory system", "7-day free trial", "Priority support"],
-      locked: ["Phone calls", "Email/SMS", "API access"],
+      id: "warrior", name: "Warrior", price: "0.49 SOL", priceNote: "/month", oldPrice: "",
+      icon: <Swords className="w-6 h-6" />, highlight: false, badge: "",
+      features: ["Up to 3 agents", "15 quests/day", "Standard Compute", "Strategy templates", "Custom prompts", "Webhook events"],
+      locked: ["Phone calls", "Email/SMS"],
     },
     {
-      id: "enterprise", name: "Enterprise", price: "0.21 SOL", priceNote: "/month", oldPrice: "0.7 SOL",
-      icon: <Shield className="w-6 h-6" />, highlight: false, badge: "Beta Price",
-      features: ["Up to 50 agents", "Everything in Pro", "Phone calls (Spix)", "Email & SMS", "Full API access", "White-label option"],
+      id: "commander", name: "Commander", price: "1.49 SOL", priceNote: "/month", oldPrice: "",
+      icon: <Crown className="w-6 h-6" />, highlight: true, badge: "Most Popular",
+      features: ["Up to 10 agents", "50 quests/day", "High Compute", "Custom Telegram bot", "Advanced analytics", "Guild leader tools", "Priority support"],
+      locked: [],
+    },
+    {
+      id: "nation", name: "Nation", price: "4.99 SOL", priceNote: "/month", oldPrice: "",
+      icon: <Shield className="w-6 h-6" />, highlight: false, badge: "Power User",
+      features: ["Up to 50 agents", "Unlimited quests/day", "Dedicated Compute", "Everything in Commander", "Phone calls (Spix)", "Email & SMS", "White-label API", "SLA guarantee"],
       locked: [],
     },
   ];
