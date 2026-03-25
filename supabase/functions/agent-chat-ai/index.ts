@@ -202,17 +202,7 @@ Rules:
       const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
       let answer: string;
 
-      if (LOVABLE_API_KEY) {
-        const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-          method: "POST",
-          headers: { "Authorization": `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-          body: JSON.stringify({ model: "google/gemini-2.5-flash-lite", messages, max_tokens: 400, temperature: 0.8 }),
-        });
-        const aiData = await aiResp.json();
-        answer = aiData.choices?.[0]?.message?.content || generateFallback(question, agent.class, agent.name);
-      } else {
-        answer = generateFallback(question, agent.class, agent.name);
-      }
+      answer = await callAI(messages, 400, 0.8) || generateFallback(question, agent.class, agent.name);
 
       await sc.from("agent_messages").insert({ from_agent_id: agent_id, to_agent_id: from_agent_id, channel: "direct", content: answer });
       
