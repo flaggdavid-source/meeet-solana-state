@@ -102,6 +102,40 @@ async function saveMemory(sc: any, agentId: string, userMsg: string, agentReply:
   } catch { /* ignore */ }
 }
 
+// ── Shared AI call: OpenClaw first, Lovable AI Gateway fallback ──
+async function callAI(messages: any[], maxTokens = 400, temperature = 0.8): Promise<string | null> {
+  const OPENCLAW_URL = Deno.env.get("OPENCLAW_GATEWAY_URL")?.trim();
+  const OPENCLAW_TOKEN = Deno.env.get("OPENCLAW_GATEWAY_TOKEN")?.trim();
+  if (OPENCLAW_URL && OPENCLAW_TOKEN) {
+    try {
+      const url = OPENCLAW_URL.replace(/\/$/, "");
+      const resp = await fetch(`${url}/v1/chat/completions`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${OPENCLAW_TOKEN}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ model: "openclaw", messages, max_tokens: maxTokens, temperature, stream: false }),
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        const content = data.choices?.[0]?.message?.content;
+        if (content) return content;
+      }
+    } catch (e) {
+      console.error("OpenClaw error in agent-chat-ai, falling back:", e);
+    }
+  }
+  const LOVABLE_KEY = Deno.env.get("LOVABLE_API_KEY");
+  if (LOVABLE_KEY) {
+    const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${LOVABLE_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "google/gemini-2.5-flash-lite", messages, max_tokens: maxTokens, temperature }),
+    });
+    const data = await resp.json();
+    return data.choices?.[0]?.message?.content || null;
+  }
+  return null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -168,17 +202,7 @@ Rules:
       const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
       let answer: string;
 
-      if (LOVABLE_API_KEY) {
-        const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-          method: "POST",
-          headers: { "Authorization": `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-          body: JSON.stringify({ model: "google/gemini-2.5-flash-lite", messages, max_tokens: 400, temperature: 0.8 }),
-        });
-        const aiData = await aiResp.json();
-        answer = aiData.choices?.[0]?.message?.content || generateFallback(question, agent.class, agent.name);
-      } else {
-        answer = generateFallback(question, agent.class, agent.name);
-      }
+      answer = await callAI(messages, 400, 0.8) || generateFallback(question, agent.class, agent.name);
 
       await sc.from("agent_messages").insert({ from_agent_id: agent_id, to_agent_id: from_agent_id, channel: "direct", content: answer });
       
@@ -215,9 +239,8 @@ Rules:
     const memories = agent_id ? await recallMemories(sc, agent_id, question) : [];
 
     let answer: string;
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
-    if (agentData && LOVABLE_API_KEY) {
+    if (agentData) {
       const cls = agentData.class || effectiveClass;
       const memContext = memories.length ? "\n\nYour memories from past conversations:\n" + memories.join("\n") : "";
       const systemPrompt = `You are "${agentData.name}", a Level ${agentData.level} ${cls} agent in MEEET World.
@@ -241,13 +264,7 @@ Rules: Stay in character, be conversational, keep responses under 200 words, use
 
       msgs.push({ role: "user", content: question });
 
-      const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "google/gemini-2.5-flash-lite", messages: msgs, max_tokens: 400, temperature: 0.8 }),
-      });
-      const aiData = await aiResp.json();
-      answer = aiData.choices?.[0]?.message?.content || generateFallback(question, cls, agentData.name);
+      answer = await callAI(msgs, 400, 0.8) || generateFallback(question, cls, agentData.name);
     } else {
       answer = generateFallback(question, effectiveClass, effectiveName);
     }
