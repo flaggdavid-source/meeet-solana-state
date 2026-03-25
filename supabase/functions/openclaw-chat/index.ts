@@ -84,7 +84,6 @@ async function getAIResponse(messages: any[], agentName: string, agentClass: str
         body: JSON.stringify({
           model: "openclaw",
           messages,
-          max_tokens: 1200,
           max_tokens: 2500,
           temperature: 0.85,
           stream: false,
