@@ -35,25 +35,32 @@ function getLevelStyle(level: number): string {
 }
 
 async function chargeBilling(sc: any, userId: string, agentId: string): Promise<{ ok: boolean; balance: number; message?: string }> {
+  const CHAT_COST = 0.006;
   try {
-    // Check/create user balance
-    const { data: bal } = await sc.from("user_balance").select("balance").eq("user_id", userId).single();
+    // Use unified agent_billing table
+    const { data: bal } = await sc.from("agent_billing").select("*").eq("user_id", userId).single();
     if (!bal) {
       // New user — give $1 free credit
-      await sc.from("user_balance").insert({ user_id: userId, balance: 1.0, total_deposited: 1.0 });
-      return { ok: true, balance: 0.994 };
+      await sc.from("agent_billing").insert({ user_id: userId, balance_usd: 1.0, free_credit_used: false });
+      return { ok: true, balance: 1.0 - CHAT_COST };
     }
-    if (bal.balance < 0.006) {
-      return { ok: false, balance: bal.balance, message: "Insufficient balance. Add funds to continue chatting." };
+    if (bal.balance_usd < CHAT_COST) {
+      return { ok: false, balance: bal.balance_usd, message: "Insufficient balance. Add funds to continue chatting." };
     }
-    // Charge $0.006
-    await sc.from("user_balance").update({ balance: bal.balance - 0.006, total_spent: bal.balance }).eq("user_id", userId);
-    // Log usage
-    await sc.from("usage_logs").insert({
+    // Charge from agent_billing
+    await sc.from("agent_billing").update({
+      balance_usd: bal.balance_usd - CHAT_COST,
+      total_spent: (bal.total_spent || 0) + CHAT_COST,
+      total_charged: (bal.total_charged || 0) + CHAT_COST,
+      updated_at: new Date().toISOString(),
+    }).eq("user_id", userId);
+    // Log usage in agent_actions
+    await sc.from("agent_actions").insert({
       user_id: userId, agent_id: agentId, action_type: "chat_message",
-      tokens_used: 400, cost_base: 0.003, cost_user: 0.006,
+      cost_usd: CHAT_COST,
+      details: { charged: CHAT_COST, remaining: bal.balance_usd - CHAT_COST },
     });
-    return { ok: true, balance: bal.balance - 0.006 };
+    return { ok: true, balance: bal.balance_usd - CHAT_COST };
   } catch {
     // If tables don't exist, allow through
     return { ok: true, balance: 999 };

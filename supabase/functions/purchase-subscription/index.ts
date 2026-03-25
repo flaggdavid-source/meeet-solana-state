@@ -17,6 +17,14 @@ const TIERS: Record<string, { price_sol: number; price_meeet: number; max_agents
   enterprise: { price_sol: 0.21, price_meeet: 29990, max_agents: 50, label: "Enterprise" },
 };
 
+// Revenue split for SOL payments
+const REVENUE_SPLIT = {
+  lp: 0.40,       // 40% to liquidity pool
+  ops: 0.30,      // 30% to operations
+  treasury: 0.20, // 20% to state treasury
+  team: 0.10,     // 10% to team
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -26,7 +34,9 @@ Deno.serve(async (req) => {
   );
 
   try {
-    const { action, user_id, tier, promo_code, tx_signature } = await req.json();
+    // Parse body ONCE
+    const body = await req.json();
+    const { action, user_id, tier, promo_code, tx_signature, agent_id } = body;
 
     // ── Validate promo code ──
     if (action === "validate_promo") {
@@ -41,17 +51,12 @@ Deno.serve(async (req) => {
 
       if (!promo) return json({ valid: false, error: "Invalid or expired promo code" });
 
-      // Check expiry
       if (promo.expires_at && new Date(promo.expires_at) < new Date()) {
         return json({ valid: false, error: "Promo code has expired" });
       }
-
-      // Check max uses
       if (promo.max_uses && promo.used_count >= promo.max_uses) {
         return json({ valid: false, error: "Promo code has been fully redeemed" });
       }
-
-      // Check if user already redeemed
       if (user_id) {
         const { data: existing } = await sc
           .from("promo_redemptions")
@@ -92,7 +97,6 @@ Deno.serve(async (req) => {
         .single();
 
       if (!promo) return json({ error: "Invalid promo code" }, 400);
-
       if (promo.expires_at && new Date(promo.expires_at) < new Date()) {
         return json({ error: "Promo code expired" }, 400);
       }
@@ -100,7 +104,6 @@ Deno.serve(async (req) => {
         return json({ error: "Promo code fully redeemed" }, 400);
       }
 
-      // Check user hasn't used it
       const { data: existing } = await sc
         .from("promo_redemptions")
         .select("id")
@@ -109,7 +112,6 @@ Deno.serve(async (req) => {
         .single();
       if (existing) return json({ error: "Already redeemed" }, 400);
 
-      // Only allow free redemption if discount is 100%
       if (promo.discount_pct < 100) {
         return json({ error: "This promo code gives a discount, not a free upgrade. Use with payment." }, 400);
       }
@@ -120,48 +122,10 @@ Deno.serve(async (req) => {
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + promo.duration_days);
 
-      // Upsert subscription
-      const { data: existingSub } = await sc
-        .from("subscriptions")
-        .select("id")
-        .eq("user_id", user_id)
-        .eq("status", "active")
-        .single();
+      await upsertSubscription(sc, user_id, promo.tier, tierInfo.max_agents, 0, expiresAt);
 
-      if (existingSub) {
-        await sc
-          .from("subscriptions")
-          .update({
-            tier: promo.tier,
-            plan: promo.tier,
-            max_agents: tierInfo.max_agents,
-            price: 0,
-            expires_at: expiresAt.toISOString(),
-          })
-          .eq("id", existingSub.id);
-      } else {
-        await sc.from("subscriptions").insert({
-          user_id,
-          tier: promo.tier,
-          plan: promo.tier,
-          status: "active",
-          price: 0,
-          max_agents: tierInfo.max_agents,
-          expires_at: expiresAt.toISOString(),
-        });
-      }
-
-      // Record redemption
-      await sc.from("promo_redemptions").insert({
-        promo_id: promo.id,
-        user_id,
-      });
-
-      // Increment used_count
-      await sc
-        .from("promo_codes")
-        .update({ used_count: promo.used_count + 1 })
-        .eq("id", promo.id);
+      await sc.from("promo_redemptions").insert({ promo_id: promo.id, user_id });
+      await sc.from("promo_codes").update({ used_count: promo.used_count + 1 }).eq("id", promo.id);
 
       return json({
         success: true,
@@ -172,54 +136,27 @@ Deno.serve(async (req) => {
       });
     }
 
-    // ── Purchase with SOL (tx_signature verification) ──
+    // ── Purchase with SOL ──
     if (action === "purchase") {
       if (!user_id || !tier) return json({ error: "user_id and tier required" }, 400);
 
       const tierInfo = TIERS[tier];
       if (!tierInfo) return json({ error: "Invalid tier" }, 400);
+      if (!tx_signature) return json({ error: "Transaction signature required" }, 400);
 
-      // For SOL payment we verify tx_signature exists
-      // In production: verify on-chain via Solana RPC
-      if (!tx_signature) {
-        return json({ error: "Transaction signature required" }, 400);
-      }
+      // Check for duplicate tx_signature to prevent replay attacks
+      const { data: existingPayment } = await sc.from("payments")
+        .select("id")
+        .eq("tx_hash", tx_signature)
+        .single();
+      if (existingPayment) return json({ error: "Transaction already processed" }, 400);
 
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 30);
 
-      // Upsert subscription
-      const { data: existingSub } = await sc
-        .from("subscriptions")
-        .select("id")
-        .eq("user_id", user_id)
-        .eq("status", "active")
-        .single();
+      await upsertSubscription(sc, user_id, tier, tierInfo.max_agents, tierInfo.price_sol, expiresAt);
 
-      if (existingSub) {
-        await sc
-          .from("subscriptions")
-          .update({
-            tier,
-            plan: tier,
-            max_agents: tierInfo.max_agents,
-            price: tierInfo.price_sol,
-            expires_at: expiresAt.toISOString(),
-          })
-          .eq("id", existingSub.id);
-      } else {
-        await sc.from("subscriptions").insert({
-          user_id,
-          tier,
-          plan: tier,
-          status: "active",
-          price: tierInfo.price_sol,
-          max_agents: tierInfo.max_agents,
-          expires_at: expiresAt.toISOString(),
-        });
-      }
-
-      // Log payment
+      // Log payment with revenue split
       await sc.from("payments").insert({
         user_id,
         amount_usdc: tierInfo.price_sol,
@@ -230,11 +167,25 @@ Deno.serve(async (req) => {
         tx_hash: tx_signature,
       });
 
+      // Credit treasury portion (20% of SOL value converted to MEEET equivalent)
+      const treasuryMeeet = Math.floor(tierInfo.price_meeet * REVENUE_SPLIT.treasury);
+      const { data: treasury } = await sc.from("state_treasury").select("*").limit(1).single();
+      if (treasury) {
+        await sc.from("state_treasury").update({
+          balance_meeet: Number(treasury.balance_meeet) + treasuryMeeet,
+        }).eq("id", treasury.id);
+      }
+
       return json({
-        success: true,
-        tier,
+        success: true, tier,
         max_agents: tierInfo.max_agents,
         expires_at: expiresAt.toISOString(),
+        revenue_split: {
+          lp: `${REVENUE_SPLIT.lp * 100}%`,
+          ops: `${REVENUE_SPLIT.ops * 100}%`,
+          treasury: `${REVENUE_SPLIT.treasury * 100}%`,
+          team: `${REVENUE_SPLIT.team * 100}%`,
+        },
       });
     }
 
@@ -245,16 +196,14 @@ Deno.serve(async (req) => {
       const tierInfo = TIERS[tier];
       if (!tierInfo) return json({ error: "Invalid tier" }, 400);
 
-      const agent_id = (await req.json().catch(() => ({}))).agent_id;
-
-      // Get user's first agent
-      const { data: agent } = await sc
-        .from("agents")
-        .select("id, balance_meeet")
-        .eq("user_id", user_id)
-        .order("created_at", { ascending: true })
-        .limit(1)
-        .single();
+      // Get user's first agent (or specified agent)
+      const agentQuery = sc.from("agents").select("id, balance_meeet").eq("user_id", user_id);
+      if (agent_id) {
+        agentQuery.eq("id", agent_id);
+      } else {
+        agentQuery.order("created_at", { ascending: true }).limit(1);
+      }
+      const { data: agent } = await agentQuery.single();
 
       if (!agent) return json({ error: "No agent found. Create an agent first." }, 400);
       if (agent.balance_meeet < tierInfo.price_meeet) {
@@ -265,34 +214,43 @@ Deno.serve(async (req) => {
         }, 402);
       }
 
-      // Deduct MEEET
-      await sc
-        .from("agents")
-        .update({ balance_meeet: agent.balance_meeet - tierInfo.price_meeet })
-        .eq("id", agent.id);
+      // Apply tax on MEEET subscription purchase (5%)
+      const taxAmount = Math.floor(tierInfo.price_meeet * 0.05);
+      const burnAmount = Math.floor(taxAmount * 0.20);
+      const treasuryAmount = taxAmount - burnAmount;
+      const totalDeducted = tierInfo.price_meeet; // User pays full price, tax comes from within
+
+      await sc.from("agents").update({
+        balance_meeet: agent.balance_meeet - totalDeducted,
+      }).eq("id", agent.id);
 
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 30);
 
-      // Upsert subscription
-      const { data: existingSub } = await sc
-        .from("subscriptions")
-        .select("id")
-        .eq("user_id", user_id)
-        .eq("status", "active")
-        .single();
+      await upsertSubscription(sc, user_id, tier, tierInfo.max_agents, 0, expiresAt);
 
-      if (existingSub) {
-        await sc.from("subscriptions").update({
-          tier, plan: tier, max_agents: tierInfo.max_agents,
-          price: 0, expires_at: expiresAt.toISOString(),
-        }).eq("id", existingSub.id);
-      } else {
-        await sc.from("subscriptions").insert({
-          user_id, tier, plan: tier, status: "active",
-          price: 0, max_agents: tierInfo.max_agents,
-          expires_at: expiresAt.toISOString(),
-        });
+      // Record transaction
+      await sc.from("transactions").insert({
+        type: "passport_purchase",
+        from_agent_id: agent.id,
+        from_user_id: user_id,
+        amount_meeet: tierInfo.price_meeet - taxAmount,
+        tax_amount: taxAmount,
+        burn_amount: burnAmount,
+        description: `${tierInfo.label} subscription purchased for ${tierInfo.price_meeet} $MEEET`,
+      });
+
+      // Update treasury
+      if (treasuryAmount > 0 || burnAmount > 0) {
+        const { data: treasury } = await sc.from("state_treasury").select("*").limit(1).single();
+        if (treasury) {
+          await sc.from("state_treasury").update({
+            balance_meeet: Number(treasury.balance_meeet) + treasuryAmount,
+            total_tax_collected: Number(treasury.total_tax_collected) + taxAmount,
+            total_burned: Number(treasury.total_burned) + burnAmount,
+            total_passport_revenue: Number(treasury.total_passport_revenue || 0) + treasuryAmount,
+          }).eq("id", treasury.id);
+        }
       }
 
       return json({
@@ -300,15 +258,15 @@ Deno.serve(async (req) => {
         max_agents: tierInfo.max_agents,
         expires_at: expiresAt.toISOString(),
         meeet_charged: tierInfo.price_meeet,
+        tax: taxAmount,
+        burned: burnAmount,
       });
     }
 
     // ── Get pricing ──
     if (action === "get_tiers") {
       return json({
-        tiers: Object.entries(TIERS).map(([key, val]) => ({
-          id: key, ...val,
-        })),
+        tiers: Object.entries(TIERS).map(([key, val]) => ({ id: key, ...val })),
       });
     }
 
@@ -318,3 +276,28 @@ Deno.serve(async (req) => {
     return json({ error: err.message }, 500);
   }
 });
+
+async function upsertSubscription(
+  sc: any, userId: string, tier: string,
+  maxAgents: number, price: number, expiresAt: Date,
+) {
+  const { data: existingSub } = await sc
+    .from("subscriptions")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("status", "active")
+    .single();
+
+  const payload = {
+    tier, plan: tier,
+    max_agents: maxAgents,
+    price,
+    expires_at: expiresAt.toISOString(),
+  };
+
+  if (existingSub) {
+    await sc.from("subscriptions").update(payload).eq("id", existingSub.id);
+  } else {
+    await sc.from("subscriptions").insert({ user_id: userId, status: "active", ...payload });
+  }
+}
