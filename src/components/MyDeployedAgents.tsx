@@ -37,6 +37,7 @@ export default function MyDeployedAgents() {
   const queryClient = useQueryClient();
   const [actingId, setActingId] = useState<string | null>(null);
   const [settingsAgent, setSettingsAgent] = useState<any | null>(null);
+  const [chatAgent, setChatAgent] = useState<any | null>(null);
 
   const { data: deployedAgents = [], isLoading } = useQuery({
     queryKey: ["my-deployed-agents", user?.id],
