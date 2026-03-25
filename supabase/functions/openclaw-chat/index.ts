@@ -88,6 +88,9 @@ async function getAIResponse(messages: any[], agentName: string, agentClass: str
           temperature: 0.8,
           stream: false,
         }),
+          max_tokens: 1200,
+          temperature: 0.85,
+          stream: false,
       });
       if (resp.ok) {
         const data = await resp.json();
