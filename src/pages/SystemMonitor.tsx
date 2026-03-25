@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { RefreshCw, Activity, Database, Users, Swords, FlaskConical, Scale, Shield } from "lucide-react";
+import { RefreshCw, Activity, Database, Users, Swords, FlaskConical, Scale, Shield, ShieldAlert } from "lucide-react";
 
 interface SystemReport {
   generated_at: string;
