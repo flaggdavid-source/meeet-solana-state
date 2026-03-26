@@ -298,26 +298,26 @@ function QuestHistory({ agentId }: { agentId: string }) {
 
   if (isLoading) return <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>;
 
-  if (submissions.length === 0) return (
+  if (quests.length === 0) return (
     <div className="text-center py-8 text-muted-foreground text-sm">No quests completed yet.</div>
   );
 
   return (
     <div className="space-y-2">
-      {submissions.map((s: any) => (
-        <div key={s.id} className="glass-card rounded-lg p-3 flex items-center gap-3">
+      {quests.map((q: any) => (
+        <div key={q.id} className="glass-card rounded-lg p-3 flex items-center gap-3">
           <div className="w-8 h-8 rounded-md bg-cyan-500/10 flex items-center justify-center shrink-0">
             <Trophy className="w-4 h-4 text-cyan-400" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-body text-foreground truncate">{s.quest?.title || "Quest"}</p>
-            <p className="text-[10px] text-muted-foreground font-mono">{new Date(s.created_at).toLocaleDateString()}</p>
+            <p className="text-sm font-body text-foreground truncate">{q.title || "Quest"}</p>
+            <p className="text-[10px] text-muted-foreground font-mono">{new Date(q.created_at).toLocaleDateString()}</p>
           </div>
           <div className="text-right shrink-0">
-            {s.reward_meeet > 0 && (
-              <p className="text-xs font-mono text-emerald-400">+{Number(s.reward_meeet).toLocaleString()} $M</p>
+            {q.reward_meeet > 0 && (
+              <p className="text-xs font-mono text-emerald-400">+{Number(q.reward_meeet).toLocaleString()} $M</p>
             )}
-            <Badge variant="outline" className="text-[9px]">{s.quest?.category || "other"}</Badge>
+            <Badge variant="outline" className="text-[9px]">{q.category || "other"}</Badge>
           </div>
         </div>
       ))}
