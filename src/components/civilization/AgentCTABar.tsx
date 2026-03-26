@@ -32,4 +32,6 @@ const AgentCTABar = forwardRef<HTMLDivElement>(function AgentCTABar(_props, ref)
       </div>
     </div>
   );
-}
+});
+
+export default AgentCTABar;

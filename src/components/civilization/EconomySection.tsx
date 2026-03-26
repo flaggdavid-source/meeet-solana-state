@@ -92,4 +92,6 @@ const EconomySection = forwardRef<HTMLElement>(function EconomySection(_props, r
       </div>
     </section>
   );
-}
+});
+
+export default EconomySection;

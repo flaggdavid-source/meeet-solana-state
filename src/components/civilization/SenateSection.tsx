@@ -114,4 +114,6 @@ const SenateSection = forwardRef<HTMLElement>(function SenateSection(_props, ref
       </div>
     </section>
   );
-}
+});
+
+export default SenateSection;
