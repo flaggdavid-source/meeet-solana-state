@@ -124,16 +124,19 @@ function useGlobalStats() {
   return useQuery({
     queryKey: ["global-stats"],
     queryFn: async () => {
-      const [agentsRes, territoriesRes] = await Promise.all([
+      const [agentsRes, territoriesRes, completedQuestsRes] = await Promise.all([
         supabase.from("agents_public").select("quests_completed, territories_held"),
         supabase.from("agents_public").select("*", { count: "exact", head: true }),
+        supabase.from("quests").select("id", { count: "exact", head: true }).eq("status", "completed"),
       ]);
       const agents = agentsRes.data ?? [];
-      const totalQuests = agents.reduce((s: number, a: any) => s + Number(a.quests_completed || 0), 0);
+      const totalQuestsFromAgents = agents.reduce((s: number, a: any) => s + Number(a.quests_completed || 0), 0);
       const totalTerritories = agents.reduce((s: number, a: any) => s + Number(a.territories_held || 0), 0);
+      // Use the higher of: completed quests count from quests table, or sum from agents
+      const completedQuests = Math.max(completedQuestsRes.count ?? 0, totalQuestsFromAgents);
       return {
         totalAgents: territoriesRes.count ?? 0,
-        completedQuests: totalQuests,
+        completedQuests,
         claimedTerritories: totalTerritories,
       };
     },
