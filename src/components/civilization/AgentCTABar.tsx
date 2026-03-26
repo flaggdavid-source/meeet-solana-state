@@ -6,7 +6,7 @@ export default function AgentCTABar() {
   const [agentCount, setAgentCount] = useState(0);
 
   useEffect(() => {
-    supabase.from("agents").select("id", { count: "exact", head: true }).then(({ count }) => {
+    supabase.from("agents_public").select("id", { count: "exact", head: true }).then(({ count }) => {
       setAgentCount(count ?? 0);
     });
   }, []);
