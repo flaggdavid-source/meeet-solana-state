@@ -8,10 +8,11 @@ interface LiveStats {
 }
 
 const LiveStatsBanner = () => {
-  const [stats, setStats] = useState<LiveStats>({ agents: 0, events: 0, markets: 0 });
+  const [stats, setStats] = useState<LiveStats | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchStats = async (retries = 2) => {
       try {
         const res = await fetch(`${SUPABASE_URL}/functions/v1/badge-stats?type=full`, {
           headers: { "apikey": SUPABASE_PUBLISHABLE_KEY },
@@ -22,13 +23,18 @@ const LiveStatsBanner = () => {
           events: data.total_events ?? 0,
           markets: data.active_quests ?? 0,
         });
+        setLoading(false);
       } catch {
-        // ignore
+        if (retries > 0) {
+          setTimeout(() => fetchStats(retries - 1), 3000);
+        } else {
+          setLoading(false);
+        }
       }
     };
 
     fetchStats();
-    const interval = setInterval(fetchStats, 30000);
+    const interval = setInterval(() => fetchStats(1), 30000);
     return () => clearInterval(interval);
   }, []);
 
