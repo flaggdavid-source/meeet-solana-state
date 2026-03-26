@@ -521,7 +521,7 @@ const Parliament = () => {
                           <p className="font-display font-bold text-sm">{president.display_name || "The President"}</p>
                           <p className="text-[10px] text-muted-foreground font-body">@{president.twitter_handle || president.username || "president"}</p>
                           <Badge variant="outline" className="text-[9px] mt-1 bg-amber-500/10 text-amber-400 border-amber-500/20 capitalize">
-                            {president.passport_tier || "elite"}
+                            {president.passport_tier === "resident" ? "Commander-in-Chief" : (president.passport_tier || "elite")}
                           </Badge>
                         </div>
                       </div>
