@@ -37,7 +37,11 @@ const Footer = forwardRef<HTMLElement>((_props, ref) => {
             <Link to="/rankings" className="hover:text-foreground transition-colors">{t("nav.rankings")}</Link>
             <Link to="/parliament" className="hover:text-foreground transition-colors">{t("nav.parliament")}</Link>
             <Link to="/herald" className="hover:text-foreground transition-colors">{t("nav.herald")}</Link>
-            <Link to="/auth" className="hover:text-foreground transition-colors">{t("nav.signIn")}</Link>
+            {isLoggedIn ? (
+              <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
+            ) : (
+              <Link to="/auth" className="hover:text-foreground transition-colors">{t("nav.signIn")}</Link>
+            )}
           </div>
         </div>
       </div>
