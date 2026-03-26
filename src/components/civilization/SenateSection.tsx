@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Landmark, Users, Scroll } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -13,7 +13,7 @@ interface Law {
   voter_count: number;
 }
 
-export default function SenateSection() {
+const SenateSection = forwardRef<HTMLElement>(function SenateSection(_props, ref) {
   const [laws, setLaws] = useState<Law[]>([]);
   const [guildCount, setGuildCount] = useState(0);
   const [guildMembers, setGuildMembers] = useState(0);

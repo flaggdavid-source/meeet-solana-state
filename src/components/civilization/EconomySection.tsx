@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Coins, ArrowDown, ArrowUp, Flame } from "lucide-react";
 
-export default function EconomySection() {
+const EconomySection = forwardRef<HTMLElement>(function EconomySection(_props, ref) {
   const [supply, setSupply] = useState(0);
   const [burned, setBurned] = useState(0);
   const [staked, setStaked] = useState(0);
