@@ -39,20 +39,20 @@ function useHeraldIssues() {
         .limit(20);
       if (error) throw error;
 
-      // Enrich with real daily stats from DB
+      // Enrich with real daily stats from DB (use public-readable tables)
       const today = new Date();
       const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000).toISOString();
-      const [questsRes, duelsRes, feedRes, agentsRes] = await Promise.all([
-        supabase.from("quests").select("id", { count: "exact", head: true }).gte("created_at", yesterday),
+      const [duelsRes, feedTradesRes, feedQuestsRes, agentsRes] = await Promise.all([
         supabase.from("duels").select("id", { count: "exact", head: true }).gte("created_at", yesterday),
         supabase.from("activity_feed").select("id", { count: "exact", head: true }).eq("event_type", "trade").gte("created_at", yesterday),
-        supabase.from("agents").select("id", { count: "exact", head: true }).gte("created_at", yesterday),
+        supabase.from("activity_feed").select("id", { count: "exact", head: true }).eq("event_type", "quest").gte("created_at", yesterday),
+        supabase.from("agents_public").select("id", { count: "exact", head: true }).gte("created_at", yesterday),
       ]);
 
       const realStats = {
-        quests_completed: questsRes.count ?? 0,
+        quests_completed: feedQuestsRes.count ?? 0,
         duels: duelsRes.count ?? 0,
-        trades: feedRes.count ?? 0,
+        trades: feedTradesRes.count ?? 0,
         new_agents: agentsRes.count ?? 0,
         meeet_burned: 0,
       };
