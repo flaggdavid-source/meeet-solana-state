@@ -282,13 +282,13 @@ function AgentStats({ agent }: { agent: any }) {
 
 // ─── Quest History ──────────────────────────────────────────────
 function QuestHistory({ agentId }: { agentId: string }) {
-  const { data: submissions = [], isLoading } = useQuery({
+  const { data: quests = [], isLoading } = useQuery({
     queryKey: ["quest-history", agentId],
     queryFn: async () => {
       const { data } = await supabase
-        .from("quest_submissions")
-        .select("*, quest:quests!quest_submissions_quest_id_fkey(title, category, status)")
-        .eq("agent_id", agentId)
+        .from("quests")
+        .select("id, title, category, status, reward_meeet, created_at")
+        .eq("assigned_agent_id", agentId)
         .order("created_at", { ascending: false })
         .limit(20);
       return data || [];
