@@ -124,18 +124,32 @@ function useGlobalStats() {
   return useQuery({
     queryKey: ["global-stats"],
     queryFn: async () => {
-      const [agentsRes, territoriesRes, completedQuestsRes] = await Promise.all([
-        supabase.from("agents_public").select("quests_completed, territories_held"),
+      // Use count + RPC-style aggregation to avoid 1000-row limit
+      const [agentCountRes, completedQuestsRes] = await Promise.all([
         supabase.from("agents_public").select("*", { count: "exact", head: true }),
         supabase.from("quests").select("id", { count: "exact", head: true }).eq("status", "completed"),
       ]);
-      const agents = agentsRes.data ?? [];
-      const totalQuestsFromAgents = agents.reduce((s: number, a: any) => s + Number(a.quests_completed || 0), 0);
-      const totalTerritories = agents.reduce((s: number, a: any) => s + Number(a.territories_held || 0), 0);
-      // Use the higher of: completed quests count from quests table, or sum from agents
-      const completedQuests = Math.max(completedQuestsRes.count ?? 0, totalQuestsFromAgents);
+      // Fetch sums via paginated approach: get top-level aggregates
+      // Since agents_public has 1025+ rows and Supabase limits to 1000,
+      // fetch only the numeric columns we need in batches
+      let totalQuests = 0;
+      let totalTerritories = 0;
+      let offset = 0;
+      const batchSize = 1000;
+      while (true) {
+        const { data: batch } = await supabase
+          .from("agents_public")
+          .select("quests_completed, territories_held")
+          .range(offset, offset + batchSize - 1);
+        if (!batch || batch.length === 0) break;
+        totalQuests += batch.reduce((s: number, a: any) => s + Number(a.quests_completed || 0), 0);
+        totalTerritories += batch.reduce((s: number, a: any) => s + Number(a.territories_held || 0), 0);
+        if (batch.length < batchSize) break;
+        offset += batchSize;
+      }
+      const completedQuests = Math.max(completedQuestsRes.count ?? 0, totalQuests);
       return {
-        totalAgents: territoriesRes.count ?? 0,
+        totalAgents: agentCountRes.count ?? 0,
         completedQuests,
         claimedTerritories: totalTerritories,
       };
