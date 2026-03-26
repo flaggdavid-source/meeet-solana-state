@@ -39,7 +39,7 @@ function useAllAgents() {
   return useQuery<Agent[]>({
     queryKey: ["all-agents"],
     queryFn: async () => {
-      const { data } = await supabase.from("agents").select("*").neq("status", "dead").order("level", { ascending: false });
+      const { data } = await supabase.from("agents_public").select("*").neq("status", "dead").order("level", { ascending: false }).limit(500);
       return (data as Agent[] | null) ?? [];
     },
   });
