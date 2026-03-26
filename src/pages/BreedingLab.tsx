@@ -349,8 +349,8 @@ const BreedingLab = () => {
                     <p className="text-muted-foreground text-sm">No agents in collection</p>
                   </div>
                 ) : myAgents.map((a: any) => {
-                  const rScore = (a.attack || 10) + (a.defense || 5) + (a.level || 1) * 3;
-                  const rarity = rScore > 60 ? "Legendary" : rScore > 40 ? "Epic" : rScore > 25 ? "Rare" : "Common";
+                 const rScore = (a.attack || 10) + (a.defense || 5) + Math.floor((a.level || 1) * 1.5);
+                  const rarity = rScore > 50 ? "Legendary" : rScore > 35 ? "Epic" : rScore > 20 ? "Rare" : "Common";
                   return (
                     <div key={a.id} className="glass-card p-4 rounded-xl text-center hover:border-primary/20 transition-colors">
                       <AgentAvatar cls={a.class} size="lg" />
