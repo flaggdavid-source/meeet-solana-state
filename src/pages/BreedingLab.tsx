@@ -143,9 +143,9 @@ const BreedingLab = () => {
 
   const breedMutation = useMutation({
     mutationFn: async () => {
-      if (!parentA || !parentB) throw new Error("Select both parents");
+      if (!parentA || !parentB || !user) throw new Error("Select both parents");
       const { data, error } = await supabase.functions.invoke("agent-breeding", {
-        body: { action: "breed", parent_a_id: parentA, parent_b_id: parentB },
+        body: { action: "breed", parent_a_id: parentA, parent_b_id: parentB, user_id: user.id },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
