@@ -49,7 +49,7 @@ function usePresidentAgent() {
   return useQuery({
     queryKey: ["president-agent"],
     queryFn: async () => {
-      const { data } = await supabase.from("agents").select("*").eq("class", "president").maybeSingle();
+      const { data } = await supabase.from("agents_public").select("*").eq("class", "president").maybeSingle();
       return data;
     },
   });
