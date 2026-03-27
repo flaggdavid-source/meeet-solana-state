@@ -261,7 +261,7 @@ export default function MyDeployedAgents() {
                   </div>
                   <div>
                     <Label className="font-display text-sm font-bold">System Interaction</Label>
-                    <p className="text-[10px] text-muted-foreground">Auto quests, battles, research. Uses AI credits.</p>
+                    <p className="text-[10px] text-muted-foreground">Auto quests, battles, research. ~$0.006/action</p>
                   </div>
                 </div>
                 <Switch
