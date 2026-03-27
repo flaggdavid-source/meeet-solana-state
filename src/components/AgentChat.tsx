@@ -229,7 +229,7 @@ export default function AgentChat({ agentId, agentName, agentClass, agentLevel, 
           </p>
         </div>
         <Badge className="bg-primary/10 text-primary border-primary/20 text-[9px]">
-          <Coins className="w-3 h-3 mr-0.5" /> 6 MEEET/msg
+          <Coins className="w-3 h-3 mr-0.5" /> ~$0.006/msg
         </Badge>
         {!inline && (
           <button onClick={onClose || (() => setExpanded(false))} className="text-muted-foreground hover:text-foreground">

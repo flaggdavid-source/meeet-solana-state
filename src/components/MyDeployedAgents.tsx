@@ -292,6 +292,7 @@ export default function MyDeployedAgents() {
                   onCheckedChange={() => {
                     toggleSocialMode(settingsAgent);
                     setSettingsAgent({ ...settingsAgent, social_mode: !settingsAgent.social_mode });
+                    toast({ title: !settingsAgent.social_mode ? "🤝 Social Mode enabled" : "Social Mode disabled", description: "Settings saved!" });
                   }}
                 />
               </div>
