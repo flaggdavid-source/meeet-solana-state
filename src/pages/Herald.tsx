@@ -315,7 +315,7 @@ const Herald = () => {
               {issues.length > 1 && (
                 <div>
                   <h2 className="font-display font-bold text-sm text-muted-foreground uppercase tracking-wider mb-4">
-                    Previous Issues
+                    {t("herald.previousIssues") || "Previous Issues"}
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {issues.slice(1).map(issue => (
