@@ -344,10 +344,11 @@ const Admin = () => {
           </div>
 
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="glass-card bg-card/50 border border-border">
+            <TabsList className="glass-card bg-card/50 border border-border flex-wrap">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="agents">Agents</TabsTrigger>
               <TabsTrigger value="economy">Economy</TabsTrigger>
+              <TabsTrigger value="token" className="gap-1"><Coins className="w-3.5 h-3.5" /> Token</TabsTrigger>
               <TabsTrigger value="trading" className="gap-1"><ArrowDownUp className="w-3.5 h-3.5" /> Trading</TabsTrigger>
               <TabsTrigger value="dialogs" className="gap-1"><MessageSquare className="w-3.5 h-3.5" /> Dialogs</TabsTrigger>
             </TabsList>
