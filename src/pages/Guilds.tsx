@@ -107,7 +107,7 @@ const Guilds = () => {
               className="flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
-              Create Guild
+              {t("guilds.createGuild") || "Create Guild"}
             </Button>
           </div>
 
