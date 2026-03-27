@@ -98,10 +98,15 @@ async function getMEEETBalance(pubkey: string): Promise<number> {
   return accounts[0]?.account?.data?.parsed?.info?.tokenAmount?.uiAmount ?? 0;
 }
 
-function getKeypair() {
+function getKeypair(): Uint8Array {
   const key = Deno.env.get("TRADING_WALLET_KEY");
   if (!key) throw new Error("TRADING_WALLET_KEY not configured");
-  return base58Decode(key);
+  const trimmed = key.trim();
+  // Support JSON array format [82,204,...] or base58 string
+  if (trimmed.startsWith("[")) {
+    return new Uint8Array(JSON.parse(trimmed));
+  }
+  return base58Decode(trimmed);
 }
 
 async function getPublicKeyFromSecret(): Promise<string> {
@@ -138,11 +143,25 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Security: internal-only
+    // Security: internal service OR president JWT
     const internalSecret = req.headers.get("x-internal-service");
     const expectedSecret = Deno.env.get("INTERNAL_SERVICE_SECRET");
-    if (!internalSecret || internalSecret !== expectedSecret) {
-      return json({ error: "Unauthorized — internal service only" }, 403);
+    const isInternal = internalSecret && internalSecret === expectedSecret;
+
+    if (!isInternal) {
+      // Check if caller is president via JWT
+      const authHeader = req.headers.get("authorization")?.replace("Bearer ", "");
+      if (!authHeader) return json({ error: "Unauthorized" }, 403);
+
+      const supabaseAuth = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      );
+      const { data: { user }, error: authErr } = await supabaseAuth.auth.getUser(authHeader);
+      if (authErr || !user) return json({ error: "Invalid token" }, 403);
+
+      const { data: profile } = await supabaseAuth.from("profiles").select("is_president").eq("user_id", user.id).single();
+      if (!profile?.is_president) return json({ error: "President access only" }, 403);
     }
 
     const body = await req.json();
