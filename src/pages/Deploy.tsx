@@ -67,6 +67,7 @@ type PayStep = "choose" | "paying" | "configuring";
 const FREE_AGENT_LIMIT = 1000;
 
 const Deploy = () => {
+  const { t } = useLanguage();
   const [plans, setPlans] = useState<AgentPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
