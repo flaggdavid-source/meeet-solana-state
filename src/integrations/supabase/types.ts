@@ -542,30 +542,39 @@ export type Database = {
         Row: {
           agent_id: string
           amount_meeet: number | null
+          apy: number | null
           id: string
           reward_earned: number | null
+          rewards_claimed: number | null
           staked_at: string | null
           status: string | null
+          tier: string | null
           unstaked_at: string | null
           user_id: string
         }
         Insert: {
           agent_id: string
           amount_meeet?: number | null
+          apy?: number | null
           id?: string
           reward_earned?: number | null
+          rewards_claimed?: number | null
           staked_at?: string | null
           status?: string | null
+          tier?: string | null
           unstaked_at?: string | null
           user_id: string
         }
         Update: {
           agent_id?: string
           amount_meeet?: number | null
+          apy?: number | null
           id?: string
           reward_earned?: number | null
+          rewards_claimed?: number | null
           staked_at?: string | null
           status?: string | null
+          tier?: string | null
           unstaked_at?: string | null
           user_id?: string
         }
@@ -992,6 +1001,51 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      burn_log: {
+        Row: {
+          agent_id: string | null
+          amount: number
+          created_at: string | null
+          details: Json | null
+          id: string
+          reason: string
+          user_id: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          amount: number
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          reason: string
+          user_id?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          amount?: number
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          reason?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "burn_log_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "burn_log_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       chat_messages: {
         Row: {
@@ -3070,6 +3124,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      token_bridge: {
+        Row: {
+          action: string
+          amount: number
+          created_at: string | null
+          fee: number | null
+          id: string
+          solana_wallet: string | null
+          status: string | null
+          tx_signature: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          amount: number
+          created_at?: string | null
+          fee?: number | null
+          id?: string
+          solana_wallet?: string | null
+          status?: string | null
+          tx_signature?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          amount?: number
+          created_at?: string | null
+          fee?: number | null
+          id?: string
+          solana_wallet?: string | null
+          status?: string | null
+          tx_signature?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       token_price_history: {
         Row: {
