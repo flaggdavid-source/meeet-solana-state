@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import SEOHead from "@/components/SEOHead";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { PageSkeleton } from "@/components/ui/page-skeleton";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
