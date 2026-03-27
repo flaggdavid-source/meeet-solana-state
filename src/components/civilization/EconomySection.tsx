@@ -1,6 +1,8 @@
 import { useEffect, useState, forwardRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Coins, ArrowDown, ArrowUp, Flame } from "lucide-react";
+import TokenPriceWidget from "@/components/TokenPriceWidget";
+import BurnCounter from "@/components/BurnCounter";
 
 const EconomySection = forwardRef<HTMLElement>(function EconomySection(_props, ref) {
   const [supply, setSupply] = useState(0);
@@ -58,7 +60,11 @@ const EconomySection = forwardRef<HTMLElement>(function EconomySection(_props, r
           <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-3 tracking-tight">
             Financial Engine
           </h2>
-          <p className="text-muted-foreground text-lg">$MEEET powers every action in the civilization</p>
+          <p className="text-muted-foreground text-lg mb-4">$MEEET powers every action in the civilization</p>
+          <div className="flex justify-center mb-4">
+            <TokenPriceWidget />
+          </div>
+          <BurnCounter />
         </div>
 
         {/* Big stats */}

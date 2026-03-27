@@ -20,12 +20,13 @@ const Footer = forwardRef<HTMLElement>((_props, ref) => {
             </div>
             <div className="flex items-center gap-6 text-sm text-muted-foreground font-body">
               
-              <Link to="/tokenomics" className="hover:text-foreground transition-colors">$MEEET</Link>
+              <Link to="/token" className="hover:text-foreground transition-colors">$MEEET</Link>
               <Link to="/live" className="hover:text-foreground transition-colors">{t("footer.liveMap")}</Link>
             </div>
           </div>
-          <div className="flex justify-center">
+          <div className="flex flex-col items-center gap-2">
             <ContractAddress variant="inline" />
+            <p className="text-[10px] text-muted-foreground font-mono">$MEEET on Solana: EJgyptJK58M9AmJi1w8ivGBjeTm5JoTqFefoQ6JTpump</p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground font-body">
             <Link to="/quests" className="hover:text-foreground transition-colors">{t("nav.quests")}</Link>
