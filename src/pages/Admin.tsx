@@ -146,6 +146,171 @@ function StatCard({ icon, label, value, sub, color }: { icon: React.ReactNode; l
   );
 }
 
+function TradingPanel() {
+  const [tStatus, setTStatus] = useState<any>(null);
+  const [tLoading, setTLoading] = useState(false);
+  const [autoTrading, setAutoTrading] = useState(false);
+  const [cycles, setCycles] = useState(0);
+  const [totalSol, setTotalSol] = useState(0);
+  const [totalMeeet, setTotalMeeet] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const { data: tradeLogs, refetch: refetchLogs } = useQuery({
+    queryKey: ["trade-log"],
+    queryFn: async () => {
+      const { data } = await supabase.from("trade_log").select("*").order("created_at", { ascending: false }).limit(50);
+      return data ?? [];
+    },
+    refetchInterval: 10000,
+  });
+
+  const callTrader = useCallback(async (action: string) => {
+    setTLoading(true);
+    try {
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const res = await fetch(`https://${projectId}.supabase.co/functions/v1/token-trader`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-internal-service": "from-admin-panel",
+        },
+        body: JSON.stringify({ action }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Trade failed");
+      if (action === "status") setTStatus(data);
+      else {
+        toast.success(`${action.toUpperCase()}: ${JSON.stringify(data).slice(0, 120)}`);
+        refetchLogs();
+        if (data?.sol_spent) setTotalSol(p => p + data.sol_spent);
+        if (data?.sol_received) setTotalSol(p => p + data.sol_received);
+        if (data?.meeet_received) setTotalMeeet(p => p + data.meeet_received);
+        if (data?.meeet_sold) setTotalMeeet(p => p + data.meeet_sold);
+        setCycles(p => p + 1);
+      }
+      return data;
+    } catch (e: any) {
+      toast.error(e.message || "Trade failed");
+      return null;
+    } finally {
+      setTLoading(false);
+    }
+  }, [refetchLogs]);
+
+  const startAutoTrading = useCallback(() => {
+    setAutoTrading(true);
+    setCycles(0);
+    setTotalSol(0);
+    setTotalMeeet(0);
+    const runCycle = () => callTrader("run_cycle").then(result => {
+      if (result?.status === "finished") {
+        stopAutoTrading();
+        toast.info("Auto-trading stopped — SOL depleted");
+      }
+    });
+    runCycle();
+    intervalRef.current = setInterval(runCycle, Math.floor(Math.random() * 180000 + 120000));
+  }, [callTrader]);
+
+  const stopAutoTrading = useCallback(() => {
+    setAutoTrading(false);
+    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
+  }, []);
+
+  useEffect(() => () => { if (intervalRef.current) clearInterval(intervalRef.current); }, []);
+
+  return (
+    <div className="space-y-6">
+      <Card className="glass-card border-border">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg font-display flex items-center gap-2">
+            <Zap className="w-5 h-5 text-primary" /> Token Trading Controls
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" onClick={() => callTrader("status")} disabled={tLoading}>
+              <Activity className="w-4 h-4 mr-1" /> Status
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => callTrader("buy")} disabled={tLoading || autoTrading} className="text-green-400 border-green-500/30">
+              <TrendingUp className="w-4 h-4 mr-1" /> Buy
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => callTrader("sell")} disabled={tLoading || autoTrading} className="text-red-400 border-red-500/30">
+              <TrendingUp className="w-4 h-4 mr-1 rotate-180" /> Sell
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => callTrader("sweep")} disabled={tLoading || autoTrading} className="text-amber-400 border-amber-500/30">
+              <Send className="w-4 h-4 mr-1" /> Sweep
+            </Button>
+            <div className="border-l border-border mx-1" />
+            {!autoTrading ? (
+              <Button size="sm" onClick={startAutoTrading} disabled={tLoading} className="bg-green-600 hover:bg-green-700 text-white">
+                <Play className="w-4 h-4 mr-1" /> Auto-Trade
+              </Button>
+            ) : (
+              <Button size="sm" onClick={stopAutoTrading} variant="destructive">
+                <Square className="w-4 h-4 mr-1" /> Stop
+              </Button>
+            )}
+          </div>
+          {autoTrading && (
+            <div className="glass-card p-3 rounded-lg border border-green-500/30 bg-green-500/5">
+              <p className="text-sm text-green-400 font-mono">🤖 Trading... {cycles} cycles, {totalSol.toFixed(4)} SOL vol, {totalMeeet.toFixed(0)} MEEET vol</p>
+            </div>
+          )}
+          {tStatus && (
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              {[
+                { l: "Wallet", v: `${tStatus.wallet?.slice(0, 6)}...${tStatus.wallet?.slice(-4)}` },
+                { l: "SOL", v: `${Number(tStatus.sol_balance).toFixed(4)}` },
+                { l: "MEEET", v: Number(tStatus.meeet_balance).toLocaleString() },
+                { l: "Trades", v: tStatus.total_trades },
+                { l: "Status", v: tStatus.status },
+              ].map(s => (
+                <div key={s.l} className="glass-card p-2 rounded-lg text-center">
+                  <p className="text-[10px] text-muted-foreground">{s.l}</p>
+                  <p className="text-sm font-mono font-bold text-foreground">{s.v}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+      <Card className="glass-card border-border">
+        <CardHeader className="pb-3"><CardTitle className="text-lg font-display">Trade Log</CardTitle></CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead><tr className="text-muted-foreground border-b border-border">
+                <th className="text-left py-2 px-2">Time</th>
+                <th className="text-left py-2 px-2">Action</th>
+                <th className="text-right py-2 px-2">SOL</th>
+                <th className="text-right py-2 px-2">MEEET</th>
+                <th className="text-right py-2 px-2">Price</th>
+                <th className="text-left py-2 px-2">Tx</th>
+              </tr></thead>
+              <tbody>
+                {tradeLogs?.map((log: any) => (
+                  <tr key={log.id} className="border-b border-border/50 hover:bg-muted/20">
+                    <td className="py-1.5 px-2 font-mono text-muted-foreground">{new Date(log.created_at).toLocaleTimeString()}</td>
+                    <td className="py-1.5 px-2">
+                      <Badge variant={log.action === "buy" ? "default" : log.action === "sell" ? "destructive" : "secondary"} className="text-[10px]">{log.action.toUpperCase()}</Badge>
+                    </td>
+                    <td className="py-1.5 px-2 text-right font-mono">{Number(log.sol_amount).toFixed(4)}</td>
+                    <td className="py-1.5 px-2 text-right font-mono">{Number(log.meeet_amount).toLocaleString()}</td>
+                    <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">{log.price ? Number(log.price).toFixed(8) : "—"}</td>
+                    <td className="py-1.5 px-2">{log.tx_signature ? <a href={`https://solscan.io/tx/${log.tx_signature}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{log.tx_signature.slice(0, 8)}...</a> : "—"}</td>
+                  </tr>
+                ))}
+                {(!tradeLogs || tradeLogs.length === 0) && <tr><td colSpan={6} className="py-8 text-center text-muted-foreground">No trades yet</td></tr>}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 const Admin = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
