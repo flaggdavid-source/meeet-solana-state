@@ -313,6 +313,10 @@ const Admin = () => {
               )}
             </TabsContent>
 
+            <TabsContent value="trading">
+              <TradingPanel />
+            </TabsContent>
+
             <TabsContent value="dialogs">
               <AdminDialogs />
             </TabsContent>
