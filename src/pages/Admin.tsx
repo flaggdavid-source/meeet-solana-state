@@ -13,6 +13,7 @@ import { Users, Bot, Coins, TrendingUp, Shield, Flame, BarChart3, Activity, Mess
 import * as Recharts from "recharts";
 import AdminDialogs from "@/components/admin/AdminDialogs";
 import { toast } from "sonner";
+import { useMeeetPrice } from "@/hooks/useMeeetPrice";
 
 const COLORS = ["#9945FF", "#14F195", "#EF4444", "#FBBF24", "#00C2FF", "#F97316", "#6366F1"];
 const {
@@ -143,6 +144,169 @@ function StatCard({ icon, label, value, sub, color }: { icon: React.ReactNode; l
         </div>
       </CardContent>
     </Card>
+  );
+}
+function TokenAnalyticsPanel() {
+  const { price } = useMeeetPrice();
+  const [airdropWallets, setAirdropWallets] = useState("");
+  const [airdropAmount, setAirdropAmount] = useState("100");
+  const [airdropLoading, setAirdropLoading] = useState(false);
+  const [airdropResult, setAirdropResult] = useState<any>(null);
+
+  const { data: burnData } = useQuery({
+    queryKey: ["admin-burn-data"],
+    queryFn: async () => {
+      const { data: logs } = await supabase.from("burn_log").select("amount, reason, created_at").order("created_at", { ascending: false }).limit(200);
+      if (!logs) return { total: 0, byReason: [] as {name:string;value:number}[], daily: [] as {date:string;amount:number}[], recent: [] as any[] };
+      const total = logs.reduce((s, l) => s + Number(l.amount), 0);
+      const reasonMap: Record<string, number> = {};
+      const dailyMap: Record<string, number> = {};
+      logs.forEach(l => {
+        reasonMap[l.reason] = (reasonMap[l.reason] || 0) + Number(l.amount);
+        const d = new Date(l.created_at).toISOString().slice(5, 10);
+        dailyMap[d] = (dailyMap[d] || 0) + Number(l.amount);
+      });
+      return {
+        total,
+        byReason: Object.entries(reasonMap).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value),
+        daily: Object.entries(dailyMap).sort().slice(-14).map(([date, amount]) => ({ date, amount })),
+        recent: logs.slice(0, 10),
+      };
+    },
+    refetchInterval: 30000,
+  });
+
+  const { data: walletInfo } = useQuery({
+    queryKey: ["admin-wallet-pnl"],
+    queryFn: async () => {
+      const { data: tradeLogs } = await supabase.from("trade_log").select("action, sol_amount, meeet_amount, price").eq("status", "completed");
+      if (!tradeLogs) return { totalBuySol: 0, totalBuyMeeet: 0, totalSellSol: 0, totalSellMeeet: 0, trades: 0 };
+      let totalBuySol = 0, totalBuyMeeet = 0, totalSellSol = 0, totalSellMeeet = 0;
+      tradeLogs.forEach(t => {
+        if (t.action === "buy") { totalBuySol += Number(t.sol_amount); totalBuyMeeet += Number(t.meeet_amount); }
+        if (t.action === "sell") { totalSellSol += Number(t.sol_amount); totalSellMeeet += Number(t.meeet_amount); }
+      });
+      return { totalBuySol, totalBuyMeeet, totalSellSol, totalSellMeeet, trades: tradeLogs.length };
+    },
+    refetchInterval: 30000,
+  });
+
+  const runAirdrop = async () => {
+    const addrs = airdropWallets.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+    if (addrs.length === 0) { toast.error("Enter wallet addresses"); return; }
+    const amt = Number(airdropAmount);
+    if (!amt || amt <= 0) { toast.error("Invalid amount"); return; }
+    setAirdropLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
+      const pid = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const res = await fetch(`https://${pid}.supabase.co/functions/v1/token-airdrop`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session.access_token}` },
+        body: JSON.stringify({ wallets: addrs, amount_meeet: amt }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Airdrop failed");
+      setAirdropResult(data);
+      toast.success(`Airdrop: ${data.successful}/${data.total} wallets received ${amt} MEEET each`);
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setAirdropLoading(false);
+    }
+  };
+
+  const pnlSol = (walletInfo?.totalSellSol ?? 0) - (walletInfo?.totalBuySol ?? 0);
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <StatCard icon={<Coins className="w-5 h-5 text-primary" />} label="MEEET Price" value={`$${price.priceUsd.toFixed(6)}`} sub={`${price.change24h >= 0 ? "+" : ""}${price.change24h.toFixed(1)}% 24h`} />
+        <StatCard icon={<BarChart3 className="w-5 h-5 text-green-400" />} label="Market Cap" value={price.marketCap > 0 ? `$${(price.marketCap / 1e3).toFixed(0)}K` : "—"} color="#4ade80" />
+        <StatCard icon={<Activity className="w-5 h-5 text-blue-400" />} label="24h Volume" value={price.volume24h > 0 ? `$${(price.volume24h / 1e3).toFixed(1)}K` : "—"} color="#60a5fa" />
+        <StatCard icon={<Flame className="w-5 h-5 text-orange-400" />} label="Total Burned" value={(burnData?.total ?? 0).toLocaleString()} sub="$MEEET" color="#fb923c" />
+        <StatCard icon={<TrendingUp className="w-5 h-5 text-purple-400" />} label="P&L" value={`${pnlSol >= 0 ? "+" : ""}${pnlSol.toFixed(4)} SOL`} sub={`${walletInfo?.trades ?? 0} trades`} color="#a855f7" />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="glass-card border-border">
+          <CardHeader className="pb-2"><CardTitle className="text-sm font-display flex items-center gap-2"><Flame className="w-4 h-4 text-orange-400" /> Burn by Source</CardTitle></CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {burnData?.byReason.map((r, i) => (
+                <div key={r.name} className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                  <span className="text-xs text-muted-foreground w-32 truncate">{r.name.replace(/_/g, " ")}</span>
+                  <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="h-full rounded-full" style={{ width: `${(r.value / (burnData.total || 1)) * 100}%`, backgroundColor: COLORS[i % COLORS.length] }} />
+                  </div>
+                  <span className="text-[10px] font-mono text-orange-400 w-16 text-right">{r.value.toLocaleString()}</span>
+                </div>
+              ))}
+              {(!burnData?.byReason.length) && <p className="text-xs text-muted-foreground text-center py-4">No burns yet</p>}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="glass-card border-border">
+          <CardHeader className="pb-2"><CardTitle className="text-sm font-display">Daily Burn Rate</CardTitle></CardHeader>
+          <CardContent>
+            {burnData?.daily && burnData.daily.length > 0 ? (
+              <ResponsiveContainer width="100%" height={160}>
+                <BarChart data={burnData.daily}>
+                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+                  <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
+                  <Bar dataKey="amount" fill="#fb923c" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : <p className="text-xs text-muted-foreground text-center py-12">No burn data</p>}
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="glass-card border-border">
+        <CardHeader className="pb-2"><CardTitle className="text-sm font-display">Recent Burns</CardTitle></CardHeader>
+        <CardContent>
+          <div className="space-y-1">
+            {burnData?.recent.map((b: any, i: number) => (
+              <div key={i} className="flex items-center justify-between py-1 text-xs border-b border-border/30 last:border-0">
+                <span className="text-muted-foreground">{new Date(b.created_at).toLocaleString()}</span>
+                <Badge variant="secondary" className="text-[10px]">{b.reason.replace(/_/g, " ")}</Badge>
+                <span className="font-mono text-orange-400">🔥 {Number(b.amount).toLocaleString()}</span>
+              </div>
+            ))}
+            {(!burnData?.recent.length) && <p className="text-xs text-muted-foreground text-center py-4">No burns yet</p>}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="glass-card border-border">
+        <CardHeader className="pb-3"><CardTitle className="text-lg font-display flex items-center gap-2"><Send className="w-5 h-5 text-primary" /> Airdrop MEEET</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <label className="text-xs text-muted-foreground mb-1 block">Wallet Addresses (one per line or comma-separated, max 50)</label>
+              <textarea className="w-full h-32 bg-muted/30 border border-border rounded-lg p-3 text-xs font-mono text-foreground resize-none focus:outline-none focus:ring-1 focus:ring-primary" placeholder={"4nfsUavL6...\n4zkqErmzJ..."} value={airdropWallets} onChange={e => setAirdropWallets(e.target.value)} />
+            </div>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">MEEET per Wallet</label>
+                <input type="number" className="w-full bg-muted/30 border border-border rounded-lg p-2 text-sm font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary" value={airdropAmount} onChange={e => setAirdropAmount(e.target.value)} />
+              </div>
+              <p className="text-xs text-muted-foreground">{airdropWallets.split(/[\n,]+/).filter(s => s.trim()).length} wallets × {airdropAmount} = {(airdropWallets.split(/[\n,]+/).filter(s => s.trim()).length * Number(airdropAmount || 0)).toLocaleString()} MEEET</p>
+              <Button onClick={runAirdrop} disabled={airdropLoading} className="w-full">{airdropLoading ? "Sending..." : "🚀 Send Airdrop"}</Button>
+            </div>
+          </div>
+          {airdropResult && (
+            <div className="glass-card p-3 rounded-lg border border-green-500/30 bg-green-500/5">
+              <p className="text-sm text-green-400">✅ {airdropResult.successful}/{airdropResult.total} wallets ({airdropResult.total_sent} MEEET total)</p>
+              {airdropResult.failed > 0 && <p className="text-xs text-red-400 mt-1">❌ {airdropResult.failed} failed</p>}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -344,10 +508,11 @@ const Admin = () => {
           </div>
 
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="glass-card bg-card/50 border border-border">
+            <TabsList className="glass-card bg-card/50 border border-border flex-wrap">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="agents">Agents</TabsTrigger>
               <TabsTrigger value="economy">Economy</TabsTrigger>
+              <TabsTrigger value="token" className="gap-1"><Coins className="w-3.5 h-3.5" /> Token</TabsTrigger>
               <TabsTrigger value="trading" className="gap-1"><ArrowDownUp className="w-3.5 h-3.5" /> Trading</TabsTrigger>
               <TabsTrigger value="dialogs" className="gap-1"><MessageSquare className="w-3.5 h-3.5" /> Dialogs</TabsTrigger>
             </TabsList>
@@ -478,6 +643,10 @@ const Admin = () => {
                   </CardContent>
                 </Card>
               )}
+            </TabsContent>
+
+            <TabsContent value="token">
+              <TokenAnalyticsPanel />
             </TabsContent>
 
             <TabsContent value="trading">
