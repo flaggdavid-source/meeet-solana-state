@@ -184,10 +184,10 @@ const BreedingLab = () => {
               <Dna className="w-3 h-3 mr-1" /> Genetics Lab
             </Badge>
             <h1 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              Breeding <span className="text-gradient-gold">Lab</span>
+              {t("breeding.title") || "Breeding"} <span className="text-gradient-gold">Lab</span>
             </h1>
             <p className="text-muted-foreground text-sm font-body max-w-md mx-auto">
-              Combine two agents to create offspring with mixed traits, stats, and rarity
+              {t("breeding.subtitle") || "Combine two agents to create offspring with mixed traits, stats, and rarity"}
             </p>
           </div>
 
