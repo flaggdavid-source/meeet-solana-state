@@ -700,7 +700,7 @@ function DirectMessages({ dmTargetName = "" }: { dmTargetName?: string }) {
       sent?.forEach((m: any) => m.to_agent_id && agentIds.add(m.to_agent_id));
       received?.forEach((m: any) => agentIds.add(m.from_agent_id));
       if (agentIds.size === 0) return [];
-      const { data: agents } = await supabase.from("agents").select("id, name, class, level").in("id", Array.from(agentIds));
+      const { data: agents } = await supabase.from("agents_public").select("id, name, class, level").in("id", Array.from(agentIds));
       return agents || [];
     },
     enabled: !!myAgent,
@@ -709,7 +709,7 @@ function DirectMessages({ dmTargetName = "" }: { dmTargetName?: string }) {
   const { data: allAgents = [] } = useQuery({
     queryKey: ["all-agents-dm"],
     queryFn: async () => {
-      const { data } = await supabase.from("agents").select("id, name, class, level, reputation").order("level", { ascending: false }).limit(50);
+      const { data } = await supabase.from("agents_public").select("id, name, class, level, reputation").order("level", { ascending: false }).limit(50);
       return data || [];
     },
   });
@@ -717,7 +717,7 @@ function DirectMessages({ dmTargetName = "" }: { dmTargetName?: string }) {
   useEffect(() => {
     if (!dmTargetName || dmTargetResolved || !myAgent) return;
     const findAgent = async () => {
-      const { data } = await supabase.from("agents").select("id").ilike("name", dmTargetName).limit(1).maybeSingle();
+      const { data } = await supabase.from("agents_public").select("id").ilike("name", dmTargetName).limit(1).maybeSingle();
       if (data) setSelectedAgent(data.id);
       setDmTargetResolved(true);
     };
@@ -729,7 +729,7 @@ function DirectMessages({ dmTargetName = "" }: { dmTargetName?: string }) {
     queryFn: async () => {
       if (!myAgent || !selectedAgent) return [];
       const { data } = await supabase.from("agent_messages")
-        .select("*, sender:agents!agent_messages_from_agent_id_fkey(name, class)")
+        .select("*, sender:agents_public!agent_messages_from_agent_id_fkey(name, class)")
         .eq("channel", "direct")
         .or(`and(from_agent_id.eq.${myAgent.id},to_agent_id.eq.${selectedAgent}),and(from_agent_id.eq.${selectedAgent},to_agent_id.eq.${myAgent.id})`)
         .order("created_at", { ascending: true }).limit(200);
@@ -764,7 +764,6 @@ function DirectMessages({ dmTargetName = "" }: { dmTargetName?: string }) {
       if (error) throw error;
       setDmMsg("");
       setIsAgentTyping(true);
-      // Fire AI reply in background — don't block on it
       supabase.functions.invoke("agent-chat-ai", {
         body: { action: "dm_reply", agent_id: selectedAgent, from_agent_id: myAgent.id, question: userMessage },
       }).then(() => {
@@ -780,15 +779,6 @@ function DirectMessages({ dmTargetName = "" }: { dmTargetName?: string }) {
     onError: (e: Error) => toast({ title: "Send failed", description: e.message || "Agent is thinking... try again", variant: "destructive" }),
   });
 
-  if (!myAgent) {
-    return (
-      <div className="text-center py-16">
-        <Mail className="w-10 h-10 mx-auto text-muted-foreground/20 mb-3" />
-        <p className="text-muted-foreground text-sm">Create an agent to send direct messages</p>
-      </div>
-    );
-  }
-
   const selectedAgentInfo = [...conversations, ...allAgents].find((a: any) => a.id === selectedAgent);
 
   const filteredAgents = useMemo(() => {
@@ -797,6 +787,15 @@ function DirectMessages({ dmTargetName = "" }: { dmTargetName?: string }) {
     if (!searchQuery) return nonConv.slice(0, 20);
     return nonConv.filter((a: any) => a.name.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 20);
   }, [allAgents, conversations, searchQuery, myAgent?.id]);
+
+  if (!myAgent) {
+    return (
+      <div className="text-center py-16">
+        <Mail className="w-10 h-10 mx-auto text-muted-foreground/20 mb-3" />
+        <p className="text-muted-foreground text-sm">Create an agent to send direct messages</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
