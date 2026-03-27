@@ -293,13 +293,13 @@ const Oracle = () => {
           <Card className="bg-card/50 border-purple-500/20">
             <CardContent className="pt-4 pb-4">
               <div className="text-2xl font-bold text-purple-400">{questions.length}</div>
-              <div className="text-xs text-muted-foreground">Active Markets</div>
+              <div className="text-xs text-muted-foreground">{t("oracle.markets") || "Active Markets"}</div>
             </CardContent>
           </Card>
           <Card className="bg-card/50 border-blue-500/20">
             <CardContent className="pt-4 pb-4">
               <div className="text-2xl font-bold text-blue-400">{formatMeeet(totalPool)}</div>
-              <div className="text-xs text-muted-foreground">Total Pool</div>
+              <div className="text-xs text-muted-foreground">{t("oracle.totalPool") || "Total Pool"}</div>
             </CardContent>
           </Card>
           <Card className="bg-card/50 border-green-500/20">
