@@ -77,12 +77,27 @@ export default function MyDeployedAgents() {
   });
 
   const togglePause = (da: any) => act(da.id, "pause-", async () => {
-    const newStatus = da.status === "running" ? "paused" : "running";
-    const { data, error } = await supabase.functions.invoke("pause-agent", {
-      body: { deployed_agent_id: da.id, action: newStatus === "paused" ? "pause" : "resume" },
-    });
-    if (error || data?.error) throw new Error(data?.error || error?.message);
-    toast({ title: newStatus === "paused" ? "⏸ Agent paused" : "▶️ Agent resumed" });
+    const newAction = da.status === "running" ? "pause" : "resume";
+    
+    // Try edge function first
+    try {
+      const { data, error } = await supabase.functions.invoke("pause-agent", {
+        body: { deployed_agent_id: da.id, action: newAction },
+      });
+      if (error || data?.error) throw new Error(data?.error || error?.message);
+    } catch (fnErr: any) {
+      // Fallback: update directly via supabase client
+      console.warn("[Pause] Edge function failed, using direct update:", fnErr.message);
+      const newStatus = newAction === "pause" ? "paused" : "running";
+      const { error: directErr } = await supabase
+        .from("deployed_agents")
+        .update({ status: newStatus } as any)
+        .eq("id", da.id)
+        .eq("user_id", user!.id);
+      if (directErr) throw new Error(directErr.message);
+    }
+    
+    toast({ title: newAction === "pause" ? "⏸ Agent paused" : "▶️ Agent resumed" });
   });
 
   const deleteAgent = (da: any) => act(da.id, "del-", async () => {
