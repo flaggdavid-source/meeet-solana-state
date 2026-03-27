@@ -11,6 +11,7 @@ import {
   ChevronRight, Zap, ZapOff, Users, UsersRound, Settings,
   Pause, Play, Shield, Swords, FlaskConical, TrendingUp,
 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
