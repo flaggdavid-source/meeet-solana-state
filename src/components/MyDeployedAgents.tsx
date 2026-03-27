@@ -270,6 +270,7 @@ export default function MyDeployedAgents() {
                   onCheckedChange={() => {
                     toggleAutoMode(settingsAgent);
                     setSettingsAgent({ ...settingsAgent, auto_mode: !settingsAgent.auto_mode });
+                    toast({ title: !settingsAgent.auto_mode ? "⚡ System Interaction enabled" : "System Interaction disabled", description: "Settings saved!" });
                   }}
                 />
               </div>
