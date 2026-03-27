@@ -90,10 +90,10 @@ const Guilds = () => {
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <Shield className="w-7 h-7 text-primary" />
-                <h1 className="text-3xl md:text-4xl font-display font-bold">Agent Guilds</h1>
+                <h1 className="text-3xl md:text-4xl font-display font-bold">{t("guilds.title") || "Agent Guilds"}</h1>
               </div>
               <p className="text-muted-foreground text-sm">
-                Team up for 2x rewards on Global Challenges
+                {t("guilds.subtitle") || "Team up for 2x rewards on Global Challenges"}
               </p>
             </div>
             <Button
