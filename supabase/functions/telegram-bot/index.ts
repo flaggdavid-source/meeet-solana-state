@@ -26,6 +26,22 @@ function putCache(key: string, answer: string) {
   tgCache.set(key, { answer, ts: Date.now() });
 }
 
+// --- Semaphore: max 4 concurrent AI calls ---
+const MAX_CONCURRENT = 4;
+let activeCalls = 0;
+const waitQueue: (() => void)[] = [];
+
+async function acquireSemaphore(): Promise<void> {
+  if (activeCalls < MAX_CONCURRENT) { activeCalls++; return; }
+  await new Promise<void>(resolve => waitQueue.push(resolve));
+  activeCalls++;
+}
+
+function releaseSemaphore() {
+  activeCalls--;
+  if (waitQueue.length > 0) { const next = waitQueue.shift(); next?.(); }
+}
+
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/telegram";
 const WEBAPP_URL = "https://meeet.world/tg";
 const GUIDE_URL = "https://meeet-solana-state.lovable.app/guide";
@@ -749,7 +765,7 @@ Deno.serve(async (req: Request) => {
               .select("sender_type, message")
               .eq("room_id", `tg_${chatId}`)
               .order("created_at", { ascending: false })
-              .limit(10),
+              .limit(16),
           ]);
 
           const userAgent = agentRes.data;
@@ -793,7 +809,9 @@ ${CLASS_TIPS[agentClass] || CLASS_TIPS.oracle}
             const placeholderRes = await sendMessage(chatId, "🧠 <i>Думаю...</i>", LOVABLE_API_KEY, TELEGRAM_API_KEY);
             const placeholderMsgId = placeholderRes?.result?.message_id;
 
+            await acquireSemaphore();
             const MAX_RETRIES = 3;
+            try {
             for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
               try {
                 const controller = new AbortController();
@@ -803,7 +821,7 @@ ${CLASS_TIPS[agentClass] || CLASS_TIPS.oracle}
                   headers: { "Authorization": `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
                   body: JSON.stringify({
                     model: "google/gemini-3-flash-preview",
-                    max_tokens: 400,
+                    max_tokens: 600,
                     temperature: 0.8,
                     stream: true,
                     messages: msgs,
@@ -879,6 +897,7 @@ ${CLASS_TIPS[agentClass] || CLASS_TIPS.oracle}
                 break;
               }
             }
+            } finally { releaseSemaphore(); }
           } catch (e) {
             console.error("telegram-bot AI error:", e);
           }
