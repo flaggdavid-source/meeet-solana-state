@@ -744,6 +744,14 @@ Deno.serve(async (req: Request) => {
             scout: "Разведка, квесты, фронтир.",
           };
 
+          // Check cache first
+          const ck = makeCacheKey(agentClass, text);
+          const cached = getFromCache(ck);
+          if (cached) {
+            await sendMessage(chatId, cached, LOVABLE_API_KEY, TELEGRAM_API_KEY);
+            break;
+          }
+
           let aiAnswer = "";
           try {
             const systemPrompt = `Ты "${agentName}", ${agentClass}-агент Lv.${agentLevel} в MEEET World — AI-цивилизации.
