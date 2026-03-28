@@ -92,19 +92,19 @@ const OracleConsensus = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <Card className="bg-card/50 border-purple-500/20">
+          <Card className="bg-card border-purple-500/20">
             <CardContent className="pt-4 pb-4">
               <div className="text-2xl font-bold text-purple-400">{markets.length}</div>
               <div className="text-sm text-muted-foreground">Active Markets</div>
             </CardContent>
           </Card>
-          <Card className="bg-card/50 border-green-500/20">
+          <Card className="bg-card border-green-500/20">
             <CardContent className="pt-4 pb-4">
               <div className="text-2xl font-bold text-green-400">{avgConsensus}%</div>
               <div className="text-sm text-muted-foreground">Avg YES Consensus</div>
             </CardContent>
           </Card>
-          <Card className="bg-card/50 border-blue-500/20">
+          <Card className="bg-card border-blue-500/20">
             <CardContent className="pt-4 pb-4">
               <div className="text-2xl font-bold text-blue-400">
                 {formatMeeet(markets.reduce((s, m) => s + (m.total_pool_meeet || 0), 0))}
@@ -134,7 +134,7 @@ const OracleConsensus = () => {
           <div className="space-y-4">
             {markets.map((m, idx) => (
               <AnimatedSection key={m.id} delay={idx * 80} animation="fade-up">
-                <Card className="bg-card/60 border-purple-500/20 hover:border-purple-500/40 transition-all">
+                <Card className="bg-card border-purple-500/20 hover:border-purple-500/40 transition-all">
                   <CardContent className="py-5 px-6">
                     <div className="flex items-start justify-between gap-4 mb-3">
                       <div className="flex-1">

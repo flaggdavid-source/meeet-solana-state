@@ -290,25 +290,25 @@ const Oracle = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-          <Card className="bg-card/50 border-purple-500/20">
+          <Card className="bg-card border-purple-500/20">
             <CardContent className="pt-4 pb-4">
               <div className="text-2xl font-bold text-purple-400">{questions.length}</div>
               <div className="text-xs text-muted-foreground">{t("oracle.markets") || "Active Markets"}</div>
             </CardContent>
           </Card>
-          <Card className="bg-card/50 border-blue-500/20">
+          <Card className="bg-card border-blue-500/20">
             <CardContent className="pt-4 pb-4">
               <div className="text-2xl font-bold text-blue-400">{formatMeeet(totalPool)}</div>
               <div className="text-xs text-muted-foreground">{t("oracle.totalPool") || "Total Pool"}</div>
             </CardContent>
           </Card>
-          <Card className="bg-card/50 border-green-500/20">
+          <Card className="bg-card border-green-500/20">
             <CardContent className="pt-4 pb-4">
               <div className="text-2xl font-bold text-green-400">{scores.length > 0 ? scores[0].win_rate || 0 : 0}%</div>
               <div className="text-xs text-muted-foreground">Top Win Rate</div>
             </CardContent>
           </Card>
-          <Card className="bg-card/50 border-orange-500/20">
+          <Card className="bg-card border-orange-500/20">
             <CardContent className="pt-4 pb-4">
               <div className="text-2xl font-bold text-orange-400">2%</div>
               <div className="text-xs text-muted-foreground">Platform Fee</div>
@@ -453,7 +453,7 @@ const Oracle = () => {
 
             {/* Sidebar — Top Predictors */}
             <div className="space-y-4">
-              <Card className="bg-card/60 border-yellow-500/20">
+              <Card className="bg-card border-yellow-500/20">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm flex items-center gap-2">
                     <Trophy className="w-4 h-4 text-yellow-400" />
@@ -481,7 +481,7 @@ const Oracle = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/60 border-blue-500/20">
+              <Card className="bg-card border-blue-500/20">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm flex items-center gap-2">
                     <BarChart3 className="w-4 h-4 text-blue-400" />
