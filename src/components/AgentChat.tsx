@@ -25,21 +25,132 @@ interface ChatMessage {
   created_at: string;
 }
 
-const OPT_USER_ID = "opt-user-latest";
-const OPT_AGENT_ID = "opt-agent-latest";
+const STREAM_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/openclaw-chat`;
+
+async function streamAgentChat({
+  message,
+  agentId,
+  userId,
+  roomId,
+  onDelta,
+  onDone,
+  onError,
+  signal,
+}: {
+  message: string;
+  agentId: string;
+  userId: string;
+  roomId: string;
+  onDelta: (text: string) => void;
+  onDone: (fullText: string) => void;
+  onError: (err: Error) => void;
+  signal?: AbortSignal;
+}) {
+  try {
+    const resp = await fetch(STREAM_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      },
+      body: JSON.stringify({ message, agent_id: agentId, user_id: userId, room_id: roomId }),
+      signal,
+    });
+
+    // Non-streaming error responses (JSON)
+    if (!resp.ok || !resp.body) {
+      const contentType = resp.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        const data = await resp.json();
+        onError(new Error(data.error || `Error ${resp.status}`));
+        return;
+      }
+      onError(new Error(`Error ${resp.status}`));
+      return;
+    }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let textBuffer = "";
+    let fullText = "";
+    let streamDone = false;
+
+    while (!streamDone) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      textBuffer += decoder.decode(value, { stream: true });
+
+      let newlineIndex: number;
+      while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+        let line = textBuffer.slice(0, newlineIndex);
+        textBuffer = textBuffer.slice(newlineIndex + 1);
+
+        if (line.endsWith("\r")) line = line.slice(0, -1);
+        if (line.startsWith(":") || line.trim() === "") continue;
+        if (!line.startsWith("data: ")) continue;
+
+        const jsonStr = line.slice(6).trim();
+        if (jsonStr === "[DONE]") {
+          streamDone = true;
+          break;
+        }
+
+        try {
+          const parsed = JSON.parse(jsonStr);
+          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+          if (content) {
+            fullText += content;
+            onDelta(content);
+          }
+        } catch {
+          textBuffer = line + "\n" + textBuffer;
+          break;
+        }
+      }
+    }
+
+    // Final flush
+    if (textBuffer.trim()) {
+      for (let raw of textBuffer.split("\n")) {
+        if (!raw) continue;
+        if (raw.endsWith("\r")) raw = raw.slice(0, -1);
+        if (raw.startsWith(":") || raw.trim() === "") continue;
+        if (!raw.startsWith("data: ")) continue;
+        const jsonStr = raw.slice(6).trim();
+        if (jsonStr === "[DONE]") continue;
+        try {
+          const parsed = JSON.parse(jsonStr);
+          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+          if (content) {
+            fullText += content;
+            onDelta(content);
+          }
+        } catch { /* partial */ }
+      }
+    }
+
+    onDone(fullText);
+  } catch (e: any) {
+    if (e.name === "AbortError") return;
+    onError(e instanceof Error ? e : new Error(String(e)));
+  }
+}
 
 export default function AgentChat({ agentId, agentName, agentClass, agentLevel, inline, onClose }: AgentChatProps) {
   const { user } = useAuth();
   const [input, setInput] = useState("");
   const [expanded, setExpanded] = useState(!!inline);
-  const [optimisticMessages, setOptimisticMessages] = useState<ChatMessage[]>([]);
+  const [streamingText, setStreamingText] = useState("");
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [streamError, setStreamError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const qc = useQueryClient();
 
   const roomId = user ? `dm_${user.id}_${agentId}` : null;
 
-  const { data: serverMessages = [], isLoading } = useQuery({
+  const { data: messages = [], isLoading } = useQuery({
     queryKey: ["agent-chat-messages", roomId],
     enabled: !!roomId,
     queryFn: async () => {
@@ -53,136 +164,67 @@ export default function AgentChat({ agentId, agentName, agentClass, agentLevel, 
       if (error) console.error("Chat history error:", error);
       return (data as ChatMessage[]) ?? [];
     },
-    refetchInterval: 5000,
-  });
-
-  // Merge server messages with optimistic ones, deduplicating
-  const messages = (() => {
-    const serverIds = new Set(serverMessages.map(m => m.id));
-    const pending = optimisticMessages.filter(m => !serverIds.has(m.id));
-    return [...serverMessages, ...pending];
-  })();
-
-  // Clear optimistic messages once server catches up
-  useEffect(() => {
-    if (optimisticMessages.length === 0 || serverMessages.length === 0) return;
-
-    setOptimisticMessages((prev) => {
-      let changed = false;
-      let next = prev;
-
-      const optUser = next.find((m) => m.id === OPT_USER_ID);
-      if (
-        optUser &&
-        serverMessages.some(
-          (m) =>
-            m.sender_type === "user" &&
-            m.message === optUser.message &&
-            new Date(m.created_at).getTime() >= new Date(optUser.created_at).getTime() - 10000,
-        )
-      ) {
-        next = next.filter((m) => m.id !== OPT_USER_ID);
-        changed = true;
-      }
-
-      const optAgent = next.find((m) => m.id === OPT_AGENT_ID);
-      if (
-        optAgent &&
-        serverMessages.some(
-          (m) =>
-            m.sender_type === "agent" &&
-            m.message === optAgent.message &&
-            new Date(m.created_at).getTime() >= new Date(optAgent.created_at).getTime() - 10000,
-        )
-      ) {
-        next = next.filter((m) => m.id !== OPT_AGENT_ID);
-        changed = true;
-      }
-
-      return changed ? next : prev;
-    });
-  }, [serverMessages, optimisticMessages.length]);
-
-  const sendMutation = useMutation({
-    mutationFn: async (msg: string) => {
-      console.log("[AgentChat] Sending message to openclaw-chat:", { agent_id: agentId, room_id: roomId });
-      
-      // Race between AI call and 60s timeout
-      const aiCall = supabase.functions.invoke("openclaw-chat", {
-        body: { message: msg, agent_id: agentId, user_id: user!.id, room_id: roomId },
-      });
-      
-      const timeout = new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error("TIMEOUT")), 60000)
-      );
-
-      let res;
-      try {
-        res = await Promise.race([aiCall, timeout]);
-      } catch (e: any) {
-        if (e.message === "TIMEOUT") {
-          // Return fallback response instead of failing
-          return { 
-            answer: `I'm processing your request but it's taking longer than usual. Let me think about "${msg.slice(0, 50)}..." — try asking again in a moment, or rephrase your question for a faster response.`,
-            fallback: true,
-          };
-        }
-        throw e;
-      }
-      
-      console.log("[AgentChat] Response:", { error: res.error, data: res.data });
-      if (res.error) throw new Error(res.error.message || "Edge function error");
-      if (res.data?.error) throw new Error(res.data.error);
-      return res.data;
-    },
-    onSuccess: (data) => {
-      setOptimisticMessages((prev) => {
-        const cleared = prev.filter((m) => m.id !== OPT_USER_ID && m.id !== OPT_AGENT_ID);
-        if (!data?.answer) return cleared;
-
-        return [
-          ...cleared,
-          {
-            id: OPT_AGENT_ID,
-            sender_type: "agent",
-            message: data.answer,
-            created_at: new Date().toISOString(),
-          },
-        ];
-      });
-
-      qc.invalidateQueries({ queryKey: ["agent-chat-messages", roomId] });
-      qc.invalidateQueries({ queryKey: ["my-balance"] });
-    },
-    onError: (err) => {
-      console.error("[AgentChat] Send failed:", err);
-      setOptimisticMessages((prev) => prev.filter((m) => m.id !== OPT_USER_ID && m.id !== OPT_AGENT_ID));
-    },
+    refetchInterval: isStreaming ? false : 8000,
   });
 
   const handleSend = useCallback(() => {
     const msg = input.trim();
-    if (!msg || sendMutation.isPending) return;
+    if (!msg || isStreaming || !user || !roomId) return;
     setInput("");
+    setStreamError(null);
+    setIsStreaming(true);
+    setStreamingText("");
 
-    // Add optimistic user message immediately
-    const optMsg: ChatMessage = {
-      id: OPT_USER_ID,
-      sender_type: "user",
+    // Optimistic user message
+    qc.setQueryData<ChatMessage[]>(["agent-chat-messages", roomId], (old = []) => [
+      ...old,
+      { id: `opt-user-${Date.now()}`, sender_type: "user", message: msg, created_at: new Date().toISOString() },
+    ]);
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setTimeout(() => controller.abort(), 60000);
+
+    let accumulated = "";
+
+    streamAgentChat({
       message: msg,
-      created_at: new Date().toISOString(),
-    };
-    setOptimisticMessages((prev) => [...prev.filter((m) => m.id !== OPT_USER_ID && m.id !== OPT_AGENT_ID), optMsg]);
+      agentId,
+      userId: user.id,
+      roomId,
+      signal: controller.signal,
+      onDelta: (delta) => {
+        accumulated += delta;
+        setStreamingText(accumulated);
+      },
+      onDone: () => {
+        setIsStreaming(false);
+        setStreamingText("");
+        abortRef.current = null;
+        // Refetch to get persisted messages from DB
+        setTimeout(() => qc.invalidateQueries({ queryKey: ["agent-chat-messages", roomId] }), 500);
+        qc.invalidateQueries({ queryKey: ["my-balance"] });
+      },
+      onError: (err) => {
+        setIsStreaming(false);
+        setStreamingText("");
+        setStreamError(err.message);
+        abortRef.current = null;
+      },
+    });
+  }, [input, isStreaming, user, roomId, agentId, qc]);
 
-    sendMutation.mutate(msg);
-  }, [input, sendMutation, agentId]);
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => { abortRef.current?.abort(); };
+  }, []);
 
   // Scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, sendMutation.isPending]);
+  }, [messages, streamingText, isStreaming]);
 
   useEffect(() => {
     if (expanded) inputRef.current?.focus();
@@ -245,7 +287,7 @@ export default function AgentChat({ agentId, agentName, agentClass, agentLevel, 
             <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
           </div>
         )}
-        {!isLoading && messages.length === 0 && !sendMutation.isPending && (
+        {!isLoading && messages.length === 0 && !isStreaming && (
           <div className="text-center py-12 space-y-2">
             <Bot className="w-10 h-10 text-muted-foreground mx-auto" />
             <p className="text-sm text-muted-foreground">Start chatting with <span className="text-foreground font-medium">{agentName}</span></p>
@@ -264,7 +306,7 @@ export default function AgentChat({ agentId, agentName, agentClass, agentLevel, 
         )}
         {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.sender_type === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-sm ${
+            <div className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-sm whitespace-pre-wrap ${
               msg.sender_type === "user"
                 ? "bg-primary text-primary-foreground rounded-br-md"
                 : "bg-muted/60 text-foreground rounded-bl-md"
@@ -273,7 +315,19 @@ export default function AgentChat({ agentId, agentName, agentClass, agentLevel, 
             </div>
           </div>
         ))}
-        {sendMutation.isPending && (
+
+        {/* Streaming agent response */}
+        {isStreaming && streamingText && (
+          <div className="flex justify-start">
+            <div className="max-w-[80%] rounded-2xl rounded-bl-md px-3.5 py-2 text-sm bg-muted/60 text-foreground whitespace-pre-wrap">
+              {streamingText}
+              <span className="inline-block w-1.5 h-4 bg-primary/60 animate-pulse ml-0.5 align-text-bottom" />
+            </div>
+          </div>
+        )}
+
+        {/* Thinking indicator (before first token) */}
+        {isStreaming && !streamingText && (
           <div className="flex justify-start">
             <div className="bg-muted/60 rounded-2xl rounded-bl-md px-4 py-2.5 flex items-center gap-2">
               <div className="flex gap-1">
@@ -285,15 +339,11 @@ export default function AgentChat({ agentId, agentName, agentClass, agentLevel, 
             </div>
           </div>
         )}
-        {sendMutation.isError && (
+
+        {streamError && (
           <div className="text-center py-2">
-            <p className="text-xs text-destructive">{(sendMutation.error as Error)?.message || "Failed to send"}</p>
-            <button
-              onClick={() => sendMutation.reset()}
-              className="text-xs text-primary underline mt-1"
-            >
-              Dismiss
-            </button>
+            <p className="text-xs text-destructive">{streamError}</p>
+            <button onClick={() => setStreamError(null)} className="text-xs text-primary underline mt-1">Dismiss</button>
           </div>
         )}
       </div>
@@ -310,15 +360,15 @@ export default function AgentChat({ agentId, agentName, agentClass, agentLevel, 
             onChange={(e) => setInput(e.target.value)}
             placeholder={`Message ${agentName}...`}
             className="flex-1 bg-background text-sm"
-            disabled={sendMutation.isPending}
+            disabled={isStreaming}
           />
           <Button
             type="submit"
             size="sm"
-            disabled={!input.trim() || sendMutation.isPending}
+            disabled={!input.trim() || isStreaming}
             className="px-3"
           >
-            {sendMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+            {isStreaming ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           </Button>
         </form>
       </div>
