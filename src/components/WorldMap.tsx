@@ -240,7 +240,7 @@ const WorldMap = forwardRef<HTMLDivElement, WorldMapProps>(({ height = "100vh", 
     FACTIONS.forEach(faction => {
       const count = factionCounts[faction.key] || 0;
       const size = isMobile
-        ? Math.max(44, Math.min(68, 44 + count * 0.08))
+        ? Math.max(66, Math.min(102, 66 + count * 0.12))
         : Math.max(60, Math.min(100, 60 + count * 0.12));
 
       const el = document.createElement("div");
