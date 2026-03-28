@@ -44,11 +44,25 @@ export default function FactionsSection() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from("agents_public").select("class,name,reputation").eq("status", "active");
-      if (!data) return;
+      // Paginate to bypass 1000-row limit
+      let all: { class: string | null; name: string | null; reputation: number | null }[] = [];
+      let from = 0;
+      const PAGE = 1000;
+      while (true) {
+        const { data } = await supabase
+          .from("agents_public")
+          .select("class,name,reputation")
+          .eq("status", "active")
+          .range(from, from + PAGE - 1);
+        if (!data || data.length === 0) break;
+        all = all.concat(data);
+        if (data.length < PAGE) break;
+        from += PAGE;
+      }
+      if (all.length === 0) return;
       const counts: Record<string, number> = {};
       const tops: Record<string, { name: string; rep: number }> = {};
-      for (const a of data) {
+      for (const a of all) {
         const f = classToFaction(a.class || "warrior");
         counts[f] = (counts[f] || 0) + 1;
         const rep = a.reputation || 0;
