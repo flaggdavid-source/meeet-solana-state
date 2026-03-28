@@ -298,6 +298,11 @@ const WorldMap = forwardRef<HTMLDivElement, WorldMapProps>(({ height = "100vh", 
       // Click → show faction detail panel with full agent list
       el.addEventListener("click", () => {
         if (popupRef.current) popupRef.current.remove();
+        if (isMobile) {
+          setSelectedMobileFaction(faction);
+          map.flyTo({ center: [faction.lng, faction.lat], zoom: 4, duration: 800 });
+          return;
+        }
         const allAgents = factionAgents[faction.key] || [];
         const agentRows = allAgents.map(a => `
           <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
