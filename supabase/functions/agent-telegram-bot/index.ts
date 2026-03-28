@@ -449,6 +449,11 @@ serve(async (req) => {
       const memCtx = memories.length ? "\nМемуары: " + memories.slice(0, 4).join(" | ") : "";
       const history = (historyRes.data || []).reverse();
 
+      // Send typing + placeholder immediately (non-blocking feel)
+      await sendTyping(botToken, chatId);
+      const placeholderRes = await sendTg(botToken, chatId, "🧠 _Думаю..._");
+      const placeholderMsgId = placeholderRes?.result?.message_id;
+
       try {
         if (LOVABLE_API_KEY) {
           const systemPrompt = `Ты "${agent.name}", ${agentClass}-агент Lv.${agent.level} в MEEET World — AI-цивилизации.
@@ -461,11 +466,6 @@ ${CLASS_TIPS[agentClass] || CLASS_TIPS.oracle}
             msgs.push({ role: h.sender_type === "agent" ? "assistant" : "user", content: h.message });
           }
           msgs.push({ role: "user", content: text });
-
-          // Send typing action + placeholder message
-          await sendTyping(botToken, chatId);
-          const placeholderRes = await sendTg(botToken, chatId, "🧠 _Думаю..._");
-          const placeholderMsgId = placeholderRes?.result?.message_id;
 
           await acquireSemaphore();
           const MAX_RETRIES = 3;
