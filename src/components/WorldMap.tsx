@@ -133,6 +133,7 @@ const WorldMap = forwardRef<HTMLDivElement, WorldMapProps>(({ height = "100vh", 
   const popupRef = useRef<maplibregl.Popup | null>(null);
   const isMobile = useIsMobile();
   const [showMobileFactions, setShowMobileFactions] = useState(false);
+  const [selectedMobileFaction, setSelectedMobileFaction] = useState<typeof FACTIONS[number] | null>(null);
 
   // Inject CSS
   useEffect(() => {
@@ -297,6 +298,11 @@ const WorldMap = forwardRef<HTMLDivElement, WorldMapProps>(({ height = "100vh", 
       // Click → show faction detail panel with full agent list
       el.addEventListener("click", () => {
         if (popupRef.current) popupRef.current.remove();
+        if (isMobile) {
+          setSelectedMobileFaction(faction);
+          map.flyTo({ center: [faction.lng, faction.lat], zoom: 4, duration: 800 });
+          return;
+        }
         const allAgents = factionAgents[faction.key] || [];
         const agentRows = allAgents.map(a => `
           <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
@@ -528,6 +534,72 @@ const WorldMap = forwardRef<HTMLDivElement, WorldMapProps>(({ height = "100vh", 
         open={rightPanelOpen}
         onClose={() => setRightPanelOpen(false)}
       />
+
+      {/* Mobile faction bottom sheet */}
+      {selectedMobileFaction && isMobile && (() => {
+        const f = selectedMobileFaction;
+        const fAgents = factionAgents[f.key] || [];
+        const count = factionCounts[f.key] || 0;
+        return (
+          <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm" onClick={() => setSelectedMobileFaction(null)}>
+            <div
+              className="bg-[rgba(3,3,8,0.98)] border-t rounded-t-2xl w-full max-h-[65vh] overflow-y-auto safe-bottom"
+              style={{ borderColor: `${f.color}30` }}
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Drag handle */}
+              <div className="w-10 h-1 rounded-full bg-white/10 mx-auto mt-3 mb-2" />
+              <div className="px-5 pb-5">
+                {/* Header */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-14 h-14 rounded-full flex items-center justify-center text-2xl flex-shrink-0"
+                    style={{ background: `radial-gradient(circle at 35% 35%, ${f.color}50, ${f.color}15)`, border: `2px solid ${f.color}70`, boxShadow: `0 0 20px ${f.color}30` }}>
+                    {f.label.split(" ")[0]}
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-bold text-lg" style={{ color: f.color }}>{f.label}</div>
+                    <div className="text-xs text-slate-400">{f.region} · {count} agents</div>
+                  </div>
+                  <button onClick={() => setSelectedMobileFaction(null)} className="w-8 h-8 rounded-full bg-white/[0.04] flex items-center justify-center text-slate-500">✕</button>
+                </div>
+
+                {/* Stats row */}
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  <div className="bg-white/[0.03] rounded-xl p-3 text-center">
+                    <div className="text-slate-500 text-[10px]">Agents</div>
+                    <div className="font-bold text-lg" style={{ color: f.color }}>{count}</div>
+                  </div>
+                  <div className="bg-white/[0.03] rounded-xl p-3 text-center">
+                    <div className="text-slate-500 text-[10px]">Total Rep</div>
+                    <div className="text-white font-bold text-sm">{fAgents.reduce((s, a) => s + a.reputation, 0).toLocaleString()}</div>
+                  </div>
+                  <div className="bg-white/[0.03] rounded-xl p-3 text-center">
+                    <div className="text-slate-500 text-[10px]">$MEEET</div>
+                    <div className="text-amber-400 font-bold text-sm">{fAgents.reduce((s, a) => s + a.balance_meeet, 0).toLocaleString()}</div>
+                  </div>
+                </div>
+
+                {/* Agent list */}
+                <div className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold mb-2">Top Agents</div>
+                <div className="space-y-0.5">
+                  {fAgents.slice(0, 20).map((a, ai) => (
+                    <button key={a.id}
+                      className="w-full flex items-center gap-2.5 text-xs py-2.5 px-2 rounded-lg active:bg-white/[0.04] transition-colors"
+                      onClick={() => { setSelectedAgent(a); setRightPanelOpen(true); setSelectedMobileFaction(null); }}>
+                      <span className="text-[10px] text-slate-600 w-4 text-right font-mono">{ai + 1}</span>
+                      <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: ai < 3 ? "#FFD700" : f.color, boxShadow: ai < 3 ? '0 0 6px rgba(255,215,0,0.4)' : `0 0 4px ${f.color}40` }} />
+                      <span className="flex-1 text-slate-200 truncate text-left">{ai < 3 ? "👑 " : ""}{a.name}</span>
+                      <span className="text-slate-500 flex-shrink-0">Lv{a.level}</span>
+                      <span className="flex-shrink-0 font-mono text-[10px]" style={{ color: ai < 3 ? "#FFD700" : f.color }}>{a.reputation.toLocaleString()}</span>
+                    </button>
+                  ))}
+                  {fAgents.length === 0 && <div className="text-center text-slate-600 text-xs py-4">No agents in this faction yet</div>}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 });
