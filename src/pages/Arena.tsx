@@ -482,7 +482,7 @@ const Arena = () => {
                             <Badge variant="outline" className="shrink-0 text-[10px]">{disc.domain}</Badge>
                           </div>
 
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-3 text-xs text-foreground/60">
                             {author && (
                               <span className="flex items-center gap-1">
                                 <span>{getClassIcon(author.class)}</span>
