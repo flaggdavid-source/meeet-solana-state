@@ -11,6 +11,35 @@ function json(body: unknown, status = 200) {
   });
 }
 
+// --- In-memory response cache (TTL 7 min) ---
+const CACHE_TTL_MS = 7 * 60 * 1000;
+const CACHE_MAX_SIZE = 200;
+const responseCache = new Map<string, { answer: string; ts: number }>();
+
+function cacheKey(agentClass: string, message: string): string {
+  const normalized = message.toLowerCase().trim().replace(/[^\wа-яё\s]/gi, "").replace(/\s+/g, " ");
+  return `${agentClass}::${normalized}`;
+}
+
+function getCached(key: string): string | null {
+  const entry = responseCache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.ts > CACHE_TTL_MS) {
+    responseCache.delete(key);
+    return null;
+  }
+  return entry.answer;
+}
+
+function setCache(key: string, answer: string) {
+  // Evict oldest if full
+  if (responseCache.size >= CACHE_MAX_SIZE) {
+    const oldest = responseCache.keys().next().value;
+    if (oldest) responseCache.delete(oldest);
+  }
+  responseCache.set(key, { answer, ts: Date.now() });
+}
+
 const CLASS_EXPERTISE: Record<string, string> = {
   oracle: "Учёный. Анализ данных, гипотезы, публикации.",
   miner: "Геолог. Ресурсы, территории, экология.",
@@ -112,6 +141,29 @@ ${CLASS_EXPERTISE[agent.class] || CLASS_EXPERTISE.oracle}
     sc.from("chat_messages").insert({
       agent_id, sender_type: "user", sender_id: user_id, message, room_id: chatRoomId,
     }).then(() => {}).catch(() => {});
+
+    // --- CHECK CACHE for common questions ---
+    const ck = cacheKey(agent.class, message);
+    const cached = getCached(ck);
+    if (cached) {
+      // Return cached answer as SSE stream + persist
+      const encoder = new TextEncoder();
+      const body = new ReadableStream({
+        start(ctrl) {
+          const chunk = JSON.stringify({ choices: [{ delta: { content: cached }, finish_reason: "stop" }] });
+          ctrl.enqueue(encoder.encode(`data: ${chunk}\n\n`));
+          ctrl.enqueue(encoder.encode("data: [DONE]\n\n"));
+          ctrl.close();
+        },
+      });
+      sc.from("chat_messages").insert({
+        agent_id, sender_type: "agent", sender_id: agent_id, message: cached, room_id: chatRoomId,
+      }).then(() => {}).catch(() => {});
+      schedulePostTasks(sc, agent_id, user_id, message, cached, chatRoomId);
+      return new Response(body, {
+        headers: { ...corsHeaders, "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "Connection": "keep-alive", "X-Agent-Name": encodeURIComponent(agent.name), "X-Agent-Class": agent.class, "X-Room-Id": chatRoomId, "X-Cache": "hit" },
+      });
+    }
 
     // --- STREAMING RESPONSE ---
     const LOVABLE_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -221,8 +273,11 @@ ${CLASS_EXPERTISE[agent.class] || CLASS_EXPERTISE.oracle}
         }
       },
       flush() {
-        // Stream done — persist agent message and post-tasks
+        // Stream done — persist agent message, cache, and post-tasks
         if (fullAnswer) {
+          // Cache the response for similar future questions
+          setCache(ck, fullAnswer);
+
           sc.from("chat_messages").insert({
             agent_id, sender_type: "agent", sender_id: agent_id, message: fullAnswer, room_id: chatRoomId,
           }).then(() => {}).catch((e: any) => console.error("persist agent msg:", e));
