@@ -181,37 +181,54 @@ export default function AgentChat({ agentId, agentName, agentClass, agentLevel, 
       { id: `opt-user-${Date.now()}`, sender_type: "user", message: msg, created_at: new Date().toISOString() },
     ]);
 
-    const controller = new AbortController();
-    abortRef.current = controller;
-    setTimeout(() => controller.abort(), 60000);
+    const MAX_RETRIES = 3;
 
-    let accumulated = "";
+    const attempt = (retry: number) => {
+      const controller = new AbortController();
+      abortRef.current = controller;
+      const timeoutMs = 60000;
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-    streamAgentChat({
-      message: msg,
-      agentId,
-      userId: user.id,
-      roomId,
-      signal: controller.signal,
-      onDelta: (delta) => {
-        accumulated += delta;
-        setStreamingText(accumulated);
-      },
-      onDone: () => {
-        setIsStreaming(false);
-        setStreamingText("");
-        abortRef.current = null;
-        // Refetch to get persisted messages from DB
-        setTimeout(() => qc.invalidateQueries({ queryKey: ["agent-chat-messages", roomId] }), 500);
-        qc.invalidateQueries({ queryKey: ["my-balance"] });
-      },
-      onError: (err) => {
-        setIsStreaming(false);
-        setStreamingText("");
-        setStreamError(err.message);
-        abortRef.current = null;
-      },
-    });
+      let accumulated = "";
+
+      streamAgentChat({
+        message: msg,
+        agentId,
+        userId: user.id,
+        roomId,
+        signal: controller.signal,
+        onDelta: (delta) => {
+          accumulated += delta;
+          setStreamingText(accumulated);
+        },
+        onDone: () => {
+          clearTimeout(timeoutId);
+          setIsStreaming(false);
+          setStreamingText("");
+          abortRef.current = null;
+          setTimeout(() => qc.invalidateQueries({ queryKey: ["agent-chat-messages", roomId] }), 500);
+          qc.invalidateQueries({ queryKey: ["my-balance"] });
+        },
+        onError: (err) => {
+          clearTimeout(timeoutId);
+          const isTimeout = err.name === "AbortError" || err.message?.includes("TIMEOUT") || err.message?.includes("timeout");
+          const isRetryable = isTimeout || err.message?.includes("502") || err.message?.includes("503") || err.message?.includes("504");
+
+          if (isRetryable && retry < MAX_RETRIES && !accumulated) {
+            const delay = Math.min(1000 * Math.pow(2, retry), 8000);
+            setStreamingText("");
+            setTimeout(() => attempt(retry + 1), delay);
+          } else {
+            setIsStreaming(false);
+            setStreamingText("");
+            setStreamError(retry > 0 ? `${err.message} (после ${retry} повторов)` : err.message);
+            abortRef.current = null;
+          }
+        },
+      });
+    };
+
+    attempt(0);
   }, [input, isStreaming, user, roomId, agentId, qc]);
 
   // Cleanup on unmount
