@@ -504,28 +504,43 @@ const WorldMap = forwardRef<HTMLDivElement, WorldMapProps>(({ height = "100vh", 
 
       {/* ═══ BOTTOM CENTER: Global stats ═══ */}
       <div className={`absolute ${isMobile ? 'bottom-3 left-3 right-3' : 'bottom-6 left-1/2 -translate-x-1/2'} z-20 pointer-events-auto`}>
-        <div className={`flex items-center ${isMobile ? 'gap-2 px-3 py-2 justify-between' : 'gap-4 px-5 py-2.5'} rounded-lg bg-[rgba(8,12,24,0.9)] backdrop-blur-xl border border-white/[0.06] text-[10px] md:text-[11px]`}>
-          <span>
-            <span className="text-blue-400 font-bold">🔬 {totalDiscoveries.toLocaleString()}</span>
-            {!isMobile && <span className="text-slate-500 ml-1">Discoveries</span>}
-          </span>
-          <span className="w-px h-3 bg-white/[0.06]" />
-          <span>
-            <span className="text-red-400 font-bold">⚔️ {totalDebates.toLocaleString()}</span>
-            {!isMobile && <span className="text-slate-500 ml-1">Debates</span>}
-          </span>
-          <span className="w-px h-3 bg-white/[0.06]" />
-          <span>
-            <span className="text-amber-400 font-bold">💰 {(totalMeeet / 1000000).toFixed(1)}M</span>
-            {!isMobile && <span className="text-slate-500 ml-1">$MEEET</span>}
-          </span>
-          {isMobile && (
-            <>
-              <span className="w-px h-3 bg-white/[0.06]" />
-              <span className="text-emerald-400 font-bold">{agents.length} 🤖</span>
-            </>
-          )}
-        </div>
+        {isMobile ? (
+          <div className="grid grid-cols-4 gap-1.5 px-2 py-2 rounded-lg bg-[rgba(8,12,24,0.9)] backdrop-blur-xl border border-white/[0.06] text-[10px]">
+            <div className="text-center">
+              <div className="text-blue-400 font-bold">🔬 {totalDiscoveries.toLocaleString()}</div>
+              <div className="text-[8px] text-slate-500">Discoveries</div>
+            </div>
+            <div className="text-center">
+              <div className="text-red-400 font-bold">⚔️ {totalDebates.toLocaleString()}</div>
+              <div className="text-[8px] text-slate-500">Debates</div>
+            </div>
+            <div className="text-center">
+              <div className="text-amber-400 font-bold">💰 {(totalMeeet / 1000000).toFixed(1)}M</div>
+              <div className="text-[8px] text-slate-500">$MEEET</div>
+            </div>
+            <div className="text-center">
+              <div className="text-emerald-400 font-bold">🤖 {agents.length}</div>
+              <div className="text-[8px] text-slate-500">Agents</div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center gap-4 px-5 py-2.5 rounded-lg bg-[rgba(8,12,24,0.9)] backdrop-blur-xl border border-white/[0.06] text-[11px]">
+            <span>
+              <span className="text-blue-400 font-bold">🔬 {totalDiscoveries.toLocaleString()}</span>
+              <span className="text-slate-500 ml-1">Discoveries</span>
+            </span>
+            <span className="w-px h-3 bg-white/[0.06]" />
+            <span>
+              <span className="text-red-400 font-bold">⚔️ {totalDebates.toLocaleString()}</span>
+              <span className="text-slate-500 ml-1">Debates</span>
+            </span>
+            <span className="w-px h-3 bg-white/[0.06]" />
+            <span>
+              <span className="text-amber-400 font-bold">💰 {(totalMeeet / 1000000).toFixed(1)}M</span>
+              <span className="text-slate-500 ml-1">$MEEET</span>
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Agent detail panel */}
