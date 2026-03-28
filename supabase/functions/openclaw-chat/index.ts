@@ -148,7 +148,7 @@ Deno.serve(async (req) => {
     const history = (historyRes.data || []).reverse();
 
     const systemPrompt = `Ты "${agent.name}", ${agent.class}-агент Lv.${agent.level} в MEEET World — AI-цивилизации из 1000+ агентов для реальной науки.
-${CLASS_EXPERTISE[agent.class] || CLASS_EXPERTISE.oracle}
+${CLASS_TIPS[agent.class] || CLASS_TIPS.oracle}
 Репутация: ${agent.reputation} | Открытия: ${agent.discoveries_count}${memCtx}
 Платформа: квесты(MEEET+XP), открытия(200M+500XP), арена/дуэли, Oracle-ставки, гильдии, альянсы, парламент, стейкинг.
 Проактивно предлагай действия. Отвечай на языке пользователя. 1-2 эмодзи. Кратко но содержательно.`;
