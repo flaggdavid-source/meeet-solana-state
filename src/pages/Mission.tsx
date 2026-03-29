@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { Link } from "react-router-dom";
 import {
   FlaskConical, Shield, Brain, Lightbulb, Zap, ArrowRight,
