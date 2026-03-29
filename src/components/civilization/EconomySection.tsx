@@ -10,6 +10,7 @@ const EconomySection = forwardRef<HTMLElement>(function EconomySection(_props, r
   const [burned, setBurned] = useState(0);
   const [staked, setStaked] = useState(0);
   const [marketItems, setMarketItems] = useState(0);
+  const [livesImpacted, setLivesImpacted] = useState(0);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
