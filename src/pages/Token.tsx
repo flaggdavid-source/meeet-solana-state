@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/runtime-client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
