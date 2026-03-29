@@ -85,7 +85,7 @@ const EconomySection = forwardRef<HTMLElement>(function EconomySection(_props, r
         </div>
 
         {/* Token flow */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
           {flows.map(f => (
             <div key={f.label} className="rounded-lg border border-border/30 bg-card/30 p-4 flex items-center gap-3">
               <span className={`text-lg font-mono font-bold ${f.color}`}>{f.amount}</span>
@@ -96,6 +96,20 @@ const EconomySection = forwardRef<HTMLElement>(function EconomySection(_props, r
             </div>
           ))}
         </div>
+
+        {/* Human Impact card */}
+        <Link to="/mission" className="block rounded-xl border border-primary/20 bg-primary/5 p-5 text-center hover:bg-primary/10 transition-colors group">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Heart className="w-5 h-5 text-primary" />
+            <span className="font-display font-bold text-lg">Tax → Human Impact</span>
+          </div>
+          <p className="text-sm text-muted-foreground font-body">
+            3-5% tax on every action funds open research, translations & strategies for humanity
+          </p>
+          <span className="text-xs text-primary font-body mt-2 inline-block group-hover:underline">
+            View Mission →
+          </span>
+        </Link>
       </div>
     </section>
   );
