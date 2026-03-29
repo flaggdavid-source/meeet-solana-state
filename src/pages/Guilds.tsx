@@ -22,6 +22,7 @@ const Guilds = () => {
   const [guildName, setGuildName] = useState("");
   const [guildDesc, setGuildDesc] = useState("");
   const [creating, setCreating] = useState(false);
+  const [selectedGuild, setSelectedGuild] = useState<any | null>(null);
 
   const { data: guilds = [], isLoading, refetch } = useQuery({
     queryKey: ["guilds"],
