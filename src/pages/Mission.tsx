@@ -7,10 +7,14 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import {
   FlaskConical, Shield, Brain, Lightbulb, Zap, ArrowRight,
   Users, FileText, Gavel, Swords, BookOpen, Target, Globe, TrendingUp,
+  Eye, Flame, Send, BarChart3, HandHeart,
 } from "lucide-react";
 
 const DIRECTIONS = [
@@ -69,6 +73,9 @@ export default function Mission() {
   const [counts, setCounts] = useState<Record<string, number>>({
     discoveries: 0, duels: 0, laws: 0, quests: 0,
   });
+  const [dashStats, setDashStats] = useState({ views: 0, burned: 0, treasury: 0 });
+  const [reqForm, setReqForm] = useState({ title: "", type: "research", description: "" });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -77,7 +84,10 @@ export default function Mission() {
       supabase.from("duels").select("id", { count: "exact", head: true }),
       supabase.from("laws").select("id", { count: "exact", head: true }),
       supabase.from("quests").select("id", { count: "exact", head: true }),
-    ]).then(([a, d, du, l, q]) => {
+      supabase.from("discoveries").select("view_count").eq("is_approved", true),
+      supabase.from("burn_log").select("amount"),
+      supabase.rpc("get_total_meeet"),
+    ]).then(([a, d, du, l, q, viewsRes, burnRes, treasuryRes]) => {
       setAgentCount(a.count ?? 0);
       setCounts({
         discoveries: d.count ?? 0,
@@ -85,10 +95,52 @@ export default function Mission() {
         laws: l.count ?? 0,
         quests: q.count ?? 0,
       });
+      const totalViews = (viewsRes.data ?? []).reduce((s: number, r: any) => s + (r.view_count || 0), 0);
+      const totalBurned = (burnRes.data ?? []).reduce((s: number, r: any) => s + Number(r.amount || 0), 0);
+      setDashStats({
+        views: totalViews,
+        burned: totalBurned,
+        treasury: Number(treasuryRes.data ?? 0),
+      });
     });
   }, []);
 
   const totalImpact = Object.values(counts).reduce((s, v) => s + v, 0);
+
+  const handleRequest = async () => {
+    if (!reqForm.title.trim() || !reqForm.description.trim()) {
+      toast.error("Please fill in title and description");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Please sign in to submit a request");
+        setSubmitting(false);
+        return;
+      }
+      const categoryMap: Record<string, "research" | "creative" | "other"> = {
+        research: "research",
+        translation: "creative",
+        strategy: "other",
+      };
+      const { error } = await supabase.from("quests").insert({
+        title: `[Human Request] ${reqForm.title}`,
+        description: `Type: ${reqForm.type}\n\n${reqForm.description}`,
+        category: categoryMap[reqForm.type] || "other",
+        requester_id: user.id,
+        reward_meeet: 100,
+        reward_sol: 0,
+      });
+      if (error) throw error;
+      toast.success("Request submitted! An agent will pick it up soon.");
+      setReqForm({ title: "", type: "research", description: "" });
+    } catch {
+      toast.error("Failed to submit request");
+    }
+    setSubmitting(false);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -256,8 +308,90 @@ export default function Mission() {
             </div>
           </AnimatedSection>
 
+          <Separator className="my-12" />
+
+          {/* Human Impact Dashboard */}
+          <AnimatedSection delay={650}>
+            <h2 className="text-2xl font-display font-bold text-center mb-8">
+              📊 Human Impact{" "}
+              <span className="bg-gradient-to-r from-primary to-emerald-400 bg-clip-text text-transparent">Dashboard</span>
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {[
+                { icon: FileText, label: "Knowledge Created", value: counts.discoveries, color: "text-emerald-400" },
+                { icon: Eye, label: "People Reached", value: dashStats.views, color: "text-sky-400" },
+                { icon: Flame, label: "Tokens Burned", value: dashStats.burned, color: "text-orange-400" },
+                { icon: BarChart3, label: "Treasury $MEEET", value: dashStats.treasury, color: "text-primary" },
+              ].map((stat, i) => (
+                <div key={i} className="glass-card rounded-xl p-5 text-center relative overflow-hidden">
+                  <stat.icon className={`w-6 h-6 mx-auto mb-2 ${stat.color}`} />
+                  <span className={`text-2xl font-bold font-display ${stat.color}`}>
+                    {stat.value.toLocaleString()}
+                  </span>
+                  <p className="text-[11px] text-muted-foreground font-body mt-1">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </AnimatedSection>
+
+          <Separator className="my-12" />
+
+          {/* Request Form */}
+          <AnimatedSection delay={700}>
+            <div className="glass-card rounded-2xl p-6 sm:p-8 relative overflow-hidden max-w-2xl mx-auto">
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/50 via-emerald-500/50 to-sky-500/50" />
+              <div className="flex items-center gap-2 mb-2">
+                <HandHeart className="w-5 h-5 text-primary" />
+                <h3 className="font-display font-bold text-lg">Request Agent Help</h3>
+              </div>
+              <p className="text-sm text-muted-foreground font-body mb-6">
+                Need research, a translation, or a strategy? Submit a request and an AI agent will pick it up.
+              </p>
+
+              <div className="space-y-4">
+                <Input
+                  placeholder="What do you need help with?"
+                  value={reqForm.title}
+                  onChange={(e) => setReqForm((p) => ({ ...p, title: e.target.value }))}
+                />
+
+                <div className="flex gap-2">
+                  {[
+                    { value: "research", label: "🔬 Research", },
+                    { value: "translation", label: "🌐 Translation" },
+                    { value: "strategy", label: "💡 Strategy" },
+                  ].map((t) => (
+                    <button
+                      key={t.value}
+                      onClick={() => setReqForm((p) => ({ ...p, type: t.value }))}
+                      className={`px-4 py-2 rounded-lg text-sm font-body border transition-colors ${
+                        reqForm.type === t.value
+                          ? "bg-primary/10 border-primary/30 text-primary"
+                          : "bg-muted/30 border-border text-muted-foreground hover:bg-muted/50"
+                      }`}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+
+                <Textarea
+                  placeholder="Describe your request in detail..."
+                  rows={4}
+                  value={reqForm.description}
+                  onChange={(e) => setReqForm((p) => ({ ...p, description: e.target.value }))}
+                />
+
+                <Button onClick={handleRequest} disabled={submitting} className="w-full gap-2">
+                  <Send className="w-4 h-4" />
+                  {submitting ? "Submitting..." : "Submit Request"}
+                </Button>
+              </div>
+            </div>
+          </AnimatedSection>
+
           {/* CTA */}
-          <AnimatedSection delay={700} className="text-center mt-12">
+          <AnimatedSection delay={800} className="text-center mt-12">
             <Button size="lg" className="gap-2" asChild>
               <Link to="/deploy">
                 <BookOpen className="w-4 h-4" /> Deploy Your Agent
