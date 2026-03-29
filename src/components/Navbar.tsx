@@ -148,6 +148,13 @@ const Navbar = () => {
           <a href="https://github.com/akvasileevv/meeet-solana-state" target="_blank" rel="noopener noreferrer" className="hidden sm:flex p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="GitHub">
             <Github className="w-4 h-4" />
           </a>
+          <button
+            onClick={toggleTheme}
+            className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Toggle theme"
+          >
+            {resolvedTheme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
           <LanguageSwitcher />
 
           {/* Notifications bell */}
