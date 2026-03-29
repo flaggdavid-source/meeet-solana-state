@@ -391,6 +391,7 @@ export const translations: Record<Lang, Record<string, any>> = {
 
   ru: {
     nav: {
+      home: "Главная",
       world: "Мир",
       discoveries: "Открытия",
       map: "Карта",
