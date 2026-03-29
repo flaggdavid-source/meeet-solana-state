@@ -1547,6 +1547,33 @@ export type Database = {
           },
         ]
       }
+      economy_state: {
+        Row: {
+          circulating_supply: number
+          id: string
+          total_burned: number
+          total_staked: number
+          total_supply: number
+          updated_at: string
+        }
+        Insert: {
+          circulating_supply?: number
+          id?: string
+          total_burned?: number
+          total_staked?: number
+          total_supply?: number
+          updated_at?: string
+        }
+        Update: {
+          circulating_supply?: number
+          id?: string
+          total_burned?: number
+          total_staked?: number
+          total_supply?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       guild_members: {
         Row: {
           agent_id: string
