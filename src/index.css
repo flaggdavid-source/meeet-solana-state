@@ -3,7 +3,57 @@
 @tailwind utilities;
 
 @layer base {
+  /* ── Light theme (default root) ── */
   :root {
+    --background: 0 0% 98%;
+    --foreground: 240 10% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 10%;
+
+    --primary: 262 100% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 157 60% 42%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 240 5% 92%;
+    --muted-foreground: 240 5% 42%;
+
+    --accent: 195 80% 44%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 6% 85%;
+    --input: 240 6% 85%;
+    --ring: 262 100% 55%;
+
+    --radius: 0.75rem;
+
+    /* Custom tokens */
+    --glow-primary: 262 100% 55%;
+    --glow-secondary: 157 60% 42%;
+    --glow-accent: 195 80% 44%;
+    --surface: 0 0% 95%;
+    --surface-hover: 0 0% 92%;
+
+    --sidebar-background: 0 0% 97%;
+    --sidebar-foreground: 240 10% 10%;
+    --sidebar-primary: 262 100% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 5% 92%;
+    --sidebar-accent-foreground: 240 10% 10%;
+    --sidebar-border: 240 6% 85%;
+    --sidebar-ring: 262 100% 55%;
+  }
+
+  /* ── Dark theme ── */
+  .dark {
     --background: 0 0% 4%;
     --foreground: 210 40% 98%;
 
@@ -31,8 +81,6 @@
     --border: 0 0% 100% / 0.06;
     --input: 0 0% 100% / 0.1;
     --ring: 262 100% 63.5%;
-
-    --radius: 0.75rem;
 
     /* Custom tokens */
     --glow-primary: 262 100% 63.5%;
