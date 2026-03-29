@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, LogOut, Bell, ChevronDown, Twitter, Github } from "lucide-react";
+import { Menu, X, LogOut, Bell, ChevronDown, Twitter, Github, Sun, Moon } from "lucide-react";
+import { useTheme } from "@/hooks/useTheme";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/runtime-client";
@@ -15,6 +16,7 @@ const Navbar = () => {
   const { user, signOut } = useAuth();
   const queryClient = useQueryClient();
   const { t } = useLanguage();
+  const { resolvedTheme, toggleTheme } = useTheme();
 
   const NAV_LINKS = [
     ...(user ? [{ href: "/dashboard", label: "🤖 " + (t("nav.world") === "Мир" ? "Мои агенты" : "My Agents") }] : []),
@@ -146,6 +148,13 @@ const Navbar = () => {
           <a href="https://github.com/akvasileevv/meeet-solana-state" target="_blank" rel="noopener noreferrer" className="hidden sm:flex p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="GitHub">
             <Github className="w-4 h-4" />
           </a>
+          <button
+            onClick={toggleTheme}
+            className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Toggle theme"
+          >
+            {resolvedTheme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
           <LanguageSwitcher />
 
           {/* Notifications bell */}
