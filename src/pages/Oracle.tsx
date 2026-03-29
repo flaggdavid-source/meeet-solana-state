@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/runtime-client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import AnimatedSection from "@/components/AnimatedSection";
+import OracleMarketChart from "@/components/OracleMarketChart";
 
 interface OracleQuestion {
   id: string;
