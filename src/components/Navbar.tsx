@@ -228,14 +228,7 @@ const Navbar = () => {
             </Link>
           )}
 
-          {/* Hamburger — visible below md */}
-          <button
-            className="md:hidden p-2 text-muted-foreground hover:text-foreground transition-colors"
-            onClick={() => setOpen(!open)}
-            aria-label="Toggle menu"
-          >
-            {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          {/* Hamburger — hidden; bottom tab bar used on mobile instead */}
         </div>
       </div>
 
