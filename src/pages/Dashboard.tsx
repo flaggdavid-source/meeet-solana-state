@@ -27,6 +27,7 @@ import PromoWidget from "@/components/PromoWidget";
 import AchievementGrid from "@/components/AchievementGrid";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { DashboardSkeleton } from "@/components/ui/page-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -1304,8 +1305,17 @@ const Dashboard = () => {
                       <Card className="glass-card border-border">
                         <CardContent className="p-4">
                           {questsLoading ? (
-                            <div className="flex items-center justify-center py-8">
-                              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                            <div className="space-y-3 py-2">
+                              {[...Array(3)].map((_, i) => (
+                                <div key={i} className="flex items-center gap-3">
+                                  <Skeleton className="h-8 w-8 rounded-lg" />
+                                  <div className="flex-1 space-y-1.5">
+                                    <Skeleton className="h-4 w-3/4" />
+                                    <Skeleton className="h-3 w-1/2" />
+                                  </div>
+                                  <Skeleton className="h-5 w-16 rounded-full" />
+                                </div>
+                              ))}
                             </div>
                           ) : quests.length === 0 ? (
                             <div className="text-center py-8">
@@ -1632,7 +1642,18 @@ function MyOraclePredictions({ userId }: { userId: string }) {
     enabled: !!userId,
   });
 
-  if (isLoading) return <div className="text-center py-8 text-muted-foreground">Loading predictions...</div>;
+  if (isLoading) return (
+    <Card className="glass-card">
+      <CardHeader><CardTitle className="font-display flex items-center gap-2"><Activity className="w-5 h-5 text-blue-400" /> My Oracle Predictions</CardTitle></CardHeader>
+      <CardContent className="space-y-3">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="flex items-center gap-3 glass-card rounded-lg px-4 py-3 border border-border">
+            <div className="flex-1 space-y-2"><Skeleton className="h-4 w-3/4" /><Skeleton className="h-3 w-1/3" /></div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
 
   return (
     <Card className="glass-card">
@@ -1711,7 +1732,14 @@ function MyImpactScore({ userId }: { userId: string }) {
   const questsDone = agents.reduce((s: number, a: any) => s + (a.quests_completed || 0), 0);
   const warningsConfirmed = impacts.filter((i: any) => i.metric_type === "warnings_confirmed").reduce((s: number, i: any) => s + (Number(i.metric_value) || 0), 0);
 
-  if (isLoading) return <div className="text-center py-8 text-muted-foreground">Loading impact...</div>;
+  if (isLoading) return (
+    <Card className="glass-card">
+      <CardHeader><CardTitle className="font-display flex items-center gap-2"><Sparkles className="w-5 h-5 text-amber-400" /> My Impact Score</CardTitle></CardHeader>
+      <CardContent className="grid grid-cols-2 gap-3">
+        {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-16 rounded-xl" />)}
+      </CardContent>
+    </Card>
+  );
 
   return (
     <Card className="glass-card">

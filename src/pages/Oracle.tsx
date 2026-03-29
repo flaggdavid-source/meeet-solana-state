@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import SEOHead from "@/components/SEOHead";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageSkeleton } from "@/components/ui/page-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -552,7 +553,17 @@ const Oracle = () => {
                   <h4 className="text-xs font-semibold mb-2 flex items-center gap-1">
                     <Users className="w-3 h-3" /> Recent Bets ({detailBets.length})
                   </h4>
-                  {detailLoading && <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />}
+                  {detailLoading && (
+                    <div className="space-y-2">
+                      {[...Array(3)].map((_, i) => (
+                        <div key={i} className="flex items-center justify-between py-1">
+                          <Skeleton className="h-3 w-20" />
+                          <Skeleton className="h-3 w-12" />
+                          <Skeleton className="h-3 w-16" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <div className="space-y-1 max-h-48 overflow-y-auto">
                     {detailBets.map((b) => (
                       <div key={b.id} className="flex items-center justify-between text-xs py-1 border-b border-border/20 last:border-0">

@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Brain, ArrowLeft, Loader2, Flame, Clock } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/runtime-client";
 import AnimatedSection from "@/components/AnimatedSection";
 
@@ -115,8 +116,18 @@ const OracleConsensus = () => {
         </div>
 
         {loading && (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-10 h-10 text-purple-400 animate-spin" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 py-4">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="rounded-xl border border-border bg-card/40 p-5 space-y-3">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-2 w-full rounded-full" />
+                <Skeleton className="h-2 w-full rounded-full" />
+                <div className="flex justify-between">
+                  <Skeleton className="h-3 w-16" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
