@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import ContractAddress from "@/components/ContractAddress";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
-import { Heart } from "lucide-react";
+import { Heart, Twitter, Github } from "lucide-react";
 
 const Footer = forwardRef<HTMLElement>((_props, ref) => {
   const { t } = useLanguage();
