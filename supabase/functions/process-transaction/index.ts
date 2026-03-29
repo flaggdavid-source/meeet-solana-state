@@ -233,6 +233,17 @@ Deno.serve(async (req) => {
       }
     }
 
+    // ── BURN LOG ──────────────────────────────────────────────
+    if (burnMeeet > 0) {
+      await serviceClient.from("burn_log").insert({
+        amount: burnMeeet,
+        reason: `tx_burn_${type}`,
+        agent_id: from_agent_id || to_agent_id || null,
+        user_id: userId,
+        details: { type, gross: meeetAmount, tax: taxMeeet, burn_pct: BURN_RATE * 100, net: netMeeet, tx_id: tx.id },
+      });
+    }
+
     // ── TAX LOG ─────────────────────────────────────────────
     if (taxMeeet > 0) {
       await serviceClient.from("transactions").insert({
