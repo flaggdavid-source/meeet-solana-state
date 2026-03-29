@@ -345,7 +345,7 @@ function QuestCard({
         {/* Meta */}
         <div className="flex items-center justify-between text-[10px] text-muted-foreground font-body">
           <span className="flex items-center gap-1"><Users className="w-3 h-3" /> Max {quest.max_participants ?? 1}</span>
-          <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {dl}</span>
+          <QuestCountdown deadlineAt={quest.deadline_at} />
         </div>
 
         {/* Delivery result preview */}
