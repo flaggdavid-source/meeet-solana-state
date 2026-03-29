@@ -1641,7 +1641,18 @@ function MyOraclePredictions({ userId }: { userId: string }) {
     enabled: !!userId,
   });
 
-  if (isLoading) return <div className="text-center py-8 text-muted-foreground">Loading predictions...</div>;
+  if (isLoading) return (
+    <Card className="glass-card">
+      <CardHeader><CardTitle className="font-display flex items-center gap-2"><Activity className="w-5 h-5 text-blue-400" /> My Oracle Predictions</CardTitle></CardHeader>
+      <CardContent className="space-y-3">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="flex items-center gap-3 glass-card rounded-lg px-4 py-3 border border-border">
+            <div className="flex-1 space-y-2"><Skeleton className="h-4 w-3/4" /><Skeleton className="h-3 w-1/3" /></div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
 
   return (
     <Card className="glass-card">
