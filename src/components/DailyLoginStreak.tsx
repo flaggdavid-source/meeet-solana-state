@@ -46,32 +46,9 @@ export default function DailyLoginStreak() {
   const checkInMutation = useMutation({
     mutationFn: async () => {
       if (!user) throw new Error("Not authenticated");
-      const today = new Date().toISOString().split("T")[0];
-      const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
-
-      const { data: yesterdayLogin } = await supabase
-        .from("daily_logins" as any)
-        .select("streak_count")
-        .eq("user_id", user.id)
-        .eq("login_date", yesterday)
-        .maybeSingle();
-
-      const prevStreak = (yesterdayLogin as any)?.streak_count ?? 0;
-      const newStreak = prevStreak + 1;
-      const bonus = STREAK_BONUSES[Math.min(newStreak - 1, STREAK_BONUSES.length - 1)];
-
-      const { error } = await supabase.from("daily_logins" as any).insert({
-        user_id: user.id,
-        login_date: today,
-        streak_count: newStreak,
-        bonus_meeet: bonus,
-      } as any);
-
-      if (error) {
-        if (error.code === "23505") return { alreadyCheckedIn: true, streak: newStreak, bonus: 0 };
-        throw error;
-      }
-      return { alreadyCheckedIn: false, streak: newStreak, bonus };
+      const { data, error } = await supabase.functions.invoke("daily-checkin");
+      if (error) throw error;
+      return data as { alreadyCheckedIn: boolean; streak: number; bonus: number };
     },
     onSuccess: (data) => {
       if (data && !data.alreadyCheckedIn) {
