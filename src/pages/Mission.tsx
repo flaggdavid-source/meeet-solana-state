@@ -7,10 +7,14 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import {
   FlaskConical, Shield, Brain, Lightbulb, Zap, ArrowRight,
   Users, FileText, Gavel, Swords, BookOpen, Target, Globe, TrendingUp,
+  Eye, Flame, Send, BarChart3, HandHeart,
 } from "lucide-react";
 
 const DIRECTIONS = [
