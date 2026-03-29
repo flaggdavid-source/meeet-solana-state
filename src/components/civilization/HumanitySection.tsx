@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import AnimatedSection from "@/components/AnimatedSection";
-import { Users, Beaker, Zap, FlaskConical, Shield, Brain, Lightbulb } from "lucide-react";
+import { FlaskConical, Shield, Brain, Lightbulb, ArrowRight, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 interface Direction {
   icon: React.ReactNode;
@@ -13,6 +15,7 @@ interface Direction {
   border: string;
   iconColor: string;
   accentGlow: string;
+  link: string;
 }
 
 const DIRECTIONS: Direction[] = [
@@ -26,6 +29,7 @@ const DIRECTIONS: Direction[] = [
     border: "border-emerald-500/25",
     iconColor: "text-emerald-400",
     accentGlow: "bg-emerald-500/20",
+    link: "/discoveries",
   },
   {
     icon: <Shield className="w-8 h-8" />,
@@ -37,6 +41,7 @@ const DIRECTIONS: Direction[] = [
     border: "border-amber-500/25",
     iconColor: "text-amber-400",
     accentGlow: "bg-amber-500/20",
+    link: "/arena",
   },
   {
     icon: <Brain className="w-8 h-8" />,
@@ -48,6 +53,7 @@ const DIRECTIONS: Direction[] = [
     border: "border-purple-500/25",
     iconColor: "text-purple-400",
     accentGlow: "bg-purple-500/20",
+    link: "/parliament",
   },
   {
     icon: <Lightbulb className="w-8 h-8" />,
@@ -59,6 +65,7 @@ const DIRECTIONS: Direction[] = [
     border: "border-sky-500/25",
     iconColor: "text-sky-400",
     accentGlow: "bg-sky-500/20",
+    link: "/quests",
   },
 ];
 
@@ -89,6 +96,8 @@ export default function HumanitySection() {
     });
   }, []);
 
+  const totalImpact = Object.values(counts).reduce((s, v) => s + v, 0);
+
   return (
     <section className="py-12 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
@@ -97,7 +106,7 @@ export default function HumanitySection() {
 
       <div className="container max-w-6xl px-4 relative">
         {/* Header */}
-        <AnimatedSection className="text-center mb-10">
+        <AnimatedSection className="text-center mb-6">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display mb-3">
             🌍 Our Mission:{" "}
             <span className="bg-gradient-to-r from-emerald-400 via-primary to-sky-400 bg-clip-text text-transparent">
@@ -110,6 +119,22 @@ export default function HumanitySection() {
           </p>
         </AnimatedSection>
 
+        {/* Total Impact Score */}
+        <AnimatedSection delay={50} className="flex justify-center mb-10">
+          <div className="glass-card rounded-2xl px-8 py-5 text-center relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500/50 via-primary to-sky-500/50" />
+            <div className="flex items-center gap-3">
+              <Zap className="w-6 h-6 text-primary" />
+              <div>
+                <span className="text-3xl sm:text-4xl font-bold font-display text-primary">
+                  {totalImpact.toLocaleString()}
+                </span>
+                <p className="text-xs text-muted-foreground font-body mt-0.5">Total Human Impact Score</p>
+              </div>
+            </div>
+          </div>
+        </AnimatedSection>
+
         {/* 4 Directions */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {DIRECTIONS.map((dir, i) => (
@@ -117,26 +142,30 @@ export default function HumanitySection() {
               <div
                 className={`rounded-xl border ${dir.border} bg-gradient-to-br ${dir.gradient} backdrop-blur-sm p-6 h-full transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group relative overflow-hidden`}
               >
-                {/* Subtle glow */}
                 <div className={`absolute -top-10 -right-10 w-32 h-32 rounded-full ${dir.accentGlow} blur-[60px] opacity-50 group-hover:opacity-80 transition-opacity`} />
 
                 <div className="relative flex items-start gap-4">
-                  {/* Icon */}
                   <div className={`${dir.iconColor} shrink-0 mt-0.5 group-hover:scale-110 transition-transform`}>
                     {dir.icon}
                   </div>
 
-                  {/* Content */}
                   <div className="min-w-0 flex-1">
                     <h3 className="font-display font-bold text-base mb-1">{dir.title}</h3>
                     <p className="text-xs text-muted-foreground font-body leading-relaxed mb-3">{dir.desc}</p>
 
-                    {/* Counter */}
-                    <div className="flex items-center gap-2">
-                      <span className={`text-xl font-bold font-display ${dir.iconColor}`}>
-                        {counts[dir.countKey]?.toLocaleString() ?? "0"}
-                      </span>
-                      <span className="text-xs text-muted-foreground font-body">{dir.countLabel}</span>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xl font-bold font-display ${dir.iconColor}`}>
+                          {counts[dir.countKey]?.toLocaleString() ?? "0"}
+                        </span>
+                        <span className="text-xs text-muted-foreground font-body">{dir.countLabel}</span>
+                      </div>
+
+                      <Button variant="ghost" size="sm" className="h-7 px-3 text-xs gap-1" asChild>
+                        <Link to={dir.link}>
+                          Explore <ArrowRight className="w-3 h-3" />
+                        </Link>
+                      </Button>
                     </div>
                   </div>
                 </div>
