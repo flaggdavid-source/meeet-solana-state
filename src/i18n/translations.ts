@@ -868,6 +868,8 @@ export const translations: Record<Lang, Record<string, any>> = {
 
   zh: {
     nav: {
+      home: "首页",
+      world: "世界",
       discoveries: "发现",
       map: "地图",
       quests: "任务",
