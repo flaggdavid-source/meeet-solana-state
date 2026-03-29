@@ -17,64 +17,57 @@ Deno.serve(async (req) => {
   );
 
   try {
-    // Get recent agent_actions that may not have burn_log entries
+    // 1. Read current state_treasury
+    const { data: treasury } = await supabase
+      .from("state_treasury")
+      .select("*")
+      .limit(1)
+      .single();
+
+    // 2. Get recent agent_actions (last 6h window to match schedule)
+    const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString();
     const { data: actions, error: actionsErr } = await supabase
       .from("agent_actions")
       .select("id, agent_id, user_id, action_type, cost_usd, details, created_at")
+      .gte("created_at", sixHoursAgo)
       .order("created_at", { ascending: false })
       .limit(500);
 
     if (actionsErr) throw actionsErr;
-    if (!actions || actions.length === 0) {
-      return new Response(JSON.stringify({ success: true, message: "No actions to process", burned: 0 }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
 
-    // Get existing burn_log entries to avoid double-burning
+    // 3. Get existing burns to avoid duplicates
     const { data: existingBurns } = await supabase
       .from("burn_log")
       .select("details")
-      .eq("reason", "auto_burn_scheduler")
-      .order("created_at", { ascending: false })
+      .in("reason", ["auto_burn_scheduler", "tax_burn_20pct"])
+      .gte("created_at", sixHoursAgo)
       .limit(1000);
 
     const burnedActionIds = new Set<string>();
     if (existingBurns) {
       for (const b of existingBurns) {
-        if (b.details && typeof b.details === "object" && (b.details as any).action_id) {
-          burnedActionIds.add((b.details as any).action_id);
-        }
+        const d = b.details as Record<string, unknown> | null;
+        if (d?.action_id) burnedActionIds.add(d.action_id as string);
       }
     }
 
-    // Also skip actions already burned inline (tax_burn_20pct)
-    const { data: inlineBurns } = await supabase
-      .from("burn_log")
-      .select("details")
-      .eq("reason", "tax_burn_20pct")
-      .order("created_at", { ascending: false })
-      .limit(1000);
-
-    if (inlineBurns) {
-      for (const b of inlineBurns) {
-        if (b.details && typeof b.details === "object" && (b.details as any).action_id) {
-          burnedActionIds.add((b.details as any).action_id);
-        }
-      }
-    }
-
-    // Filter unburned actions with a cost
-    const unburned = actions.filter(
+    // 4. Filter unburned actions with cost
+    const unburned = (actions || []).filter(
       (a) => a.cost_usd && a.cost_usd > 0 && !burnedActionIds.has(a.id)
     );
 
     if (unburned.length === 0) {
-      return new Response(JSON.stringify({ success: true, message: "All actions already burned", burned: 0 }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      return json({
+        success: true,
+        message: "No new actions to burn",
+        processed: 0,
+        total_burned_usd: 0,
+        treasury_balance: treasury?.balance_meeet ?? 0,
+        treasury_total_burned: treasury?.total_burned ?? 0,
       });
     }
 
+    // 5. Create burn entries
     let totalBurned = 0;
     const burnEntries = unburned.map((a) => {
       const burnAmount = (a.cost_usd || 0) * BURN_PCT;
@@ -89,29 +82,47 @@ Deno.serve(async (req) => {
           action_type: a.action_type,
           original_cost: a.cost_usd,
           burn_pct: BURN_PCT * 100,
+          treasury_snapshot: {
+            balance_meeet: treasury?.balance_meeet ?? 0,
+            total_tax: treasury?.total_tax_collected ?? 0,
+          },
         },
       };
     });
 
-    // Insert burns in batches of 50
+    // 6. Insert burns in batches
     for (let i = 0; i < burnEntries.length; i += 50) {
       const batch = burnEntries.slice(i, i + 50);
       const { error: insertErr } = await supabase.from("burn_log").insert(batch);
       if (insertErr) throw insertErr;
     }
 
-    return new Response(JSON.stringify({
+    // 7. Update state_treasury total_burned
+    if (treasury) {
+      await supabase
+        .from("state_treasury")
+        .update({
+          total_burned: (treasury.total_burned || 0) + totalBurned,
+        })
+        .eq("id", treasury.id);
+    }
+
+    return json({
       success: true,
       processed: unburned.length,
       total_burned_usd: totalBurned,
+      treasury_balance: treasury?.balance_meeet ?? 0,
+      treasury_total_burned: (treasury?.total_burned ?? 0) + totalBurned,
       message: `Burned ${BURN_PCT * 100}% from ${unburned.length} actions`,
-    }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ success: false, error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ success: false, error: error.message }, 500);
   }
 });
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
