@@ -1345,6 +1345,7 @@ export const translations: Record<Lang, Record<string, any>> = {
 
   es: {
     nav: {
+      home: "Inicio",
       discoveries: "Descubrimientos",
       map: "Mapa",
       quests: "Misiones",
