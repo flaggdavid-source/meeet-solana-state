@@ -441,28 +441,36 @@ function SubscriptionSection({ userId }: { userId?: string }) {
             </Button>
           </div>
 
-          {/* Comms Pro */}
-          <div className="relative bg-card border border-border rounded-2xl p-5 flex flex-col">
-            <div className="flex items-center gap-3 mb-4">
+          {/* Comms Pro — $29/mo */}
+          <div className="relative bg-card border border-primary/30 rounded-2xl p-5 flex flex-col">
+            <Badge className="absolute -top-2.5 left-4 bg-primary text-primary-foreground text-[10px] px-2">Popular</Badge>
+            <div className="flex items-center gap-3 mb-4 pt-1">
               <div className="w-10 h-10 rounded-xl bg-accent/15 flex items-center justify-center">
                 <Phone className="w-5 h-5 text-accent" />
               </div>
               <div>
                 <h4 className="font-display font-bold">Comms Pro</h4>
                 <p className="text-lg font-bold text-primary">
-                  {payMethod === "sol" ? "0.29 SOL" : "7,250 MEEET"}
-                  <span className="text-xs text-muted-foreground font-normal">/mo</span>
+                  $29<span className="text-xs text-muted-foreground font-normal">/mo</span>
                 </p>
               </div>
             </div>
             <div className="flex-1 space-y-2 mb-4">
-              {["1,000 emails/month", "100 SMS/month", "30 min calls/month", "3 inboxes", "Thread replies", "Call transcripts"].map(f => (
+              {[
+                "1,000 Spix credits/month",
+                "Email + Calls + SMS",
+                "~500 emails or 250 SMS or 100 min calls",
+                "3 inboxes",
+                "Thread replies",
+                "Call transcripts",
+                "Email drafts & templates",
+              ].map(f => (
                 <div key={f} className="flex items-center gap-2 text-sm">
                   <Check className="w-3.5 h-3.5 text-primary shrink-0" />
                   <span className="text-foreground">{f}</span>
                 </div>
               ))}
-              {["Bulk email", "AI call summary"].map(f => (
+              {["Bulk email (10k)", "Priority routing", "AI call summary"].map(f => (
                 <div key={f} className="flex items-center gap-2 text-sm">
                   <Lock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                   <span className="text-muted-foreground">{f}</span>
@@ -474,9 +482,9 @@ function SubscriptionSection({ userId }: { userId?: string }) {
             </Button>
           </div>
 
-          {/* Comms Enterprise */}
+          {/* Comms Enterprise — $99/mo */}
           <div className="relative bg-card border border-border rounded-2xl p-5 flex flex-col">
-            <Badge className="absolute -top-2.5 right-4 bg-primary text-primary-foreground text-[10px] px-2">Unlimited</Badge>
+            <Badge className="absolute -top-2.5 right-4 bg-accent text-accent-foreground text-[10px] px-2">Unlimited</Badge>
             <div className="flex items-center gap-3 mb-4 pt-1">
               <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
                 <Zap className="w-5 h-5 text-primary" />
@@ -484,13 +492,24 @@ function SubscriptionSection({ userId }: { userId?: string }) {
               <div>
                 <h4 className="font-display font-bold">Comms Enterprise</h4>
                 <p className="text-lg font-bold text-primary">
-                  {payMethod === "sol" ? "1.99 SOL" : "49,750 MEEET"}
-                  <span className="text-xs text-muted-foreground font-normal">/mo</span>
+                  $99<span className="text-xs text-muted-foreground font-normal">/mo</span>
                 </p>
               </div>
             </div>
             <div className="flex-1 space-y-2 mb-4">
-              {["Unlimited emails", "Unlimited SMS", "Unlimited calls", "10 inboxes", "Bulk email (10k)", "AI call summaries", "Thread management", "Custom sender domain", "Priority Spix routing"].map(f => (
+              {[
+                "5,000 Spix credits/month",
+                "Priority phone calls",
+                "Unlimited emails",
+                "Unlimited SMS",
+                "10 inboxes",
+                "Bulk email (10k recipients)",
+                "AI call summaries",
+                "Thread management",
+                "Custom sender domain",
+                "Priority Spix routing",
+                "Dedicated support",
+              ].map(f => (
                 <div key={f} className="flex items-center gap-2 text-sm">
                   <Check className="w-3.5 h-3.5 text-primary shrink-0" />
                   <span className="text-foreground">{f}</span>
@@ -501,8 +520,6 @@ function SubscriptionSection({ userId }: { userId?: string }) {
               <Zap className="w-4 h-4 mr-2" /> Coming soon
             </Button>
           </div>
-        </div>
-      </div>
 
       <div className="max-w-md mx-auto">
         <Card className="bg-card border-border">
