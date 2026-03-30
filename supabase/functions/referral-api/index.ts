@@ -132,7 +132,7 @@ Deno.serve(async (req) => {
         referred_user_id: user_id,
         ref_code,
         status: "registered",
-        total_earned_meeet: REFERRAL_BONUS,
+        total_earned_meeet: REFERRER_BONUS,
       });
 
       // Update profile referred_by
