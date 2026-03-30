@@ -116,6 +116,4 @@ export default function SenateSection() {
       </div>
     </section>
   );
-});
-
-export default SenateSection;
+}
