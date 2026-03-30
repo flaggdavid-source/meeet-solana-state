@@ -493,7 +493,8 @@ function SubscriptionSection({ userId }: { userId?: string }) {
                 <Zap className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <h4 className="font-display font-bold">Comms Enterprise</h4>
+                <h4 className="font-display font-bold">📧📞💬 Comms Enterprise</h4>
+                <p className="text-[10px] text-muted-foreground mb-0.5">AI Communications Suite · Unlimited</p>
                 <p className="text-lg font-bold text-primary">
                   $99<span className="text-xs text-muted-foreground font-normal">/mo</span>
                 </p>
