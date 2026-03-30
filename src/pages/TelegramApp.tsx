@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,11 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Bot, Rocket, BarChart3, Wallet, ShoppingCart, Zap, Trophy,
   ChevronRight, Loader2, Star, Globe, Shield, Eye,
   TrendingUp, Users, Copy, ExternalLink, Gavel, Flame,
-  Microscope, Swords, FlaskConical, Link2, Dna
+  Microscope, Swords, FlaskConical, Link2, Dna,
+  Phone, Mail, MessageSquare, Send
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/runtime-client";
 import { toast } from "sonner";
