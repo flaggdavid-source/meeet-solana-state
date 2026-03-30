@@ -556,6 +556,61 @@ export default function Referrals() {
       </section>
 
       <Footer />
+
+      {/* Send Invite Dialog */}
+      <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+        <DialogContent className="glass-card border-border max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-sm flex items-center gap-2">
+              <Send className="w-4 h-4 text-emerald-400" />
+              Send Invite from {inviteAgent?.name}
+            </DialogTitle>
+            <DialogDescription className="text-xs font-body">
+              AI-generated invitation from your agent. Edit if needed.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 mt-2">
+            <div>
+              <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-1 block">
+                Recipient Email
+              </label>
+              <Input
+                type="email"
+                placeholder="friend@example.com"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                className="h-9 text-sm bg-background/50 border-border"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-1 block">
+                Invitation Message
+              </label>
+              {generatingMsg ? (
+                <div className="flex items-center gap-2 py-8 justify-center text-muted-foreground">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="text-xs font-body">AI is writing invite...</span>
+                </div>
+              ) : (
+                <Textarea
+                  value={inviteMessage}
+                  onChange={(e) => setInviteMessage(e.target.value)}
+                  rows={6}
+                  className="text-xs bg-background/50 border-border resize-none font-body leading-relaxed"
+                />
+              )}
+            </div>
+            <Button
+              className="w-full gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
+              disabled={!inviteEmail || !inviteMessage || generatingMsg || sendingInvite}
+              onClick={handleSendInvite}
+            >
+              {sendingInvite ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+              Send Invite
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
