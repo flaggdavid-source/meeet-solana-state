@@ -19,7 +19,7 @@
  *  POST /v1/email/bulk  — Send bulk emails (up to 1000 recipients)  (scope: email:write)
  *    Body: { recipients, subject, body, from_name }
  *
- *  POST /v1/sms         — Send an SMS message
+ *  POST /v1/sms         — Send an SMS message  (scope: sms:write)
  *    Body: { to, message }
  *
  *  All requests require header: Authorization: Bearer <SPIX_API_KEY>
