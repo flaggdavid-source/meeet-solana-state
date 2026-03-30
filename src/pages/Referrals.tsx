@@ -272,62 +272,100 @@ export default function Referrals() {
                 </CardContent>
               </Card>
 
-              {/* Referral history */}
+              {/* Outreach History table */}
               <Card className="glass-card border-border">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <CardTitle className="font-display text-sm flex items-center gap-2">
-                      <Users className="w-4 h-4 text-purple-400" /> Referral History
+                      <Mail className="w-4 h-4 text-purple-400" /> Outreach History
                     </CardTitle>
                     <Badge variant="outline" className="text-[9px] text-muted-foreground">
-                      {referrals.length} total
+                      {referrals.length} invites
                     </Badge>
                   </div>
+                  <CardDescription className="text-xs font-body">
+                    Track every invite — from email sent to agent deployed.
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                   {isLoading ? (
                     <div className="flex justify-center py-8">
                       <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
                     </div>
                   ) : referrals.length === 0 ? (
-                    <div className="text-center py-10 space-y-3">
+                    <div className="text-center py-10 space-y-3 px-6">
                       <div className="w-12 h-12 mx-auto rounded-xl bg-muted flex items-center justify-center">
-                        <Users className="w-6 h-6 text-muted-foreground" />
+                        <Send className="w-6 h-6 text-muted-foreground" />
                       </div>
                       <p className="text-sm text-muted-foreground font-body">
-                        No referrals yet. Share your link above to start earning!
+                        No outreach yet. Share your link to start earning!
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
-                      {referrals.map((r: any) => (
-                        <div key={r.id} className="flex items-center gap-3 glass-card rounded-lg px-3 py-2.5 hover:bg-muted/30 transition-colors">
-                          <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0">
-                            <Users className="w-4 h-4 text-purple-400" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-mono text-foreground truncate">
-                              {r.referred_user_id?.slice(0, 8)}...{r.referred_user_id?.slice(-4)}
-                            </p>
-                            <p className="text-[10px] text-muted-foreground">
-                              {new Date(r.created_at).toLocaleDateString()}
-                            </p>
-                          </div>
-                          <Badge
-                            variant="outline"
-                            className={`text-[9px] shrink-0 ${
-                              r.status === "pending"
-                                ? "text-amber-400 border-amber-500/20"
-                                : "text-emerald-400 border-emerald-500/20"
-                            }`}
-                          >
-                            {r.status}
-                          </Badge>
-                          <span className="text-xs font-display font-bold text-secondary shrink-0">
-                            +{r.total_earned_meeet} $M
-                          </span>
-                        </div>
-                      ))}
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs">
+                        <thead>
+                          <tr className="border-b border-border text-muted-foreground font-mono">
+                            <th className="text-left px-4 py-2.5 font-medium">Citizen</th>
+                            <th className="text-left px-4 py-2.5 font-medium">Date</th>
+                            <th className="text-center px-4 py-2.5 font-medium">Status</th>
+                            <th className="text-right px-4 py-2.5 font-medium">Earned</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border/50">
+                          {referrals.map((r: any) => {
+                            const status = getOutreachStatus(r.status);
+                            return (
+                              <tr key={r.id} className="hover:bg-muted/20 transition-colors">
+                                <td className="px-4 py-3">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0">
+                                      <Users className="w-3 h-3 text-purple-400" />
+                                    </div>
+                                    <span className="font-mono text-foreground">
+                                      {r.referred_user_id?.slice(0, 6)}…{r.referred_user_id?.slice(-4)}
+                                    </span>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3 text-muted-foreground">
+                                  {new Date(r.created_at).toLocaleDateString()}
+                                </td>
+                                <td className="px-4 py-3 text-center">
+                                  <div className="inline-flex items-center gap-1.5">
+                                    {/* Pipeline dots */}
+                                    {OUTREACH_STAGES.map((stage, i) => (
+                                      <div key={stage.key} className="flex items-center gap-0.5">
+                                        <div
+                                          className={`w-2 h-2 rounded-full ${
+                                            i <= status.stageIndex
+                                              ? status.dotColor
+                                              : "bg-muted"
+                                          }`}
+                                          title={stage.label}
+                                        />
+                                        {i < OUTREACH_STAGES.length - 1 && (
+                                          <div className={`w-2 h-px ${i < status.stageIndex ? "bg-emerald-500/40" : "bg-muted"}`} />
+                                        )}
+                                      </div>
+                                    ))}
+                                    <Badge
+                                      variant="outline"
+                                      className={`text-[9px] ml-1.5 ${status.badgeClass}`}
+                                    >
+                                      {status.label}
+                                    </Badge>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3 text-right">
+                                  <span className="font-display font-bold text-secondary">
+                                    +{r.total_earned_meeet || 0} $M
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
                     </div>
                   )}
                 </CardContent>
