@@ -69,7 +69,7 @@ async function invoke<T = Record<string, unknown>>(
   action: string,
   userId: string,
   agentId: string,
-  payload: Record<string, unknown> = {},
+  payload: Record<string, unknown> = {} as Record<string, unknown>,
 ): Promise<SpixResult<T>> {
   const { data, error } = await supabase.functions.invoke("agent-spix", {
     body: { action, user_id: userId, agent_id: agentId, ...payload },
