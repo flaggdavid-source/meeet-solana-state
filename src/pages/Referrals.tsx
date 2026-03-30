@@ -26,7 +26,28 @@ function getTier(count: number) {
   return [...TIERS].reverse().find((t) => count >= t.min) ?? TIERS[0];
 }
 
-export default function Referrals() {
+const OUTREACH_STAGES = [
+  { key: "sent", label: "Sent" },
+  { key: "opened", label: "Opened" },
+  { key: "registered", label: "Registered" },
+  { key: "deployed", label: "Deployed Agent" },
+];
+
+function getOutreachStatus(status: string) {
+  switch (status) {
+    case "deployed":
+      return { label: "Deployed Agent", stageIndex: 3, dotColor: "bg-emerald-500", badgeClass: "text-emerald-400 border-emerald-500/20" };
+    case "registered":
+    case "active":
+      return { label: "Registered", stageIndex: 2, dotColor: "bg-emerald-500", badgeClass: "text-emerald-400 border-emerald-500/20" };
+    case "opened":
+      return { label: "Opened", stageIndex: 1, dotColor: "bg-blue-400", badgeClass: "text-blue-400 border-blue-500/20" };
+    case "pending":
+    default:
+      return { label: "Sent", stageIndex: 0, dotColor: "bg-amber-400", badgeClass: "text-amber-400 border-amber-500/20" };
+  }
+}
+
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
