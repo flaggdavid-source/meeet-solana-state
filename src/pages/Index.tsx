@@ -17,6 +17,7 @@ import AgentCTABar from "@/components/civilization/AgentCTABar";
 import EarlyAdopterBanner from "@/components/civilization/EarlyAdopterBanner";
 import WhyJoinSection from "@/components/civilization/WhyJoinSection";
 import SocialProofBanner from "@/components/civilization/SocialProofBanner";
+import LaunchCampaignSection from "@/components/civilization/LaunchCampaignSection";
 
 const Index = () => {
   return (
@@ -32,6 +33,7 @@ const Index = () => {
         <EarlyAdopterBanner />
         <WhyJoinSection />
         <SocialProofBanner />
+        <LaunchCampaignSection />
         <FactionsSection />
         <HumanitySection />
         <ArenaSection />
