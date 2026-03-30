@@ -20,7 +20,7 @@ function AnimatedNumber({ target }: { target: number }) {
   return <>{count.toLocaleString()}</>;
 }
 
-export default function BurnCounter() {
+const BurnCounter = forwardRef<HTMLDivElement>(function BurnCounter(_props, ref) {
   const queryClient = useQueryClient();
 
   const { data: totalBurned = 333 } = useQuery({
