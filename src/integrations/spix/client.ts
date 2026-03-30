@@ -33,6 +33,11 @@
  *
  *  GET  /v1/email/threads/{id}   — Get full email thread  (scope: email:read)
  *
+ *  POST /v1/inboxes      — Create an inbox  (scope: inboxes:write)
+ *    Body: { name, email_prefix }
+ *
+ *  GET  /v1/balance       — Check account balance  (scope: account:read)
+ *
  *  All requests require header: Authorization: Bearer <SPIX_API_KEY>
  */
 
