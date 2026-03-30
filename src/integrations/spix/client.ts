@@ -4,8 +4,9 @@
  * Provides typed methods for agent communication actions:
  * phone calls ($0.10/min), email ($0.02), SMS ($0.04), bulk email ($1.00).
  *
+ * Backend: Spix REST API — https://api.spix.sh/v1 (Bearer token auth)
  * All actions are routed through the `agent-spix` edge function,
- * which handles billing, Spix API integration, and action logging.
+ * which handles billing, Spix API calls, and action logging.
  */
 
 import { supabase } from "@/integrations/supabase/client";

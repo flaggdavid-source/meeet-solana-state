@@ -6,6 +6,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const SPIX_BASE = "https://api.spix.sh/v1";
+
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -13,11 +15,24 @@ function json(body: unknown, status = 200) {
   });
 }
 
+async function spixFetch(path: string, apiKey: string, body: Record<string, unknown>) {
+  const res = await fetch(`${SPIX_BASE}${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  return { status: res.status, ok: res.ok, data };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-  const SPIX_API = Deno.env.get("SPIX_API_KEY");
+  const SPIX_API_KEY = Deno.env.get("SPIX_API_KEY")?.trim();
   const BILLING_URL = Deno.env.get("SUPABASE_URL") + "/functions/v1/agent-billing";
 
   try {
@@ -28,7 +43,7 @@ Deno.serve(async (req) => {
     const { data: agent } = await supabase.from("agents").select("*").eq("id", agent_id).single();
     if (!agent) throw new Error("Agent not found");
 
-    // Helper: charge via billing
+    // Charge via billing edge function
     async function chargeUser(actionType: string) {
       const res = await fetch(BILLING_URL, {
         method: "POST",
@@ -40,29 +55,23 @@ Deno.serve(async (req) => {
       return data;
     }
 
-    // MAKE CALL
+    // ── MAKE CALL ───────────────────────────────────────────────────
     if (action === "make_call") {
       const { phone_number, message } = body;
       if (!phone_number || !message) throw new Error("phone_number and message required");
       await chargeUser("phone_call");
 
-      let callResult = { status: "simulated", message: "Call simulated — Spix API key not configured" };
-      if (SPIX_API) {
-        try {
-          const res = await fetch("https://api.spix.ai/v1/calls", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + SPIX_API },
-            body: JSON.stringify({
-              to: phone_number,
-              agent_name: agent.name,
-              prompt: message,
-              voice: "professional",
-            }),
-          });
-          callResult = await res.json();
-        } catch (e) {
-          callResult = { status: "simulated", error: e.message };
-        }
+      let callResult: Record<string, unknown>;
+      if (SPIX_API_KEY) {
+        const r = await spixFetch("/calls", SPIX_API_KEY, {
+          to: phone_number,
+          agent_name: agent.name,
+          prompt: message,
+          voice: "professional",
+        });
+        callResult = r.ok ? r.data : { status: "error", error: r.data };
+      } else {
+        callResult = { status: "simulated", message: "SPIX_API_KEY not configured" };
       }
 
       await supabase.from("agent_actions").insert({
@@ -73,27 +82,23 @@ Deno.serve(async (req) => {
       return json({ success: true, call: callResult });
     }
 
-    // SEND EMAIL
+    // ── SEND EMAIL ──────────────────────────────────────────────────
     if (action === "send_email") {
       const { to_email, subject, body: emailBody } = body;
       if (!to_email || !subject) throw new Error("to_email and subject required");
       await chargeUser("email_send");
 
-      let emailResult = { status: "simulated", message: "Email simulated — Spix API key not configured" };
-      if (SPIX_API) {
-        try {
-          const res = await fetch("https://api.spix.ai/v1/email", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + SPIX_API },
-            body: JSON.stringify({
-              to: to_email, subject, body: emailBody,
-              from_name: agent.name + " (MEEET Agent)",
-            }),
-          });
-          emailResult = await res.json();
-        } catch (e) {
-          emailResult = { status: "simulated", error: e.message };
-        }
+      let emailResult: Record<string, unknown>;
+      if (SPIX_API_KEY) {
+        const r = await spixFetch("/email", SPIX_API_KEY, {
+          to: to_email,
+          subject,
+          body: emailBody,
+          from_name: `${agent.name} (MEEET Agent)`,
+        });
+        emailResult = r.ok ? r.data : { status: "error", error: r.data };
+      } else {
+        emailResult = { status: "simulated", message: "SPIX_API_KEY not configured" };
       }
 
       await supabase.from("agent_actions").insert({
@@ -104,27 +109,23 @@ Deno.serve(async (req) => {
       return json({ success: true, email: emailResult });
     }
 
-    // BULK EMAIL
+    // ── BULK EMAIL ──────────────────────────────────────────────────
     if (action === "bulk_email") {
       const { recipients, subject, body: emailBody } = body;
       if (!recipients || !Array.isArray(recipients) || recipients.length === 0) throw new Error("recipients array required");
       await chargeUser("bulk_email");
 
-      let bulkResult = { status: "simulated", count: recipients.length };
-      if (SPIX_API) {
-        try {
-          const res = await fetch("https://api.spix.ai/v1/email/bulk", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + SPIX_API },
-            body: JSON.stringify({
-              recipients, subject, body: emailBody,
-              from_name: agent.name + " (MEEET Agent)",
-            }),
-          });
-          bulkResult = await res.json();
-        } catch (e) {
-          bulkResult = { status: "simulated", error: e.message };
-        }
+      let bulkResult: Record<string, unknown>;
+      if (SPIX_API_KEY) {
+        const r = await spixFetch("/email/bulk", SPIX_API_KEY, {
+          recipients,
+          subject,
+          body: emailBody,
+          from_name: `${agent.name} (MEEET Agent)`,
+        });
+        bulkResult = r.ok ? r.data : { status: "error", error: r.data };
+      } else {
+        bulkResult = { status: "simulated", count: recipients.length, message: "SPIX_API_KEY not configured" };
       }
 
       await supabase.from("agent_actions").insert({
@@ -135,24 +136,21 @@ Deno.serve(async (req) => {
       return json({ success: true, bulk: bulkResult });
     }
 
-    // SEND SMS
+    // ── SEND SMS ────────────────────────────────────────────────────
     if (action === "send_sms") {
       const { phone_number, message } = body;
       if (!phone_number || !message) throw new Error("phone_number and message required");
       await chargeUser("sms_send");
 
-      let smsResult = { status: "simulated", message: "SMS simulated — Spix API key not configured" };
-      if (SPIX_API) {
-        try {
-          const res = await fetch("https://api.spix.ai/v1/sms", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + SPIX_API },
-            body: JSON.stringify({ to: phone_number, message: "[" + agent.name + "] " + message }),
-          });
-          smsResult = await res.json();
-        } catch (e) {
-          smsResult = { status: "simulated", error: e.message };
-        }
+      let smsResult: Record<string, unknown>;
+      if (SPIX_API_KEY) {
+        const r = await spixFetch("/sms", SPIX_API_KEY, {
+          to: phone_number,
+          message: `[${agent.name}] ${message}`,
+        });
+        smsResult = r.ok ? r.data : { status: "error", error: r.data };
+      } else {
+        smsResult = { status: "simulated", message: "SPIX_API_KEY not configured" };
       }
 
       await supabase.from("agent_actions").insert({
@@ -163,7 +161,7 @@ Deno.serve(async (req) => {
       return json({ success: true, sms: smsResult });
     }
 
-    // ACTION HISTORY
+    // ── ACTION HISTORY ──────────────────────────────────────────────
     if (action === "action_history") {
       const { data } = await supabase.from("agent_actions").select("*").eq("user_id", user_id).order("created_at", { ascending: false }).limit(50);
       return json({ success: true, actions: data || [] });
