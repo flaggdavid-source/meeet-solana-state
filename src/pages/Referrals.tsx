@@ -52,6 +52,7 @@ export default function Referrals() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+  const [copiedAgentId, setCopiedAgentId] = useState<string | null>(null);
 
   const { data: profile } = useQuery({
     queryKey: ["profile-referral", user?.id],
