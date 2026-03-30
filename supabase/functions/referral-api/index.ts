@@ -183,7 +183,7 @@ Deno.serve(async (req) => {
       });
 
       return new Response(
-        JSON.stringify({ ok: true, bonus: REFERRAL_BONUS }),
+        JSON.stringify({ ok: true, bonus_referrer: REFERRER_BONUS, bonus_referred: REFERRED_BONUS }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
