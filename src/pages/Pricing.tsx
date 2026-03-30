@@ -405,8 +405,9 @@ function SubscriptionSection({ userId }: { userId?: string }) {
       {/* ── Spix Communication Add-ons ── */}
       <div className="mb-10">
         <div className="text-center mb-6">
-          <Badge className="bg-primary/10 text-primary border-primary/20 mb-2">Spix Integration</Badge>
-          <h3 className="text-xl md:text-2xl font-display font-bold mb-1">Communication Add-ons</h3>
+          <div className="flex items-center justify-center gap-1.5 text-2xl mb-2">📧📞💬</div>
+          <Badge className="bg-primary/10 text-primary border-primary/20 mb-2">AI Communications Suite</Badge>
+          <h3 className="text-xl md:text-2xl font-display font-bold mb-1">Spix Communications</h3>
           <p className="text-sm text-muted-foreground">Give your agent the power to call, email, and text</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-4xl mx-auto">
@@ -418,8 +419,9 @@ function SubscriptionSection({ userId }: { userId?: string }) {
                 <Mail className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <h4 className="font-display font-bold">Email Only</h4>
-                <p className="text-lg font-bold text-primary">Free <span className="text-xs text-muted-foreground font-normal">sandbox</span></p>
+                <h4 className="font-display font-bold">📧 Email Only</h4>
+                <p className="text-[10px] text-muted-foreground mb-0.5">Spix Sandbox</p>
+                <p className="text-lg font-bold text-primary">Free</p>
               </div>
             </div>
             <div className="flex-1 space-y-2 mb-4">
@@ -449,7 +451,8 @@ function SubscriptionSection({ userId }: { userId?: string }) {
                 <Phone className="w-5 h-5 text-accent" />
               </div>
               <div>
-                <h4 className="font-display font-bold">Comms Pro</h4>
+                <h4 className="font-display font-bold">📧📞💬 Comms Pro</h4>
+                <p className="text-[10px] text-muted-foreground mb-0.5">AI Communications Suite</p>
                 <p className="text-lg font-bold text-primary">
                   $29<span className="text-xs text-muted-foreground font-normal">/mo</span>
                 </p>
@@ -490,7 +493,8 @@ function SubscriptionSection({ userId }: { userId?: string }) {
                 <Zap className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <h4 className="font-display font-bold">Comms Enterprise</h4>
+                <h4 className="font-display font-bold">📧📞💬 Comms Enterprise</h4>
+                <p className="text-[10px] text-muted-foreground mb-0.5">AI Communications Suite · Unlimited</p>
                 <p className="text-lg font-bold text-primary">
                   $99<span className="text-xs text-muted-foreground font-normal">/mo</span>
                 </p>
