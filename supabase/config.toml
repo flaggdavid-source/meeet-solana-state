@@ -294,3 +294,6 @@ schedule = "0 */6 * * *"
 
 [functions.get-meeet-price]
 verify_jwt = false
+
+[functions.twitter-poster]
+verify_jwt = false
