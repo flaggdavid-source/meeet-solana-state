@@ -11,7 +11,7 @@
  * ── Main Endpoints ──────────────────────────────────────────────────
  *
  *  POST /v1/calls       — Initiate an outbound phone call  (scope: calls:write)
- *    Body: { to, agent_name, prompt, voice }
+ *    Body: { playbook_id, source_number, destination_number, metadata }
  *
  *  POST /v1/email       — Send a single email  (scope: email:write)
  *    Body: { to, subject, body, from_name }
@@ -30,8 +30,10 @@ import { supabase } from "@/integrations/supabase/client";
 // ── Types ───────────────────────────────────────────────────────────
 
 export interface SpixCallPayload {
-  phone_number: string;
-  message: string;
+  playbook_id: string;
+  source_number: string;
+  destination_number: string;
+  metadata?: Record<string, unknown>;
 }
 
 export interface SpixEmailPayload {

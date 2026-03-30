@@ -57,17 +57,17 @@ Deno.serve(async (req) => {
 
     // ── MAKE CALL ───────────────────────────────────────────────────
     if (action === "make_call") {
-      const { phone_number, message } = body;
-      if (!phone_number || !message) throw new Error("phone_number and message required");
+      const { playbook_id, source_number, destination_number, metadata } = body;
+      if (!playbook_id || !source_number || !destination_number) throw new Error("playbook_id, source_number and destination_number required");
       await chargeUser("phone_call");
 
       let callResult: Record<string, unknown>;
       if (SPIX_API_KEY) {
         const r = await spixFetch("/calls", SPIX_API_KEY, {
-          to: phone_number,
-          agent_name: agent.name,
-          prompt: message,
-          voice: "professional",
+          playbook_id,
+          source_number,
+          destination_number,
+          metadata: metadata || {},
         });
         callResult = r.ok ? r.data : { status: "error", error: r.data };
       } else {
@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
 
       await supabase.from("agent_actions").insert({
         agent_id, user_id, action_type: "phone_call", cost_usd: 0.10,
-        details: { phone: phone_number, message, result: callResult },
+        details: { playbook_id, source_number, destination_number, metadata, result: callResult },
       });
 
       return json({ success: true, call: callResult });
