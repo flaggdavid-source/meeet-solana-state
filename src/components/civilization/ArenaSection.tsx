@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Swords, Trophy, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
