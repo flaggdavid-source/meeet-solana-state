@@ -663,7 +663,7 @@ const SpixDialog = ({ agent, mode, onClose }: { agent: Agent | null; mode: "call
   });
 
   const handleSend = () => {
-    if (mode === "call") action.mutate({ action: "call", phone, message: "Agent call" });
+    if (mode === "call") action.mutate({ action: "call", phone, message: callMsg });
     else if (mode === "email") action.mutate({ action: "email", to: email, subject, body });
     else if (mode === "sms") action.mutate({ action: "sms", phone, message: smsMsg });
   };
