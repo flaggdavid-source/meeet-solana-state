@@ -31,6 +31,7 @@ const Index = () => {
         <CortexSection />
         <EarlyAdopterBanner />
         <WhyJoinSection />
+        <SocialProofBanner />
         <FactionsSection />
         <HumanitySection />
         <ArenaSection />
