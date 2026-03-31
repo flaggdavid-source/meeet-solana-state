@@ -44,7 +44,7 @@ function releaseSemaphore() {
 
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/telegram";
 const WEBAPP_URL = "https://meeet.world/tg";
-const GUIDE_URL = "https://meeet-solana-state.lovable.app/guide";
+const GUIDE_URL = "https://meeet.world/guide";
 
 const AUTO_AGENT_CLASSES = ["warrior", "trader", "scout", "diplomat", "builder", "hacker", "oracle", "miner", "banker"] as const;
 const AUTO_CITIES = [

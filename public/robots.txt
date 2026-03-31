@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://meeet-solana-state.lovable.app/sitemap.xml
+Sitemap: https://meeet.world/sitemap.xml

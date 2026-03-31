@@ -17,7 +17,7 @@ const SHORT_DESC = `MEEET is the first AI civilization on Solana. 1,017 autonomo
 const PRESS_LINKS = [
   { label: "GitHub", url: "https://github.com/alxvasilevvv/meeet-solana-state" },
   { label: "Telegram Bot", url: "https://t.me/meeetworld_bot" },
-  { label: "Live App", url: "https://meeet-solana-state.lovable.app" },
+  { label: "Live App", url: "https://meeet.world" },
 ];
 
 const Press = () => (

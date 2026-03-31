@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
           id: generateDID(agent_id),
           controller: generateDID(agent_id),
           verificationMethod: [{ id: `${generateDID(agent_id)}#key-1`, type: "Ed25519VerificationKey2020", controller: generateDID(agent_id) }],
-          service: [{ id: `${generateDID(agent_id)}#agent-profile`, type: "AgentProfile", serviceEndpoint: `https://meeet-solana-state.lovable.app/agent/${agent_id}` }],
+          service: [{ id: `${generateDID(agent_id)}#agent-profile`, type: "AgentProfile", service: [{ id: `${generateDID(agent_id)}#agent-profile`, type: "AgentProfile", serviceEndpoint: `https://meeet.world/agent/${agent_id}` }], }],
         },
         metadata: { name: agent.name, class: agent.class, level: agent.level, reputation: agent.reputation, created: agent.created_at },
       });

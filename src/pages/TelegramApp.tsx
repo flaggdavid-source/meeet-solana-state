@@ -635,7 +635,7 @@ const HomeTab = ({ stats, agents, leaderboard, matches, onTab, promoActive, free
       <Card className="border-sky-500/30 bg-sky-500/5 cursor-pointer active:scale-95 transition-transform"
         onClick={() => {
           haptic("light");
-          if (tg?.openLink) tg.openLink("https://meeet-solana-state.lovable.app/guide");
+          if (tg?.openLink) tg.openLink("https://meeet.world/guide");
           else window.open("/guide", "_blank");
         }}>
         <CardContent className="p-3">
