@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === "widget") {
-      const widget = `(function(){var d=document,s=d.createElement('div');s.id='meeet-widget';s.innerHTML='<iframe src="https://meeet-solana-state.lovable.app" style="width:100%;height:600px;border:none;border-radius:12px;"></iframe>';d.body.appendChild(s);})();`;
+      const widget = `(function(){var d=document,s=d.createElement('div');s.id='meeet-widget';s.innerHTML='<iframe src="https://meeet.world" style="width:100%;height:600px;border:none;border-radius:12px;"></iframe>';d.body.appendChild(s);})();`; style="width:100%;height:600px;border:none;border-radius:12px;"></iframe>';d.body.appendChild(s);})();`;
       return new Response(widget, { headers: { ...corsHeaders, "Content-Type": "application/javascript" } });
     }
 
