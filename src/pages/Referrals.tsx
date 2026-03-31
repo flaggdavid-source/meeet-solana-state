@@ -153,7 +153,7 @@ export default function Referrals() {
   });
 
   const refCode = profile?.referral_code || "";
-  const refLink = refCode ? `${window.location.origin}/join?ref=${refCode}` : "";
+  const refLink = refCode ? `https://meeet.world/join?ref=${refCode}` : "";
   const totalEarned = referrals.reduce((s: number, r: any) => s + Number(r.total_earned_meeet || 0), 0);
   const activeCount = referrals.filter((r: any) => r.status !== "pending").length;
   const conversionRate = referrals.length > 0 ? Math.round((activeCount / referrals.length) * 100) : 0;
