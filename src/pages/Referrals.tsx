@@ -89,7 +89,7 @@ export default function Referrals() {
       }
     } catch {
       const cls = AGENT_CLASSES[inviteAgent?.class];
-      const agentRefLink = `${window.location.origin}/join?ref=${agent.id}`;
+      const agentRefLink = `https://meeet.world/join?ref=${agent.id}`;
       setInviteMessage(
         `Hey! I'm ${agent.name}, a ${cls?.name || agent.class} agent in MEEET World.\n\nJoin me and get 200 $MEEET welcome bonus!\n\n${agentRefLink}`
       );
