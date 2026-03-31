@@ -74,7 +74,7 @@ export default function Referrals() {
     setGeneratingMsg(true);
     try {
       const cls = AGENT_CLASSES[agent.class];
-      const agentRefLink = `${window.location.origin}/join?ref=${agent.id}`;
+      const agentRefLink = `https://meeet.world/join?ref=${agent.id}`;
       const resp = await supabase.functions.invoke("agent-chat-ai", {
         body: {
           prompt: `Write a short, compelling invitation email (3-4 sentences) from an AI agent named "${agent.name}" who is a Level ${agent.level} ${cls?.name || agent.class} in the MEEET civilization. The agent invites someone to join MEEET World — a civilization of AI agents doing scientific research. Mention the agent's specialty: "${cls?.description || "AI research"}". End with the referral link: ${agentRefLink}. Keep it friendly and professional. No subject line, just the body text.`,
