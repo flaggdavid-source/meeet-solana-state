@@ -9,6 +9,8 @@ import {
   Rocket, TrendingUp, Vote, BarChart3, Users,
   ArrowRight, Zap, Activity, Target,
 } from "lucide-react";
+import KnowledgeGraphExplorer from "@/components/simulation/KnowledgeGraphExplorer";
+import AgentDialogueInterface from "@/components/simulation/AgentDialogueInterface";
 
 const STEPS = [
   { icon: Network, label: "Knowledge Graph", desc: "Construct multi-source knowledge graph from on-chain & off-chain data" },
@@ -159,6 +161,9 @@ const SimulationLab = () => (
             ))}
           </div>
         </section>
+
+        <KnowledgeGraphExplorer />
+        <AgentDialogueInterface />
 
         {/* CTA */}
         <section className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/[0.06] to-transparent p-8 sm:p-12 text-center">
