@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import CortexSection from "@/components/civilization/CortexSection";
+import LiveTicker from "@/components/LiveTicker";
 import FactionsSection from "@/components/civilization/FactionsSection";
 import ArenaSection from "@/components/civilization/ArenaSection";
 import HumanitySection from "@/components/civilization/HumanitySection";
@@ -33,6 +34,7 @@ const Index = () => {
       <Navbar />
       <main className="pt-16 pb-16">
         <CortexSection />
+        <LiveTicker />
         <EarlyAdopterBanner />
         <WhyJoinSection />
         <SocialProofBanner />
