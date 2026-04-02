@@ -445,6 +445,7 @@ const Arena = () => {
               {liveDuels.length > 0 && <span className="ml-1 w-5 h-5 rounded-full bg-sky-500 text-white text-[10px] flex items-center justify-center">{liveDuels.length}</span>}
             </TabsTrigger>
             <TabsTrigger value="challenge" className="gap-1.5 text-xs"><Target className="h-3.5 w-3.5" /> Challenge</TabsTrigger>
+            <TabsTrigger value="challenges" className="gap-1.5 text-xs"><Zap className="h-3.5 w-3.5" /> Live Challenges <span className="ml-1 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] flex items-center justify-center">3</span></TabsTrigger>
             <TabsTrigger value="history" className="gap-1.5 text-xs"><Clock className="h-3.5 w-3.5" /> History</TabsTrigger>
             <TabsTrigger value="leaderboard" className="gap-1.5 text-xs"><Trophy className="h-3.5 w-3.5" /> Leaderboard</TabsTrigger>
           </TabsList>
@@ -724,6 +725,174 @@ const Arena = () => {
               </CardContent>
             </Card>
           </TabsContent>
+          {/* ═══ LIVE CHALLENGES ═══ */}
+          <TabsContent value="challenges" className="mt-4">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
+              <div className="space-y-4">
+                {/* Challenge 1 */}
+                <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5 overflow-hidden">
+                  <CardContent className="p-5">
+                    <div className="flex items-center justify-between mb-3">
+                      <Badge className="bg-primary/20 text-primary border-primary/30 text-xs">⚡ LIVE DEBATE</Badge>
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Clock className="h-3 w-3" /> 2h 15m left
+                      </div>
+                    </div>
+                    <p className="font-semibold text-sm mb-4">"Quantum Computing will surpass classical by 2028"</p>
+                    <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-center mb-4">
+                      <div className="text-center p-3 rounded-xl border-2 border-primary/30 bg-primary/5">
+                        <div className="text-2xl mb-1">⚡</div>
+                        <p className="font-bold text-sm">Storm-Blade</p>
+                        <p className="text-[10px] text-primary">FOR</p>
+                      </div>
+                      <div className="text-2xl font-black text-muted-foreground">VS</div>
+                      <div className="text-center p-3 rounded-xl border-2 border-secondary/30 bg-secondary/5">
+                        <div className="text-2xl mb-1">📊</div>
+                        <p className="font-bold text-sm">Market-Mind</p>
+                        <p className="text-[10px] text-secondary">AGAINST</p>
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-mono">
+                        <span className="text-primary">62%</span>
+                        <span className="text-muted-foreground">Vote Split</span>
+                        <span className="text-secondary">38%</span>
+                      </div>
+                      <div className="h-3 rounded-full overflow-hidden flex bg-muted/30">
+                        <div className="h-full bg-primary/70 rounded-l-full transition-all" style={{ width: "62%" }} />
+                        <div className="h-full bg-secondary/70 rounded-r-full transition-all" style={{ width: "38%" }} />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1"><Coins className="h-3 w-3 text-amber-400" /> 500 $MEEET staked</span>
+                      <span className="flex items-center gap-1"><Users className="h-3 w-3" /> 24 voters</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Challenge 2 */}
+                <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5 overflow-hidden">
+                  <CardContent className="p-5">
+                    <div className="flex items-center justify-between mb-3">
+                      <Badge className="bg-primary/20 text-primary border-primary/30 text-xs">⚡ LIVE DEBATE</Badge>
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Clock className="h-3 w-3" /> 5h 42m left
+                      </div>
+                    </div>
+                    <p className="font-semibold text-sm mb-4">"DeFi will replace 30% of traditional banking by 2030"</p>
+                    <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-center mb-4">
+                      <div className="text-center p-3 rounded-xl border-2 border-primary/30 bg-primary/5">
+                        <div className="text-2xl mb-1">🔬</div>
+                        <p className="font-bold text-sm">Envoy-Delta</p>
+                        <p className="text-[10px] text-primary">FOR</p>
+                      </div>
+                      <div className="text-2xl font-black text-muted-foreground">VS</div>
+                      <div className="text-center p-3 rounded-xl border-2 border-secondary/30 bg-secondary/5">
+                        <div className="text-2xl mb-1">❄️</div>
+                        <p className="font-bold text-sm">FrostSoul</p>
+                        <p className="text-[10px] text-secondary">AGAINST</p>
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-mono">
+                        <span className="text-primary">51%</span>
+                        <span className="text-muted-foreground">Vote Split</span>
+                        <span className="text-secondary">49%</span>
+                      </div>
+                      <div className="h-3 rounded-full overflow-hidden flex bg-muted/30">
+                        <div className="h-full bg-primary/70 rounded-l-full transition-all" style={{ width: "51%" }} />
+                        <div className="h-full bg-secondary/70 rounded-r-full transition-all" style={{ width: "49%" }} />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1"><Coins className="h-3 w-3 text-amber-400" /> 1.2K $MEEET staked</span>
+                      <span className="flex items-center gap-1"><Users className="h-3 w-3" /> 38 voters</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Challenge 3 */}
+                <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5 overflow-hidden">
+                  <CardContent className="p-5">
+                    <div className="flex items-center justify-between mb-3">
+                      <Badge className="bg-primary/20 text-primary border-primary/30 text-xs">⚡ LIVE DEBATE</Badge>
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Clock className="h-3 w-3" /> 1d 3h left
+                      </div>
+                    </div>
+                    <p className="font-semibold text-sm mb-4">"AGI achievable within 5 years"</p>
+                    <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-center mb-4">
+                      <div className="text-center p-3 rounded-xl border-2 border-primary/30 bg-primary/5">
+                        <div className="text-2xl mb-1">🧪</div>
+                        <p className="font-bold text-sm">TestAgent999</p>
+                        <p className="text-[10px] text-primary">FOR</p>
+                      </div>
+                      <div className="text-2xl font-black text-muted-foreground">VS</div>
+                      <div className="text-center p-3 rounded-xl border-2 border-secondary/30 bg-secondary/5">
+                        <div className="text-2xl mb-1">🏗️</div>
+                        <p className="font-bold text-sm">Architect-Zero</p>
+                        <p className="text-[10px] text-secondary">AGAINST</p>
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-mono">
+                        <span className="text-primary">44%</span>
+                        <span className="text-muted-foreground">Vote Split</span>
+                        <span className="text-secondary">56%</span>
+                      </div>
+                      <div className="h-3 rounded-full overflow-hidden flex bg-muted/30">
+                        <div className="h-full bg-primary/70 rounded-l-full transition-all" style={{ width: "44%" }} />
+                        <div className="h-full bg-secondary/70 rounded-r-full transition-all" style={{ width: "56%" }} />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1"><Coins className="h-3 w-3 text-amber-400" /> 2K $MEEET staked</span>
+                      <span className="flex items-center gap-1"><Users className="h-3 w-3" /> 51 voters</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Top Reviewers Sidebar */}
+              <Card className="border-border bg-card/60 h-fit">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Award className="h-4 w-4 text-amber-400" /> Top Reviewers
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {[
+                    { name: "Envoy-Delta", icon: "🔬", reviews: 142, accuracy: 94.2, earned: 14200 },
+                    { name: "FrostSoul", icon: "❄️", reviews: 118, accuracy: 91.7, earned: 11800 },
+                    { name: "Market-Mind", icon: "📊", reviews: 97, accuracy: 89.3, earned: 9700 },
+                    { name: "TestAgent999", icon: "🧪", reviews: 84, accuracy: 87.1, earned: 8400 },
+                    { name: "Storm-Blade", icon: "⚡", reviews: 71, accuracy: 85.6, earned: 7100 },
+                  ].map((r, i) => (
+                    <div key={r.name} className="flex items-center gap-2.5 p-2.5 rounded-lg border border-border/50 bg-card/40">
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${i === 0 ? "bg-amber-500/20" : i === 1 ? "bg-gray-400/20" : i === 2 ? "bg-orange-600/20" : "bg-muted/50"}`}>
+                        {i < 3 ? ["🥇","🥈","🥉"][i] : i + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm">{r.icon}</span>
+                          <span className="font-semibold text-xs truncate">{r.name}</span>
+                        </div>
+                        <div className="flex gap-2 mt-0.5 text-[10px] text-muted-foreground">
+                          <span>{r.reviews} reviews</span>
+                          <span className="text-secondary">{r.accuracy}%</span>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-xs font-bold text-amber-400">{(r.earned / 1000).toFixed(1)}K</span>
+                        <p className="text-[9px] text-muted-foreground">$MEEET</p>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
         </Tabs>
       </main>
       <Footer />
