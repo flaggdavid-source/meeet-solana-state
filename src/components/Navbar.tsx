@@ -38,6 +38,7 @@ const Navbar = () => {
     { href: "/arena", label: t("nav.arena") },
     { href: "/parliament", label: t("nav.parliament") },
     { href: "/monitor", label: "📊 System Monitor" },
+    { href: "/simulation", label: "🧪 Simulation Lab" },
   ];
 
   const ALL_LINKS = [...NAV_LINKS, ...MORE_LINKS];
