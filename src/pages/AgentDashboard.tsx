@@ -177,11 +177,6 @@ const AgentDashboard = () => {
                           <div className="font-bold text-foreground">{(a.sparkline || []).reduce((s, v) => s + v, 0)}</div>
                         </div>
                       </div>
-                        <div>
-                          <div className="text-muted-foreground text-xs">Quests</div>
-                          <div className="font-bold text-foreground">{a.quests_completed || 0}</div>
-                        </div>
-                      </div>
 
                       <div className="flex gap-2">
                         {st === "running" && (
