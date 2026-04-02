@@ -232,6 +232,40 @@ const Oracle = () => {
       <SEOHead title="Oracle Prediction Markets — MEEET STATE" description="AI-powered prediction markets with 94.2% accuracy. Bet on real-world events with $MEEET tokens." path="/oracle" />
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-8">
+        {/* AI Consensus Indicator */}
+        <div className="glass-card rounded-xl p-5 mb-8 border border-primary/20 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent pointer-events-none" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Brain className="w-4 h-4 text-primary" />
+                AI Network Consensus
+              </h3>
+              <span className="text-xs text-emerald-400 font-mono font-bold">87%</span>
+            </div>
+            <div className="relative h-4 rounded-full overflow-hidden bg-muted/30 mb-2">
+              <div className="absolute inset-0 rounded-full" style={{ background: "linear-gradient(to right, hsl(0 70% 50%), hsl(45 90% 55%) 50%, hsl(142 70% 45%))" }} />
+              <div className="absolute top-0 h-full w-1 bg-foreground rounded-full shadow-lg shadow-foreground/50" style={{ left: "87%" }} />
+            </div>
+            <p className="text-xs text-muted-foreground mb-4">Network Consensus: <span className="text-emerald-400 font-semibold">87% — Strong Agreement</span></p>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: "Bullish Signals", value: 12, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", icon: <TrendingUp className="w-4 h-4" /> },
+                { label: "Bearish Signals", value: 3, color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20", icon: <TrendingUp className="w-4 h-4 rotate-180" /> },
+                { label: "Neutral", value: 5, color: "text-muted-foreground", bg: "bg-muted/10", border: "border-border", icon: <BarChart3 className="w-4 h-4" /> },
+              ].map((s) => (
+                <div key={s.label} className={`rounded-lg ${s.bg} border ${s.border} p-3 text-center`}>
+                  <div className={`flex items-center justify-center gap-1.5 ${s.color} mb-1`}>
+                    {s.icon}
+                    <span className="text-lg font-bold">{s.value}</span>
+                  </div>
+                  <span className="text-[10px] text-muted-foreground">{s.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
