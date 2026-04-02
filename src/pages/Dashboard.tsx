@@ -22,6 +22,8 @@ import SpixPanel from "@/components/dashboard/SpixPanel";
 import UsdBalanceCard from "@/components/dashboard/UsdBalanceCard";
 import RaidClaimsAdmin from "@/components/RaidClaimsAdmin";
 import FeedbackWidget from "@/components/FeedbackWidget";
+import NetworkHealthWidget from "@/components/dashboard/NetworkHealthWidget";
+import AgentPerformanceChart from "@/components/dashboard/AgentPerformanceChart";
 import DailyLoginStreak from "@/components/DailyLoginStreak";
 import PromoWidget from "@/components/PromoWidget";
 import AchievementGrid from "@/components/AchievementGrid";
