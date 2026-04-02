@@ -21,6 +21,7 @@ import SocialProofBanner from "@/components/civilization/SocialProofBanner";
 import LaunchCampaignSection from "@/components/civilization/LaunchCampaignSection";
 import TopAgentsSection from "@/components/civilization/TopAgentsSection";
 import UpcomingEventsSection from "@/components/civilization/UpcomingEventsSection";
+import KeyIntegrationsSection from "@/components/civilization/KeyIntegrationsSection";
 import FinalCTASection from "@/components/civilization/FinalCTASection";
 
 const Index = () => {
