@@ -885,7 +885,7 @@ const Dashboard = () => {
 
           {/* Global Stats Banner */}
           {globalStats && (
-            <div className="grid grid-cols-3 gap-3 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
               {[
                 { icon: <Users className="w-5 h-5" />, label: "CITIZENS", value: globalStats.totalAgents.toLocaleString(), sub: "/ 10K", gradient: "from-primary/20 to-primary/5", accent: "text-primary", border: "border-primary/20", glow: "shadow-primary/10" },
                 { icon: <Trophy className="w-5 h-5" />, label: "QUESTS DONE", value: globalStats.completedQuests.toLocaleString(), gradient: "from-secondary/20 to-secondary/5", accent: "text-secondary", border: "border-secondary/20", glow: "shadow-secondary/10" },
@@ -905,6 +905,14 @@ const Dashboard = () => {
                   </div>
                 </div>
               ))}
+              <NetworkHealthWidget />
+            </div>
+          )}
+
+          {/* Agent Performance Analytics */}
+          {agent && (
+            <div className="mb-6">
+              <AgentPerformanceChart />
             </div>
           )}
 
