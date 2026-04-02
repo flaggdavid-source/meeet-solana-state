@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import KnowledgeGraphExplorer from "@/components/simulation/KnowledgeGraphExplorer";
 import AgentDialogueInterface from "@/components/simulation/AgentDialogueInterface";
+import ScenarioControlPanel from "@/components/simulation/ScenarioControlPanel";
+import AgentMemoryTimeline from "@/components/simulation/AgentMemoryTimeline";
 
 const STEPS = [
   { icon: Network, label: "Knowledge Graph", desc: "Construct multi-source knowledge graph from on-chain & off-chain data" },
@@ -164,6 +166,9 @@ const SimulationLab = () => (
 
         <KnowledgeGraphExplorer />
         <AgentDialogueInterface />
+
+        <ScenarioControlPanel />
+        <AgentMemoryTimeline />
 
         {/* CTA */}
         <section className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/[0.06] to-transparent p-8 sm:p-12 text-center">
