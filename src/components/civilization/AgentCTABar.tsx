@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Flame, ArrowRight } from "lucide-react";
 
-export default function AgentCTABar() {
+const AgentCTABar = forwardRef<HTMLDivElement>(function AgentCTABar(_props, ref) {
   const [slots, setSlots] = useState(0);
 
   useEffect(() => {
@@ -12,7 +12,7 @@ export default function AgentCTABar() {
   }, []);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-primary/20 bg-background/80 backdrop-blur-xl">
+    <div ref={ref} className="fixed bottom-0 left-0 right-0 z-40 border-t border-primary/20 bg-background/80 backdrop-blur-xl">
       <div className="max-w-4xl mx-auto flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
           <Flame className="w-5 h-5 text-orange-400 animate-pulse" />
@@ -31,4 +31,6 @@ export default function AgentCTABar() {
       </div>
     </div>
   );
-}
+});
+
+export default AgentCTABar;
