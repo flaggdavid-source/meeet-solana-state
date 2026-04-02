@@ -86,7 +86,6 @@ export default function CortexSection() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const [weekCount, setWeekCount] = useState(0);
 
   useEffect(() => {
     (async () => {
