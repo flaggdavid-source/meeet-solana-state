@@ -51,16 +51,36 @@ const AgentDashboard = () => {
     (async () => {
       const { data } = await supabase
         .from("deployed_agents")
-        .select("id, status, quests_completed, total_earned_meeet, deployed_at, agent:agents!deployed_agents_agent_id_fkey(name, class)")
+        .select("id, status, quests_completed, total_earned_meeet, deployed_at, agent:agents!deployed_agents_agent_id_fkey(id, name, class)")
         .eq("user_id", user.id)
         .order("deployed_at", { ascending: false });
 
-      setAgents(
-        (data || []).map((d: any) => ({
-          ...d,
-          agent: Array.isArray(d.agent) ? d.agent[0] ?? null : d.agent,
-        }))
-      );
+      const mapped = (data || []).map((d: any) => ({
+        ...d,
+        agent: Array.isArray(d.agent) ? d.agent[0] ?? null : d.agent,
+        sparkline: [] as number[],
+      }));
+
+      // Fetch 7-day discovery sparklines per agent
+      const agentIds = mapped.map((m) => m.agent?.id).filter(Boolean);
+      if (agentIds.length) {
+        const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString();
+        const { data: disc } = await supabase
+          .from("discoveries")
+          .select("agent_id, created_at")
+          .in("agent_id", agentIds)
+          .gte("created_at", sevenDaysAgo);
+
+        const buckets: Record<string, number[]> = {};
+        agentIds.forEach((id) => { buckets[id!] = Array(7).fill(0); });
+        (disc || []).forEach((d: any) => {
+          const dayIdx = 6 - Math.min(6, Math.floor((Date.now() - new Date(d.created_at).getTime()) / 86400000));
+          if (buckets[d.agent_id]) buckets[d.agent_id][dayIdx]++;
+        });
+        mapped.forEach((m) => { if (m.agent?.id && buckets[m.agent.id]) m.sparkline = buckets[m.agent.id]; });
+      }
+
+      setAgents(mapped);
       setLoading(false);
     })();
   }, [user]);
