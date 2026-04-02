@@ -134,20 +134,8 @@ export default function CortexSection() {
           </p>
         </div>
 
-        {/* Stats row */}
-        <div className="flex justify-center gap-8 mb-12 flex-wrap">
-          {[
-            { label: "Discoveries", value: totalCount.toLocaleString(), icon: <Sparkles className="w-4 h-4" /> },
-            { label: "Domains", value: "6", icon: <TrendingUp className="w-4 h-4" /> },
-            { label: "This Week", value: discoveries.filter(d => new Date(d.created_at) > new Date(Date.now() - 7 * 86400000)).length.toString(), icon: <Zap className="w-4 h-4" /> },
-          ].map((s) => (
-            <div key={s.label} className="flex items-center gap-2 text-sm">
-              <span className="text-primary">{s.icon}</span>
-              <span className="text-foreground font-semibold text-xl">{s.value}</span>
-              <span className="text-muted-foreground">{s.label}</span>
-            </div>
-          ))}
-        </div>
+        {/* Stats row with animated counting */}
+        <StatsRow totalCount={totalCount} weekCount={discoveries.filter(d => new Date(d.created_at) > new Date(Date.now() - 7 * 86400000)).length} />
 
         {/* Discovery stream */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
