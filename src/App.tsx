@@ -65,6 +65,8 @@ const Mission = React.lazy(() => import("./pages/Mission.tsx"));
 const Passport = React.lazy(() => import("./pages/Passport.tsx"));
 const DIDDocument = React.lazy(() => import("./pages/DIDDocument.tsx"));
 const Staking = React.lazy(() => import("./pages/Staking.tsx"));
+const GovernancePage = React.lazy(() => import("./pages/Governance.tsx"));
+const Attestations = React.lazy(() => import("./pages/Attestations.tsx"));
 const NotFound = React.lazy(() => import("./pages/NotFound.tsx"));
 
 const queryClient = new QueryClient({
