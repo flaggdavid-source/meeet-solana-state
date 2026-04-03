@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import CortexSection from "@/components/civilization/CortexSection";
+import PageWrapper from "@/components/PageWrapper";
 import LiveTicker from "@/components/LiveTicker";
 import FactionsSection from "@/components/civilization/FactionsSection";
 import ArenaSection from "@/components/civilization/ArenaSection";
