@@ -150,6 +150,8 @@ const App = () => (
                   <Route path="/install" element={<Install />} />
                   <Route path="/token" element={<Token />} />
                   <Route path="/mission" element={<Mission />} />
+                  <Route path="/passport/:agentId" element={<Passport />} />
+                  <Route path="/did/:agentId" element={<DIDDocument />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
