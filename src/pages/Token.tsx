@@ -162,6 +162,25 @@ function LiveBurnFeed() {
 
 const Token = () => {
   const { price, isLoading: priceLoading, isUnavailable } = useMeeetPrice();
+  const { address: walletAddress } = useSolanaWallet();
+  const [walletMeeet, setWalletMeeet] = useState<number | null>(null);
+  const [walletSol, setWalletSol] = useState<number | null>(null);
+
+  const fetchWalletBalances = useCallback(async (addr: string) => {
+    try {
+      const { Connection, PublicKey } = await import("@solana/web3.js");
+      const { getAssociatedTokenAddress, getAccount } = await import("@solana/spl-token");
+      const conn = new Connection("https://api.mainnet-beta.solana.com", "confirmed");
+      const pk = new PublicKey(addr);
+      const MEEET_MINT = new PublicKey("EJgyptJK58M9AmJi1w8ivGBjeTm5JoTqFefoQ6JTpump");
+      const [lamports, ata] = await Promise.all([conn.getBalance(pk), getAssociatedTokenAddress(MEEET_MINT, pk)]);
+      setWalletSol(lamports / 1e9);
+      try { const acc = await getAccount(conn, ata); setWalletMeeet(Number(acc.amount)); } catch { setWalletMeeet(0); }
+    } catch { setWalletSol(null); setWalletMeeet(null); }
+  }, []);
+
+  useEffect(() => { if (walletAddress) fetchWalletBalances(walletAddress); }, [walletAddress, fetchWalletBalances]);
+
   const [stakeAmount, setStakeAmount] = useState(1000);
   const [stakeTier, setStakeTier] = useState<keyof typeof STAKING_TIERS>("flex");
 
