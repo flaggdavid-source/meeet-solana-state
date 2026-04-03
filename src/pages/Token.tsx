@@ -20,7 +20,7 @@ import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
 } from "recharts";
 
-const DEXSCREENER_URL = `https://dexscreener.com/solana/${MEEET_CONTRACT_ADDRESS}`;
+const CHART_URL = PUMP_FUN_URL;
 
 const STAKING_TIERS = {
   flex: { min: 100, apy: 5, lock_days: 0, label: "Flex", bonus: "None" },
@@ -140,7 +140,7 @@ function LiveBurnFeed() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-bold text-orange-400 font-mono">
-                  {Number(b.amount).toLocaleString(undefined, { maximumFractionDigits: 4 })}
+                  {Number(b.amount).toLocaleString("en-US", { maximumFractionDigits: 4 })}
                 </span>
                 <span className="text-xs text-muted-foreground">MEEET</span>
                 <Badge variant="outline" className="text-[9px] border-border/50 text-muted-foreground">
@@ -159,7 +159,7 @@ function LiveBurnFeed() {
 }
 
 const Token = () => {
-  const { price, isLoading: priceLoading } = useMeeetPrice();
+  const { price, isLoading: priceLoading, isUnavailable } = useMeeetPrice();
   const [stakeAmount, setStakeAmount] = useState(1000);
   const [stakeTier, setStakeTier] = useState<keyof typeof STAKING_TIERS>("flex");
 
@@ -223,9 +223,11 @@ const Token = () => {
               </p>
 
               {/* Live Price */}
-              <div className="inline-flex items-center gap-6 bg-card/60 border border-border rounded-2xl px-8 py-5 backdrop-blur-xl mb-8">
+              <div className="inline-flex items-center gap-6 bg-card/60 border border-border rounded-2xl px-8 py-5 backdrop-blur-xl mb-6">
                 {priceLoading ? (
                   <Skeleton className="h-10 w-48" />
+                ) : isUnavailable ? (
+                  <p className="text-muted-foreground text-sm">Live data unavailable — check back soon</p>
                 ) : (
                   <>
                     <div>
@@ -241,7 +243,7 @@ const Token = () => {
                     </div>
                     <div className="border-l border-border pl-6 hidden sm:block">
                       <p className="text-xs text-muted-foreground mb-1">Market Cap</p>
-                      <p className="text-lg font-bold">${price.marketCap.toLocaleString()}</p>
+                      <p className="text-lg font-bold">${price.marketCap.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
                     </div>
                     <div className="border-l border-border pl-6 hidden md:block">
                       <p className="text-xs text-muted-foreground mb-1">24h Volume</p>
@@ -251,13 +253,30 @@ const Token = () => {
                 )}
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+              {/* Bonding Curve Progress */}
+              <div className="max-w-md mx-auto mb-6">
+                <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
+                  <span>Bonding Curve Progress</span>
+                  <span>{(price.bondingCurveProgress ?? 0).toFixed(1)}%</span>
+                </div>
+                <div className="h-3 rounded-full bg-muted/40 border border-border overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-primary to-purple-400 transition-all duration-1000"
+                    style={{ width: `${Math.max(0.5, price.bondingCurveProgress ?? 0)}%` }}
+                  />
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  {(price.bondingCurveSol ?? 0).toFixed(1)} SOL in bonding curve
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4">
                 <Button size="lg" className="gap-2 bg-gradient-to-r from-primary to-purple-500 hover:from-primary/90 hover:to-purple-500/90 text-white shadow-xl shadow-primary/20" asChild>
                   <a href={PUMP_FUN_URL} target="_blank" rel="noopener noreferrer">
                     Buy $MEEET <ArrowRight className="w-4 h-4" />
                   </a>
                 </Button>
-                <Button variant="outline" size="lg" className="gap-2" onClick={() => window.open(DEXSCREENER_URL, '_blank', 'noopener,noreferrer')}>
+                <Button variant="outline" size="lg" className="gap-2" onClick={() => window.open(CHART_URL, '_blank', 'noopener,noreferrer')}>
                   <TrendingUp className="w-4 h-4" /> View Chart
                 </Button>
               </div>
@@ -267,7 +286,7 @@ const Token = () => {
           </div>
         </section>
 
-        <div className="container max-w-5xl mx-auto px-4 py-16 space-y-20">
+        <div className="container max-w-5xl mx-auto px-4 py-12 space-y-16">
           {/* TOKENOMICS */}
           <section>
             <h2 className="text-2xl font-display font-bold mb-8 flex items-center gap-2">
