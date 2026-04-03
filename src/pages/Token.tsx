@@ -286,7 +286,7 @@ const Token = () => {
           </div>
         </section>
 
-        <div className="container max-w-5xl mx-auto px-4 py-16 space-y-20">
+        <div className="container max-w-5xl mx-auto px-4 py-12 space-y-16">
           {/* TOKENOMICS */}
           <section>
             <h2 className="text-2xl font-display font-bold mb-8 flex items-center gap-2">
