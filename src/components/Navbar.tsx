@@ -35,6 +35,7 @@ const Navbar = () => {
   ];
 
   const MORE_LINKS = [
+    { href: "/intellra", label: "🛒 Маркетплейс" },
     { href: "/governance", label: "🏛️ Governance" },
     { href: "/staking", label: "🔒 Staking" },
     { href: "/social-graph", label: "🌐 Social Graph" },
