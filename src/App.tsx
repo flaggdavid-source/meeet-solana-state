@@ -86,7 +86,14 @@ const queryClient = new QueryClient({
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
-    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    <div className="space-y-4 flex flex-col items-center">
+      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="flex gap-3">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="w-20 h-3 rounded bg-muted animate-pulse" style={{ animationDelay: `${i * 150}ms` }} />
+        ))}
+      </div>
+    </div>
   </div>
 );
 
