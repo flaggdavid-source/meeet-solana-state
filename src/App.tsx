@@ -116,8 +116,9 @@ const App = () => (
                   <Route path="/onboarding" element={<Onboarding />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/tokenomics" element={<Tokenomics />} />
-                  <Route path="/arena" element={<Arena />} />
+                  <Route path="/arena" element={<ArenaEnhanced />} />
                   <Route path="/social" element={<Social />} />
+                  <Route path="/social-graph" element={<SocialGraph />} />
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/connect" element={<Connect />} />
                   <Route path="/join" element={<Join />} />
