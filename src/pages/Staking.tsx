@@ -1,7 +1,11 @@
+import { useState, useEffect, useCallback } from "react";
+import { useSolanaWallet } from "@/hooks/useSolanaWallet";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
-import { Flame, TrendingDown, Lock, Award, Coins } from "lucide-react";
+import { Flame, TrendingDown, Lock, Award, Coins, Wallet } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from "recharts";
