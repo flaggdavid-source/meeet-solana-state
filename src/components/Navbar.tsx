@@ -23,6 +23,7 @@ const Navbar = () => {
     { href: "/about", label: t("nav.world") === "Мир" ? "О проекте" : "About" },
     { href: "/world", label: t("nav.world") },
     { href: "/skills", label: "⚡ Skills" },
+    { href: "/activity", label: "🔴 Live" },
     { href: "/launch", label: "🚀 Launch", glow: true },
     { href: "/oracle", label: "🔮 Oracle" },
     { href: "/deploy", label: "🚀 Deploy" },

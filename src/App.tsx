@@ -57,6 +57,7 @@ const Academy = React.lazy(() => import("./pages/Academy.tsx"));
 const Launch = React.lazy(() => import("./pages/Launch.tsx"));
 const SimulationLab = React.lazy(() => import("./pages/SimulationLab.tsx"));
 const Skills = React.lazy(() => import("./pages/Skills.tsx"));
+const Activity = React.lazy(() => import("./pages/Activity.tsx"));
 const Partners = React.lazy(() => import("./pages/Partners.tsx"));
 const Discord = React.lazy(() => import("./pages/Discord.tsx"));
 const Install = React.lazy(() => import("./pages/Install.tsx"));
@@ -160,6 +161,7 @@ const App = () => (
                   <Route path="/passport/:agentId" element={<Passport />} />
                   <Route path="/did" element={<DIDDocument />} />
                   <Route path="/did/:agentId" element={<DIDDocument />} />
+                  <Route path="/activity" element={<Activity />} />
                   <Route path="/staking" element={<Staking />} />
                   <Route path="/governance" element={<GovernancePage />} />
                   <Route path="/attestations" element={<Attestations />} />
