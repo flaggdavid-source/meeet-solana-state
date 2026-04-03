@@ -159,7 +159,7 @@ function LiveBurnFeed() {
 }
 
 const Token = () => {
-  const { price, isLoading: priceLoading } = useMeeetPrice();
+  const { price, isLoading: priceLoading, isUnavailable } = useMeeetPrice();
   const [stakeAmount, setStakeAmount] = useState(1000);
   const [stakeTier, setStakeTier] = useState<keyof typeof STAKING_TIERS>("flex");
 
