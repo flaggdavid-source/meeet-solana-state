@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/runtime-client";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useLanguage } from "@/i18n/LanguageContext";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+
 import NavWalletButton from "@/components/NavWalletButton";
 import { useRealtimePresence } from "@/hooks/useRealtimePresence";
 
@@ -191,7 +191,7 @@ const Navbar = () => {
           >
             {resolvedTheme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
-          <LanguageSwitcher />
+          
 
           {/* Notifications bell */}
           {user && (

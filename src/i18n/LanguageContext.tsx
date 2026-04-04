@@ -22,10 +22,7 @@ function detectBrowserLanguage(): Lang {
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>(() => {
-    const saved = localStorage.getItem("meeet-lang") as Lang | null;
-    return saved && translations[saved] ? saved : detectBrowserLanguage();
-  });
+  const [lang, setLangState] = useState<Lang>("en");
 
   const setLang = useCallback((newLang: Lang) => {
     setLangState(newLang);
