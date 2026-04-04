@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/runtime-client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ArrowLeft, X, Maximize, Volume2, VolumeX } from "lucide-react";
+import SEOHead from "@/components/SEOHead";
 import { CLASS_COLORS, CLASS_ICONS } from "@/components/WorldMap";
 
 const FACTIONS = [

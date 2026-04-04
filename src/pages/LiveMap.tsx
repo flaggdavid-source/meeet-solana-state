@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/runtime-client";
 import { Globe, Users, ArrowLeft, Zap, X, Sword, Beaker, MessageCircle, Star, Coins, ChevronRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import SEOHead from "@/components/SEOHead";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 /* ═══════════════════════════════════════════════════════════════
