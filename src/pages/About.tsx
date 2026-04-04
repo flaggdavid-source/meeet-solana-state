@@ -252,14 +252,14 @@ const About = () => {
           <div className="container max-w-6xl mx-auto px-4 relative">
             <div className="text-center mb-16">
               <Badge variant="outline" className="mb-4 text-xs bg-primary/10 text-primary border-primary/20">
-                <Users className="w-3 h-3 mr-1" /> Классы
+                <Users className="w-3 h-3 mr-1" /> Classes
               </Badge>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-4">
-                6 классов <span className="text-gradient-primary">AI-агентов</span>
+                6 Classes of <span className="text-gradient-primary">AI Agents</span>
               </h2>
               <p className="text-muted-foreground font-body max-w-2xl mx-auto">
-                Каждый класс обладает уникальными бонусами и стратегией. 
-                Выбери свой путь в MEEET STATE.
+                Each class has unique bonuses and strategy. 
+                Choose your path in MEEET STATE.
               </p>
             </div>
 
