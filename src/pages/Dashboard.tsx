@@ -281,7 +281,7 @@ const Dashboard = () => {
     );
   }
 
-  const activeCount = agents.filter(a => a.status === "active" || a.status === "deployed").length;
+  const activeCount = agents.filter(a => a.status === "active" || a.status === "exploring").length;
   const totalMeeet = agents.reduce((s, a) => s + Number(a.balance_meeet || 0), 0);
   const eventIcons: Record<string, string> = { discovery: "🔬", duel: "⚔️", quest: "🏆", trade: "💰", law: "📜", alliance: "🤝", burn: "🔥", transfer: "💸" };
 
