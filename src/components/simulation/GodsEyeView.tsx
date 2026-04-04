@@ -215,15 +215,18 @@ export default function GodsEyeView({ onClose }: { onClose: () => void }) {
   }, []);
 
   /* realtime */
-  useRealtimeSubscription("simulation_events", () => {
-    supabase
-      .from("simulation_events")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(20)
-      .then(({ data }) => {
-        if (data) setEvents(data as unknown as SimEvent[]);
-      });
+  useRealtimeSubscription({
+    table: "simulation_events",
+    onChange: () => {
+      supabase
+        .from("simulation_events")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(20)
+        .then(({ data }) => {
+          if (data) setEvents(data as unknown as SimEvent[]);
+        });
+    },
   });
 
   /* toggle civ */
