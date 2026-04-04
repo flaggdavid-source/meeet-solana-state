@@ -83,6 +83,7 @@ const World = () => {
   const [recentEvents, setRecentEvents] = useState<Array<{ title: string; agentName: string; type: string }>>([]);
   const [soundOn, setSoundOn] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [viewMode, setViewMode] = useState<"neural" | "pixel">("neural");
   const particlesRef = useRef<Array<{ x: number; y: number; vx: number; vy: number; life: number; maxLife: number; color: string; size: number }>>([]);
 
   // Data fetch
