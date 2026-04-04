@@ -596,12 +596,12 @@ const ConnectorHub = () => {
               onChange={(e) => setBotToken(e.target.value)}
             />
             <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
-              <li>Откройте @BotFather в Telegram</li>
-              <li>Отправьте /newbot и следуйте инструкциям</li>
-              <li>Скопируйте полученный токен сюда</li>
+              <li>Open @BotFather in Telegram</li>
+              <li>Send /newbot and follow the instructions</li>
+              <li>Copy the received token here</li>
             </ol>
             <Button className="w-full gap-2" onClick={connectTelegram}>
-              <MessageSquare className="w-4 h-4" /> Подключить бота
+              <MessageSquare className="w-4 h-4" /> Connect Bot
             </Button>
           </div>
         </DialogContent>
