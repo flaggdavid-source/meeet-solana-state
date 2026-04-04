@@ -674,7 +674,7 @@ export default function PixelWorldCanvas() {
                 agreeableness={selectedAgent.data.personality_agreeableness || 0.5}
                 neuroticism={selectedAgent.data.personality_neuroticism || 0.5}
                 size={120}
-                color={CIV_DEFS[selectedAgent.civ].color}
+                accentColor={CIV_DEFS[selectedAgent.civ].color}
               />
             </div>
           )}
