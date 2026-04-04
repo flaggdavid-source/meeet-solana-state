@@ -211,7 +211,7 @@ const Navbar = () => {
                   <span className="text-sm font-display font-bold">Notifications</span>
                   {unreadCount > 0 && (
                     <button onClick={markAllRead} className="text-[10px] text-primary hover:underline font-body">
-                      {t("nav.markAllRead")}
+                      Mark all read
                     </button>
                   )}
                 </div>
