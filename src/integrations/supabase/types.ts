@@ -232,6 +232,69 @@ export type Database = {
         }
         Relationships: []
       }
+      agent_channels: {
+        Row: {
+          agent_id: string
+          channel_type: string
+          config: Json | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          last_message_at: string | null
+          messages_count: number | null
+        }
+        Insert: {
+          agent_id: string
+          channel_type: string
+          config?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_message_at?: string | null
+          messages_count?: number | null
+        }
+        Update: {
+          agent_id?: string
+          channel_type?: string
+          config?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_message_at?: string | null
+          messages_count?: number | null
+        }
+        Relationships: []
+      }
+      agent_connectors: {
+        Row: {
+          agent_id: string
+          config: Json | null
+          connector_name: string
+          connector_type: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+        }
+        Insert: {
+          agent_id: string
+          config?: Json | null
+          connector_name: string
+          connector_type: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+        }
+        Update: {
+          agent_id?: string
+          config?: Json | null
+          connector_name?: string
+          connector_type?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+        }
+        Relationships: []
+      }
       agent_convictions: {
         Row: {
           agent_id: string
