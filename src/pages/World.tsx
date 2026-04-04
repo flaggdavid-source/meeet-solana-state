@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState, useMemo, useCallback } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/runtime-client";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ArrowLeft, X, Maximize, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, X, Maximize, Volume2, VolumeX, Map, Grid3x3 } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
 import { CLASS_COLORS, CLASS_ICONS } from "@/components/WorldMap";
+
+const PixelWorldCanvas = lazy(() => import("@/components/PixelWorldCanvas"));
 
 const FACTIONS = [
   { key: "ai", label: "AI CORE", icon: "🤖", classes: ["trader", "diplomat"], color: "#3B82F6", hsl: "217,91%,60%", region: "Neural Network" },
@@ -81,6 +83,7 @@ const World = () => {
   const [recentEvents, setRecentEvents] = useState<Array<{ title: string; agentName: string; type: string }>>([]);
   const [soundOn, setSoundOn] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [viewMode, setViewMode] = useState<"neural" | "pixel">("neural");
   const particlesRef = useRef<Array<{ x: number; y: number; vx: number; vy: number; life: number; maxLife: number; color: string; size: number }>>([]);
 
   // Data fetch
@@ -849,9 +852,6 @@ const World = () => {
         path="/world"
       />
       <div className="h-screen w-screen overflow-hidden bg-[#030308] relative">
-        <canvas ref={canvasRef} className="absolute inset-0 w-full h-full"
-          onMouseMove={e => handleCanvasInteraction(e, false)}
-          onClick={e => handleCanvasInteraction(e, true)} />
 
       {/* Top bar */}
       <div className="absolute top-0 inset-x-0 z-20 pointer-events-none">
@@ -875,11 +875,37 @@ const World = () => {
               <span className="text-sm font-bold text-emerald-400">{totalAgents}</span>
               <span className="text-[11px] text-slate-500">Active Agents</span>
             </div>
+            {/* View toggle */}
+            <div className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[rgba(3,3,8,0.9)] backdrop-blur-xl border border-white/[0.06]">
+              <button
+                onClick={() => setViewMode("neural")}
+                className={`px-2.5 py-1 rounded text-xs font-semibold transition-colors ${viewMode === "neural" ? "bg-purple-500/20 text-purple-400" : "text-slate-500 hover:text-slate-300"}`}
+              >
+                <Map className="w-3.5 h-3.5 inline mr-1" />Neural
+              </button>
+              <button
+                onClick={() => setViewMode("pixel")}
+                className={`px-2.5 py-1 rounded text-xs font-semibold transition-colors ${viewMode === "pixel" ? "bg-cyan-500/20 text-cyan-400" : "text-slate-500 hover:text-slate-300"}`}
+              >
+                <Grid3x3 className="w-3.5 h-3.5 inline mr-1" />Pixel World
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom stats — 6 stats with separators and tabular-nums */}
+      {/* Canvas views */}
+      {viewMode === "pixel" ? (
+        <Suspense fallback={<div className="absolute inset-0 flex items-center justify-center text-slate-500 text-sm">Loading Pixel World...</div>}>
+          <PixelWorldCanvas />
+        </Suspense>
+      ) : (
+        <>
+          <canvas ref={canvasRef} className="absolute inset-0 w-full h-full"
+            onMouseMove={e => handleCanvasInteraction(e, false)}
+            onClick={e => handleCanvasInteraction(e, true)} />
+        </>
+      )}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 pointer-events-auto">
         <div className="flex items-center gap-0 px-1 py-3 rounded-xl bg-[rgba(3,3,8,0.9)] backdrop-blur-xl border border-white/[0.06] text-[11px]" style={{ fontFeatureSettings: "'tnum'" }}>
           <span className="px-4">🔬 <span className="text-blue-400 font-bold">{totalDiscoveries.toLocaleString()}</span> <span className="text-slate-500">Discoveries</span></span>
