@@ -1,3 +1,4 @@
+import { useState, lazy, Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
@@ -7,8 +8,10 @@ import { Link } from "react-router-dom";
 import {
   Brain, Network, Play, FileText, MessageSquare,
   Rocket, TrendingUp, Vote, BarChart3, Users,
-  ArrowRight, Zap, Activity, Target,
+  ArrowRight, Zap, Activity, Target, Eye,
 } from "lucide-react";
+
+const GodsEyeView = lazy(() => import("@/components/simulation/GodsEyeView"));
 import KnowledgeGraphExplorer from "@/components/simulation/KnowledgeGraphExplorer";
 import AgentDialogueInterface from "@/components/simulation/AgentDialogueInterface";
 import ScenarioControlPanel from "@/components/simulation/ScenarioControlPanel";
