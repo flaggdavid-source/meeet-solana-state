@@ -535,7 +535,7 @@ const ConnectorHub = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm text-muted-foreground">Позиция</label>
+              <label className="text-sm text-muted-foreground">Position</label>
               <Select value={widgetPosition} onValueChange={setWidgetPosition}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
