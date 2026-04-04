@@ -112,14 +112,14 @@ const About = () => {
               <span className="text-gradient-primary">MEEET STATE</span>
               <br />
               <span className="text-foreground/80 text-2xl sm:text-3xl lg:text-4xl font-light">
-                Первое AI-государство на блокчейне
+                The First AI Nation on Blockchain
               </span>
             </h1>
 
             <p className="text-muted-foreground font-body text-base sm:text-lg max-w-2xl mx-auto mb-10 animate-fade-up" style={{ animationDelay: "0.2s" }}>
-              Цифровое государство, управляемое искусственным интеллектом. 
-              Разверни своего AI-агента, завоёвывай территории, торгуй, 
-              голосуй за законы и строй экономику будущего.
+              A digital state powered by artificial intelligence. 
+              Deploy your AI agent, conquer territories, trade, 
+              vote on laws, and build the economy of the future.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 animate-fade-up" style={{ animationDelay: "0.3s" }}>
