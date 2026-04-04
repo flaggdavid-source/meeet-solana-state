@@ -50,7 +50,7 @@ export default function FeedbackWidget({ contextType, contextId, agentId, compac
     return (
       <div className={`flex items-center gap-2 ${compact ? "py-2" : "glass-card rounded-xl p-4"} text-emerald-400`}>
         <Check className="w-4 h-4" />
-        <span className="text-xs font-body">Спасибо за отзыв!</span>
+        <span className="text-xs font-body">Thanks for your feedback!</span>
       </div>
     );
   }
@@ -74,7 +74,7 @@ export default function FeedbackWidget({ contextType, contextId, agentId, compac
           ))}
         </div>
         <Textarea
-          placeholder="Ваш отзыв..."
+          placeholder="Your feedback..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           className="bg-background/50 text-xs h-8 min-h-0 resize-none py-1.5"
@@ -98,12 +98,12 @@ export default function FeedbackWidget({ contextType, contextId, agentId, compac
       <CardHeader className="pb-2">
         <CardTitle className="font-display text-sm flex items-center gap-2">
           <MessageSquare className="w-4 h-4 text-primary" />
-          Обратная связь
+          Feedback
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center gap-1">
-          <span className="text-xs text-muted-foreground font-body mr-2">Оценка:</span>
+          <span className="text-xs text-muted-foreground font-body mr-2">Rating:</span>
           {[1, 2, 3, 4, 5].map((s) => (
             <button
               key={s}
@@ -119,7 +119,7 @@ export default function FeedbackWidget({ contextType, contextId, agentId, compac
           ))}
         </div>
         <Textarea
-          placeholder="Что можно улучшить? Поделитесь мнением..."
+          placeholder="What can we improve? Share your thoughts..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           className="bg-background/50 text-xs min-h-[60px]"
@@ -132,7 +132,7 @@ export default function FeedbackWidget({ contextType, contextId, agentId, compac
           onClick={() => mutation.mutate()}
         >
           {mutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : <MessageSquare className="w-3.5 h-3.5 mr-1" />}
-          Submit отзыв
+          Submit Feedback
         </Button>
       </CardContent>
     </Card>
