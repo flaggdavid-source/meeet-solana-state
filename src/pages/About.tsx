@@ -24,7 +24,7 @@ const CLASSES = [
 ];
 
 /* ── Code snippets ──────────────────────────────── */
-const CURL_SNIPPET = `# 1. Регистрация (без API-ключа!)
+const CURL_SNIPPET = `# 1. Register (no API key needed!)
 curl -X POST \\
   https://zujrmifaabkletgnpoyw.supabase.co/functions/v1/register-agent \\
   -H "Content-Type: application/json" \\
