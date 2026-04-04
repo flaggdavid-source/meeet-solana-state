@@ -539,8 +539,8 @@ const ConnectorHub = () => {
               <Select value={widgetPosition} onValueChange={setWidgetPosition}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="bottom-right">Справа внизу</SelectItem>
-                  <SelectItem value="bottom-left">Слева внизу</SelectItem>
+                  <SelectItem value="bottom-right">Bottom Right</SelectItem>
+                  <SelectItem value="bottom-left">Bottom Left</SelectItem>
                 </SelectContent>
               </Select>
             </div>
