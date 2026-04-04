@@ -49,7 +49,7 @@ const CHANNEL_DEFS = [
   {
     type: "web_widget",
     name: "Web Widget",
-    description: "Встраиваемый чат-виджет для вашего сайта. Просто скопируйте код.",
+    description: "Embeddable chat widget for your website. Just copy the code.",
     icon: Globe,
     available: true,
     color: "from-blue-500/20 to-cyan-500/20 border-blue-500/30",
