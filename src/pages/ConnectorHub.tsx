@@ -287,7 +287,7 @@ const ConnectorHub = () => {
             {/* Agent Selector */}
             <Select value={selectedAgentId} onValueChange={setSelectedAgentId}>
               <SelectTrigger className="w-64 bg-card border-border">
-                <SelectValue placeholder="Выберите агента" />
+                <SelectValue placeholder="Select an agent" />
               </SelectTrigger>
               <SelectContent>
                 {agents.map((a) => (
