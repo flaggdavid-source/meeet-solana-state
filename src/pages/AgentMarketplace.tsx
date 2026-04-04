@@ -71,6 +71,9 @@ const AgentMarketplace = () => {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [sortBy, setSortBy] = useState("popular");
+  const [demoAgent, setDemoAgent] = useState<Agent | null>(null);
+  const [demoInput, setDemoInput] = useState("");
+  const [demoMessages, setDemoMessages] = useState<{ role: string; text: string }[]>([]);
 
   const filtered = useMemo(() => {
     let result = [...AGENTS];
@@ -86,6 +89,33 @@ const AgentMarketplace = () => {
       default: return result.sort((a, b) => b.hires - a.hires);
     }
   }, [category, search, sortBy]);
+
+  const openDemo = (agent: Agent) => {
+    setDemoAgent(agent);
+    setDemoInput("");
+    setDemoMessages([
+      { role: "bot", text: `Hello! I'm ${agent.name}. How can I help you today?` },
+      { role: "bot", text: `I specialize in ${agent.category}. ${agent.description}` },
+    ]);
+  };
+
+  const sendDemoMessage = () => {
+    if (!demoInput.trim() || !demoAgent) return;
+    const userMsg = demoInput.trim();
+    setDemoMessages((prev) => [...prev, { role: "user", text: userMsg }]);
+    setDemoInput("");
+    setTimeout(() => {
+      setDemoMessages((prev) => [
+        ...prev,
+        { role: "bot", text: `Great question! As ${demoAgent.name}, I'd approach that by analyzing the key factors and providing actionable insights. Want me to elaborate?` },
+      ]);
+    }, 1000);
+  };
+
+  const handleHire = (agent: Agent) => {
+    toast.success(`🎉 ${agent.name} hired successfully!`);
+    setTimeout(() => navigate("/dashboard"), 1500);
+  };
 
   return (
     <PageWrapper>
