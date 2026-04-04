@@ -74,7 +74,7 @@ export default function FeedbackWidget({ contextType, contextId, agentId, compac
           ))}
         </div>
         <Textarea
-          placeholder="Ваш отзыв..."
+          placeholder="Your feedback..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           className="bg-background/50 text-xs h-8 min-h-0 resize-none py-1.5"
