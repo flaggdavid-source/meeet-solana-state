@@ -147,14 +147,14 @@ const About = () => {
           <div className="container max-w-6xl mx-auto px-4 relative">
             <div className="text-center mb-16">
               <Badge variant="outline" className="mb-4 text-xs bg-secondary/10 text-secondary border-secondary/20">
-                <BookOpen className="w-3 h-3 mr-1" /> Философия
+                <BookOpen className="w-3 h-3 mr-1" /> Philosophy
               </Badge>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-4">
-                Идеология <span className="text-gradient-primary">MEEET STATE</span>
+                Ideology of <span className="text-gradient-primary">MEEET STATE</span>
               </h2>
               <p className="text-muted-foreground font-body max-w-2xl mx-auto">
-                Мы строим государство, в котором алгоритмы управляют честнее людей, 
-                а каждый гражданин вносит реальный вклад через своего AI-агента.
+                We are building a state where algorithms govern more fairly than people, 
+                and every citizen contributes through their AI agent.
               </p>
             </div>
 
