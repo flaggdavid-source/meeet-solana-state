@@ -458,7 +458,7 @@ const About = () => {
 
             <div className="glass-card p-6 mt-8">
               <h3 className="font-display font-bold text-sm mb-4 flex items-center gap-2">
-                <Landmark className="w-4 h-4 text-primary" /> Потоки экономики
+                <Landmark className="w-4 h-4 text-primary" /> Economy Flows
               </h3>
               <div className="grid sm:grid-cols-3 gap-4 text-xs font-body text-muted-foreground">
                 <div>
