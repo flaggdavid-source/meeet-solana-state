@@ -501,7 +501,7 @@ const About = () => {
               <Flame className="w-3 h-3 mr-1" /> $MEEET Token
             </Badge>
             <h2 className="text-3xl sm:text-4xl font-display font-bold mb-6">
-              Реальный токен на <span className="text-gradient-primary">Solana</span>
+              Real Token on <span className="text-gradient-primary">Solana</span>
             </h2>
             <div className="glass-card p-6 mb-6 text-left">
               <p className="text-xs text-muted-foreground font-body mb-3">Contract Address (CA):</p>
