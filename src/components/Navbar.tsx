@@ -25,22 +25,22 @@ const Navbar = () => {
   const NAV_LINKS = [
     ...(user ? [{ href: "/dashboard", label: "🤖 My Agents" }] : []),
     { href: "/marketplace", label: "🛍️ Marketplace" },
-    { href: "/agent-studio", label: "🪄 Agent Studio" },
-    { href: "/connector-hub", label: "🔌 Connectors" },
+    { href: "/agent-studio", label: "🪄 Studio" },
     { href: "/about", label: "About" },
-    { href: "/world", label: t("nav.world") },
-    { href: "/skills", label: "⚡ Skills" },
+    { href: "/world", label: "🌍 World" },
     { href: "/activity", label: "🔴 Live" },
     { href: "/chat", label: "💬 Chat" },
     { href: "/launch", label: "🚀 Launch", glow: true },
-    { href: "/oracle", label: "🔮 Oracle" },
-    { href: "/deploy", label: "🚀 Deploy" },
-    { href: "/arena", label: t("nav.arena") },
-    { href: "/leaderboard", label: t("nav.rankings") },
     { href: "/token", label: "💰 $MEEET" },
   ];
 
   const MORE_LINKS = [
+    { href: "/connector-hub", label: "🔌 Connectors" },
+    { href: "/oracle", label: "🔮 Oracle" },
+    { href: "/deploy", label: "🚀 Deploy" },
+    { href: "/arena", label: "⚔️ Arena" },
+    { href: "/leaderboard", label: "🏆 Rankings" },
+    { href: "/skills", label: "⚡ Skills" },
     { href: "/reports", label: "📊 Reports" },
     { href: "/intellra", label: "🛒 Intellra" },
     { href: "/governance", label: "🏛️ Governance" },
@@ -50,8 +50,8 @@ const Navbar = () => {
     { href: "/social", label: "💬 Social" },
     { href: "/oracle/consensus", label: "🧠 Consensus" },
     { href: "/guilds", label: "🛡️ Guilds" },
-    { href: "/discoveries", label: t("nav.discoveries") },
-    { href: "/parliament", label: t("nav.parliament") },
+    { href: "/discoveries", label: "🔬 Discoveries" },
+    { href: "/parliament", label: "🏛️ Parliament" },
     { href: "/monitor", label: "📊 System Monitor" },
     { href: "/simulation", label: "🧪 Simulation Lab" },
   ];
@@ -208,16 +208,16 @@ const Navbar = () => {
               </PopoverTrigger>
               <PopoverContent className="w-80 p-0" align="end">
                 <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-                  <span className="text-sm font-display font-bold">{t("nav.notifications")}</span>
+                  <span className="text-sm font-display font-bold">Notifications</span>
                   {unreadCount > 0 && (
                     <button onClick={markAllRead} className="text-[10px] text-primary hover:underline font-body">
-                      {t("nav.markAllRead")}
+                      Mark all read
                     </button>
                   )}
                 </div>
                 <ScrollArea className="max-h-64">
                   {notifications.length === 0 ? (
-                    <p className="text-center text-muted-foreground text-xs py-6">{t("nav.noNotifications")}</p>
+                    <p className="text-center text-muted-foreground text-xs py-6">No notifications</p>
                   ) : (
                     <div className="divide-y divide-border">
                       {notifications.map((n: any) => (
@@ -256,7 +256,7 @@ const Navbar = () => {
                 to="/dashboard"
                 className="hidden md:block px-3 py-1.5 text-sm font-display font-semibold bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors duration-150"
               >
-                {t("nav.dashboard")}
+                Dashboard
               </Link>
               <button
                 onClick={signOut}
@@ -270,7 +270,7 @@ const Navbar = () => {
               to="/auth"
               className="hidden md:block px-3 py-1.5 text-sm font-display font-semibold bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors duration-150"
             >
-              {t("nav.signIn")}
+              Sign In
             </Link>
           )}
 
