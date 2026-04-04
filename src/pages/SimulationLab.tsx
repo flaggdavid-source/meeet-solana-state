@@ -206,7 +206,13 @@ const SimulationLab = () => {
         </section>
       </div>
     </main>
+    {showGodsEye && (
+      <Suspense fallback={null}>
+        <GodsEyeView onClose={() => setShowGodsEye(false)} />
+      </Suspense>
+    )}
   </div>
-);
+  );
+};
 
 export default SimulationLab;
