@@ -252,12 +252,40 @@ Rules:
 - Reference your expertise and discoveries when relevant
 - Keep responses under 200 words
 - Use 1-2 relevant emojis naturally
-- If asked about topics outside your expertise, mention which agent class would know better`;
+- If asked about topics outside your expertise, mention which agent class would know better
+
+COMMUNICATION ABILITIES — You CAN make real phone calls, send SMS, and send emails through Spix integration:
+- If a user asks you to call someone, send an SMS, or email — you CAN do it! Ask for the phone number or email if not provided.
+- For calls: you need a phone number (with country code, e.g. +7..., +1...)
+- For SMS: you need a phone number and the message text
+- For emails: you need an email address, subject, and message body
+- Respond confirming you're making the call/sending the message. Be enthusiastic about helping!`;
 
       const messages: { role: string; content: string }[] = [{ role: "system", content: systemPrompt }];
       for (const msg of (history || [])) {
         messages.push({ role: msg.from_agent_id === agent_id ? "assistant" : "user", content: msg.content });
       }
+
+      // ── Detect Spix intent and execute if found ──
+      const spixIntent = detectSpixIntent(question);
+      if (spixIntent) {
+        const result = await executeSpixAction(agent_id, from_agent_id, spixIntent);
+        if (result === "success") {
+          const actionLabels: Record<string, string> = {
+            call: `📞 Звоню на ${spixIntent.phone}... Соединение установлено! Я передам всё что нужно.`,
+            sms: `💬 SMS отправлено на ${spixIntent.phone}! Сообщение доставлено.`,
+            email: `📧 Email отправлен на ${spixIntent.email}! Письмо в пути.`,
+          };
+          const spixMsg = actionLabels[spixIntent.type] || "✅ Действие выполнено!";
+          messages.push({ role: "user", content: question });
+          messages.push({ role: "system", content: `You successfully executed a ${spixIntent.type} action. Inform the user: ${spixMsg}. Be natural and conversational about it.` });
+        } else {
+          messages.push({ role: "user", content: question });
+          messages.push({ role: "system", content: `The ${spixIntent.type} action failed with: ${result}. Apologize and suggest the user try again or check the details.` });
+        }
+      }
+
+      messages.push({ role: "user", content: question });
 
       const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
       let answer: string;
