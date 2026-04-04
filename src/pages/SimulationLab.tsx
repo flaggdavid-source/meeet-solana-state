@@ -93,6 +93,13 @@ const SimulationLab = () => {
             Powered by <span className="text-foreground font-semibold">MiroFish Multi-Agent Prediction Engine</span>. 
             Simulate complex scenarios with autonomous agents before making real decisions.
           </p>
+          <Button
+            size="lg"
+            onClick={() => setShowGodsEye(true)}
+            className="mt-6 gap-2 bg-purple-600 hover:bg-purple-500"
+          >
+            <Eye className="w-4 h-4" /> God&apos;s-Eye View
+          </Button>
         </div>
 
         {/* Stats */}
