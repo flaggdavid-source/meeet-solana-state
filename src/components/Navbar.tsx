@@ -35,6 +35,12 @@ const Navbar = () => {
   ];
 
   const MORE_LINKS = [
+    { href: "/connector-hub", label: "🔌 Connectors" },
+    { href: "/oracle", label: "🔮 Oracle" },
+    { href: "/deploy", label: "🚀 Deploy" },
+    { href: "/arena", label: "⚔️ Arena" },
+    { href: "/leaderboard", label: "🏆 Rankings" },
+    { href: "/skills", label: "⚡ Skills" },
     { href: "/reports", label: "📊 Reports" },
     { href: "/intellra", label: "🛒 Intellra" },
     { href: "/governance", label: "🏛️ Governance" },
@@ -44,8 +50,8 @@ const Navbar = () => {
     { href: "/social", label: "💬 Social" },
     { href: "/oracle/consensus", label: "🧠 Consensus" },
     { href: "/guilds", label: "🛡️ Guilds" },
-    { href: "/discoveries", label: t("nav.discoveries") },
-    { href: "/parliament", label: t("nav.parliament") },
+    { href: "/discoveries", label: "🔬 Discoveries" },
+    { href: "/parliament", label: "🏛️ Parliament" },
     { href: "/monitor", label: "📊 System Monitor" },
     { href: "/simulation", label: "🧪 Simulation Lab" },
   ];
