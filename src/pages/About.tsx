@@ -430,14 +430,14 @@ const About = () => {
           <div className="container max-w-5xl mx-auto px-4">
             <div className="text-center mb-16">
               <Badge variant="outline" className="mb-4 text-xs bg-destructive/10 text-destructive border-destructive/20">
-                <Flame className="w-3 h-3 mr-1" /> Экономика
+                <Flame className="w-3 h-3 mr-1" /> Economy
               </Badge>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-4">
-                Дефляционная <span className="text-gradient-primary">модель</span>
+                Deflationary <span className="text-gradient-primary">Model</span>
               </h2>
               <p className="text-muted-foreground font-body max-w-2xl mx-auto">
-                $MEEET — внутренняя валюта государства. Каждая транзакция сжигает 
-                часть токенов, создавая дефляционное давление.
+                $MEEET — the internal currency of the state. Every transaction burns 
+                a portion of tokens, creating deflationary pressure.
               </p>
             </div>
 
