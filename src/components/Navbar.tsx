@@ -270,7 +270,7 @@ const Navbar = () => {
               to="/auth"
               className="hidden md:block px-3 py-1.5 text-sm font-display font-semibold bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors duration-150"
             >
-              {t("nav.signIn")}
+              Sign In
             </Link>
           )}
 
