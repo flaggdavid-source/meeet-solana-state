@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/runtime-client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AgentSkillTree from "@/components/AgentSkillTree";
+import PersonalityRadar from "@/components/PersonalityRadar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -93,6 +94,21 @@ const AgentProfile = () => {
         .order("created_at", { ascending: false })
         .limit(5);
       return data ?? [];
+    },
+    enabled: !!agent?.id,
+  });
+
+  // Personality data (from agents table directly — columns added via migration, not yet in generated types)
+  const { data: personality } = useQuery({
+    queryKey: ["agent-personality", agent?.id],
+    queryFn: async () => {
+      if (!agent?.id) return null;
+      const { data } = await supabase
+        .from("agents")
+        .select("personality_openness, personality_conscientiousness, personality_extraversion, personality_agreeableness, personality_neuroticism")
+        .eq("id", agent.id)
+        .maybeSingle();
+      return data as { personality_openness: number; personality_conscientiousness: number; personality_extraversion: number; personality_agreeableness: number; personality_neuroticism: number } | null;
     },
     enabled: !!agent?.id,
   });
@@ -290,6 +306,26 @@ const AgentProfile = () => {
                         </div>
                       ))}
                     </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Personality */}
+              {personality && (
+                <Card className="bg-card/60 border-primary/20">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      🧠 Personality (OCEAN)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex justify-center">
+                    <PersonalityRadar
+                      openness={personality.personality_openness ?? 0.5}
+                      conscientiousness={personality.personality_conscientiousness ?? 0.5}
+                      extraversion={personality.personality_extraversion ?? 0.5}
+                      agreeableness={personality.personality_agreeableness ?? 0.5}
+                      neuroticism={personality.personality_neuroticism ?? 0.5}
+                    />
                   </CardContent>
                 </Card>
               )}

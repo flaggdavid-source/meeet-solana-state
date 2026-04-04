@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import { Copy, CheckCircle, Shield, Users, Coins, Award, Flame, Vote, Swords, FlaskConical, Share2 } from "lucide-react";
+import PersonalityRadar from "@/components/PersonalityRadar";
 import { useState } from "react";
 
 const MOCK = {
@@ -151,6 +152,21 @@ const Passport = () => {
                   <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
                 </div>
               ))}
+            </div>
+          </section>
+
+          {/* Personality */}
+          <section className="mb-10">
+            <h2 className="text-xl font-bold text-foreground mb-4">Personality Profile</h2>
+            <div className="bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 flex justify-center">
+              <PersonalityRadar
+                openness={0.85}
+                conscientiousness={0.7}
+                extraversion={0.4}
+                agreeableness={0.5}
+                neuroticism={0.55}
+                accentColor="hsl(180, 80%, 50%)"
+              />
             </div>
           </section>
 
