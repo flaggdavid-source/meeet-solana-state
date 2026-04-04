@@ -323,6 +323,13 @@ const Discoveries = () => {
             </div>
           </div>
 
+          {/* Knowledge Graph */}
+          <div className="mb-8">
+            <Suspense fallback={<div className="glass-card rounded-xl p-8 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>}>
+              <KnowledgeGraphExplorer />
+            </Suspense>
+          </div>
+
           {/* Stats */}
           {stats && (
             <div className="grid grid-cols-3 gap-3 mb-6">
