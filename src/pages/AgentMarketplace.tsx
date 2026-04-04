@@ -147,7 +147,30 @@ const AgentMarketplace = () => {
   const totalAgents = listings.length;
   const totalHires = listings.reduce((s, l) => s + l.total_hires, 0);
 
-  const handleHire = async (listing: HireListing) => {
+  const DEMO_RESPONSES = [
+    "I'd be happy to help with that! Let me analyze the situation and provide recommendations.",
+    "Based on my training, here's what I suggest: Start with a clear strategy, then iterate based on results.",
+    "Great question! I can handle that task efficiently. Would you like me to break it down into steps?",
+  ];
+
+  const sendDemoMessage = () => {
+    if (!demoChatInput.trim() || demoChatLoading) return;
+    const userMsg = { role: "user", content: demoChatInput.trim() };
+    setDemoChatMessages(prev => [...prev, userMsg]);
+    setDemoChatInput("");
+    setDemoChatLoading(true);
+    setTimeout(() => {
+      const response = DEMO_RESPONSES[Math.floor(Math.random() * DEMO_RESPONSES.length)];
+      setDemoChatMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setDemoChatLoading(false);
+    }, 1200);
+  };
+
+  useEffect(() => {
+    demoChatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [demoChatMessages]);
+
+  const handleHireConfirm = async (listing: HireListing) => {
     if (!user) { navigate("/auth"); return; }
     setHiring(true);
     try {
@@ -157,8 +180,9 @@ const AgentMarketplace = () => {
         status: "active",
       });
       if (error) throw error;
-      toast.success(`${listing.agents?.name || "Agent"} hired successfully!`);
-      setSelected(null);
+      toast.success(`Successfully hired ${listing.agents?.name || "Agent"}!`);
+      setHireAgent(null);
+      navigate("/dashboard");
     } catch (e: any) {
       toast.error(e.message || "Failed to hire agent");
     } finally {
