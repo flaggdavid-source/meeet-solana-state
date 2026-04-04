@@ -79,10 +79,10 @@ function useProfile(uid: string | undefined) {
 
 function useMyAgents(uid: string | undefined) {
   return useQuery({
-    queryKey: ["my-agents-all", uid], enabled: !!uid,
+    queryKey: ["my-agents-dashboard", uid], enabled: !!uid,
     queryFn: async () => {
       const { data } = await supabase.from("agents").select("*").eq("user_id", uid!).order("created_at");
-      return (data ?? []) as Agent[];
+      return (data ?? []).filter((a: Agent) => a.user_id === uid) as Agent[];
     },
   });
 }
