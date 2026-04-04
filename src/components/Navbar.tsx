@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogOut, Bell, ChevronDown, Twitter, Github, Sun, Moon } from "lucide-react";
+import { Menu, X, LogOut, Bell, ChevronDown, Twitter, Github, Sun, Moon, Users } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -10,6 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useLanguage } from "@/i18n/LanguageContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import NavWalletButton from "@/components/NavWalletButton";
+import { useRealtimePresence } from "@/hooks/useRealtimePresence";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
