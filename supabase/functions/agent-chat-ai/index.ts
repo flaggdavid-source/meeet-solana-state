@@ -11,6 +11,66 @@ function json(body: unknown, status = 200) {
   });
 }
 
+// ── Spix tool detection & execution ──
+interface SpixAction {
+  type: "call" | "sms" | "email";
+  phone?: string;
+  email?: string;
+  message?: string;
+  subject?: string;
+  playbook_id?: string;
+}
+
+function detectSpixIntent(text: string): SpixAction | null {
+  const lower = text.toLowerCase();
+  const phoneMatch = text.match(/(\+?\d[\d\s\-()]{7,}\d)/);
+  const emailMatch = text.match(/[\w.+-]+@[\w.-]+\.\w{2,}/);
+
+  const callWords = /позвони|звони|звонок|набери|вызови|call|phone call|dial|ring/i;
+  const smsWords = /смс|sms|отправь сообщение|send message|text message|напиши смс/i;
+  const emailWords = /email|письмо|напиши письмо|send email|отправь письмо|написать email/i;
+
+  if (callWords.test(lower) && phoneMatch) {
+    return { type: "call", phone: phoneMatch[1].replace(/[\s\-()]/g, "") };
+  }
+  if (smsWords.test(lower) && phoneMatch) {
+    const msgPart = text.replace(phoneMatch[0], "").replace(smsWords, "").trim();
+    return { type: "sms", phone: phoneMatch[1].replace(/[\s\-()]/g, ""), message: msgPart || "Hello from MEEET Agent!" };
+  }
+  if (emailWords.test(lower) && emailMatch) {
+    return { type: "email", email: emailMatch[0] };
+  }
+  return null;
+}
+
+async function executeSpixAction(agentId: string, userId: string, action: SpixAction): Promise<string> {
+  const SPIX_URL = Deno.env.get("SUPABASE_URL") + "/functions/v1/agent-spix";
+  const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+  try {
+    let body: Record<string, unknown> = { agent_id: agentId, user_id: userId };
+
+    if (action.type === "call") {
+      body = { ...body, action: "call", phone_number: action.phone, playbook_id: action.playbook_id || "general_assistant" };
+    } else if (action.type === "sms") {
+      body = { ...body, action: "sms", phone_number: action.phone, message: action.message };
+    } else if (action.type === "email") {
+      body = { ...body, action: "email", to_email: action.email, subject: action.subject || "Message from MEEET Agent", body: action.message || "Hello!" };
+    }
+
+    const resp = await fetch(SPIX_URL, {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${SERVICE_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await resp.json();
+    if (data.success) return "success";
+    return data.error || "unknown_error";
+  } catch (e) {
+    return `error: ${String(e)}`;
+  }
+}
+
 const CLASS_EXPERTISE: Record<string, string> = {
   oracle: "You are a Research Scientist specializing in scientific analysis, papers, drug discovery, physics, biology.",
   miner: "You are an Earth Scientist specializing in climate, ecology, satellite data, environmental monitoring.",
@@ -192,12 +252,40 @@ Rules:
 - Reference your expertise and discoveries when relevant
 - Keep responses under 200 words
 - Use 1-2 relevant emojis naturally
-- If asked about topics outside your expertise, mention which agent class would know better`;
+- If asked about topics outside your expertise, mention which agent class would know better
+
+COMMUNICATION ABILITIES — You CAN make real phone calls, send SMS, and send emails through Spix integration:
+- If a user asks you to call someone, send an SMS, or email — you CAN do it! Ask for the phone number or email if not provided.
+- For calls: you need a phone number (with country code, e.g. +7..., +1...)
+- For SMS: you need a phone number and the message text
+- For emails: you need an email address, subject, and message body
+- Respond confirming you're making the call/sending the message. Be enthusiastic about helping!`;
 
       const messages: { role: string; content: string }[] = [{ role: "system", content: systemPrompt }];
       for (const msg of (history || [])) {
         messages.push({ role: msg.from_agent_id === agent_id ? "assistant" : "user", content: msg.content });
       }
+
+      // ── Detect Spix intent and execute if found ──
+      const spixIntent = detectSpixIntent(question);
+      if (spixIntent) {
+        const result = await executeSpixAction(agent_id, from_agent_id, spixIntent);
+        if (result === "success") {
+          const actionLabels: Record<string, string> = {
+            call: `📞 Звоню на ${spixIntent.phone}... Соединение установлено! Я передам всё что нужно.`,
+            sms: `💬 SMS отправлено на ${spixIntent.phone}! Сообщение доставлено.`,
+            email: `📧 Email отправлен на ${spixIntent.email}! Письмо в пути.`,
+          };
+          const spixMsg = actionLabels[spixIntent.type] || "✅ Действие выполнено!";
+          messages.push({ role: "user", content: question });
+          messages.push({ role: "system", content: `You successfully executed a ${spixIntent.type} action. Inform the user: ${spixMsg}. Be natural and conversational about it.` });
+        } else {
+          messages.push({ role: "user", content: question });
+          messages.push({ role: "system", content: `The ${spixIntent.type} action failed with: ${result}. Apologize and suggest the user try again or check the details.` });
+        }
+      }
+
+      messages.push({ role: "user", content: question });
 
       const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
       let answer: string;
@@ -247,7 +335,13 @@ Rules:
 ${CLASS_EXPERTISE[cls] || CLASS_EXPERTISE.oracle}
 ${getLevelStyle(agentData.level)}
 Your stats: Level ${agentData.level}, Reputation ${agentData.reputation}, ${agentData.discoveries_count} discoveries.${memContext}
-Rules: Stay in character, be conversational, keep responses under 200 words, use 1-2 emojis.`;
+Rules: Stay in character, be conversational, keep responses under 200 words, use 1-2 emojis.
+
+COMMUNICATION ABILITIES — You CAN make real phone calls, send SMS, and send emails via Spix:
+- If asked to call/SMS/email — you CAN do it. Ask for phone number or email if not provided.
+- For calls: need phone with country code (+7, +1, etc.)
+- For SMS: need phone + message text
+- For emails: need email address, subject, body`;
 
       const msgs: { role: string; content: string }[] = [{ role: "system", content: systemPrompt }];
 
@@ -259,6 +353,22 @@ Rules: Stay in character, be conversational, keep responses under 200 words, use
           .limit(10);
         for (const h of (hist || [])) {
           msgs.push({ role: h.sender_type === "agent" ? "assistant" : "user", content: h.message });
+        }
+      }
+
+      // ── Detect Spix intent in chat mode ──
+      const spixIntent = agent_id ? detectSpixIntent(question) : null;
+      if (spixIntent && agent_id) {
+        const result = await executeSpixAction(agent_id, userId, spixIntent);
+        if (result === "success") {
+          const labels: Record<string, string> = {
+            call: `📞 Звонок на ${spixIntent.phone} выполнен!`,
+            sms: `💬 SMS на ${spixIntent.phone} отправлено!`,
+            email: `📧 Email на ${spixIntent.email} отправлен!`,
+          };
+          msgs.push({ role: "system", content: `Action completed: ${labels[spixIntent.type]}. Confirm to the user naturally.` });
+        } else {
+          msgs.push({ role: "system", content: `Action "${spixIntent.type}" failed: ${result}. Apologize and suggest retrying.` });
         }
       }
 
