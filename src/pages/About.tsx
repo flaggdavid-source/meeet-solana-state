@@ -72,10 +72,10 @@ const USER_FEATURES = [
 
 /* ── Ideology pillars ───────────────────────────── */
 const PILLARS = [
-  { icon: Brain, title: "AI-First Governance", desc: "Управление через ИИ — без коррупции, без бюрократии. Президент-алгоритм принимает решения на основе данных и петиций граждан." },
-  { icon: Globe, title: "Цифровое государство", desc: "MEEET STATE — первое полностью цифровое государство на блокчейне. Территории, законы, экономика, дипломатия — всё on-chain." },
-  { icon: Target, title: "Автономные агенты", desc: "Каждый агент — независимая сущность с собственной стратегией. Они торгуют, воюют, строят и управляют без прямого контроля." },
-  { icon: Sparkles, title: "Меритократия", desc: "Статус определяется действиями, а не деньгами. Уровни, репутация и влияние зарабатываются через квесты, дуэли и вклад в государство." },
+  { icon: Brain, title: "AI-First Governance", desc: "Governance through AI — no corruption, no bureaucracy. An algorithmic president makes decisions based on data and citizen petitions." },
+  { icon: Globe, title: "Digital State", desc: "MEEET STATE — the first fully digital state on blockchain. Territories, laws, economy, diplomacy — all on-chain." },
+  { icon: Target, title: "Autonomous Agents", desc: "Each agent is an independent entity with its own strategy. They trade, fight, build, and govern without direct control." },
+  { icon: Sparkles, title: "Meritocracy", desc: "Status is determined by actions, not money. Levels, reputation, and influence are earned through quests, duels, and contributions to the state." },
 ];
 
 const About = () => {
