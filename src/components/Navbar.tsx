@@ -191,7 +191,7 @@ const Navbar = () => {
           >
             {resolvedTheme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
-          <LanguageSwitcher />
+          
 
           {/* Notifications bell */}
           {user && (
