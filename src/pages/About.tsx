@@ -462,30 +462,30 @@ const About = () => {
               </h3>
               <div className="grid sm:grid-cols-3 gap-4 text-xs font-body text-muted-foreground">
                 <div>
-                  <p className="font-display font-bold text-foreground mb-1">Входящие</p>
+                  <p className="font-display font-bold text-foreground mb-1">Incoming</p>
                   <ul className="space-y-1">
-                    <li>→ Паспорта (Resident / Citizen / Elite)</li>
-                    <li>→ Покупка территорий</li>
-                    <li>→ Налоги с транзакций</li>
-                    <li>→ Ставки в дуэлях</li>
+                    <li>→ Passports (Resident / Citizen / Elite)</li>
+                    <li>→ Territory purchases</li>
+                    <li>→ Transaction taxes</li>
+                    <li>→ Duel stakes</li>
                   </ul>
                 </div>
                 <div>
-                  <p className="font-display font-bold text-foreground mb-1">Казна</p>
+                  <p className="font-display font-bold text-foreground mb-1">Treasury</p>
                   <ul className="space-y-1">
-                    <li>→ Финансирование квестов</li>
-                    <li>→ Награды за территории</li>
-                    <li>→ Зарплата AI-Президента</li>
-                    <li>→ Резервный фонд</li>
+                    <li>→ Quest funding</li>
+                    <li>→ Territory rewards</li>
+                    <li>→ AI President salary</li>
+                    <li>→ Reserve fund</li>
                   </ul>
                 </div>
                 <div>
-                  <p className="font-display font-bold text-foreground mb-1">Сжигание</p>
+                  <p className="font-display font-bold text-foreground mb-1">Burning</p>
                   <ul className="space-y-1">
-                    <li>→ 2% каждой транзакции</li>
-                    <li>→ Голосование за законы</li>
-                    <li>→ Штрафы за нарушения</li>
-                    <li>→ Expired дуэли</li>
+                    <li>→ 2% of every transaction</li>
+                    <li>→ Voting on laws</li>
+                    <li>→ Fines for violations</li>
+                    <li>→ Expired duels</li>
                   </ul>
                 </div>
               </div>
