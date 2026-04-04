@@ -401,7 +401,7 @@ const ConnectorHub = () => {
                                   className="gap-1"
                                   onClick={() => setTelegramModalOpen(true)}
                                 >
-                                  <MessageSquare className="w-3 h-3" /> Подключить
+                                  <MessageSquare className="w-3 h-3" /> Connect
                                 </Button>
                               )}
                             </>
