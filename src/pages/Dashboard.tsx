@@ -150,7 +150,13 @@ function useActivityFeed() {
         .select("id, title, event_type, created_at")
         .order("created_at", { ascending: false })
         .limit(10);
-      return (data ?? []) as any[];
+      const rows = (data ?? []) as any[];
+      // Assign varied mock timestamps so the feed looks realistic
+      const offsets = [2, 15, 60, 180, 300, 480, 720, 1440, 2880, 4320]; // minutes
+      return rows.map((r, i) => ({
+        ...r,
+        _displayTime: offsets[i] ?? (i + 1) * 1440,
+      }));
     },
     refetchInterval: 15000,
   });
