@@ -574,7 +574,7 @@ const ConnectorHub = () => {
         <DialogContent className="max-w-md bg-card border-border">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-sky-400" /> Подключить Telegram
+              <MessageSquare className="w-5 h-5 text-sky-400" /> Connect Telegram
             </DialogTitle>
             <DialogDescription>
               Получите токен у{" "}
