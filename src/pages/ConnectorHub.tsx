@@ -338,7 +338,7 @@ const ConnectorHub = () => {
                                 {ch.name}
                                 {!ch.available && (
                                   <Badge variant="outline" className="text-[10px] border-muted-foreground/30">
-                                    Скоро
+                                     Coming Soon
                                   </Badge>
                                 )}
                               </h3>
