@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import SEOHead from "@/components/SEOHead";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Navbar from "@/components/Navbar";
@@ -16,6 +16,8 @@ import { supabase } from "@/integrations/supabase/runtime-client";
 import { useSolanaWallet } from "@/hooks/useSolanaWallet";
 import { sendSolToTreasury, sendMeeetToTreasury } from "@/lib/solana-transfer";
 import { toast } from "sonner";
+
+const CivilizationGrowth = lazy(() => import("@/components/CivilizationGrowth"));
 
 interface AgentPlan {
   id: string;
@@ -319,6 +321,10 @@ const Deploy = () => {
         </div>
 
         <div className="container mx-auto px-4 pb-16">
+          <Suspense fallback={null}>
+            <CivilizationGrowth />
+          </Suspense>
+
           <h2 className="text-2xl font-bold text-center mb-8">{t("deploy.chooseYourPlan") || "Choose Your Plan"}</h2>
 
           {loading ? (
