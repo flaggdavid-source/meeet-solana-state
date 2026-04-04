@@ -58,7 +58,7 @@ const CHANNEL_DEFS = [
   {
     type: "telegram",
     name: "Telegram Bot",
-    description: "Подключите агента как Telegram-бота. Нужен токен от @BotFather.",
+    description: "Connect your agent as a Telegram bot. Requires a token from @BotFather.",
     icon: MessageSquare,
     available: true,
     color: "from-sky-500/20 to-blue-500/20 border-sky-500/30",
