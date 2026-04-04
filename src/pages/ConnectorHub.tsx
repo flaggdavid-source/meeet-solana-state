@@ -577,7 +577,7 @@ const ConnectorHub = () => {
               <MessageSquare className="w-5 h-5 text-sky-400" /> Connect Telegram
             </DialogTitle>
             <DialogDescription>
-              Получите токен у{" "}
+              Get a token from{" "}
               <a
                 href="https://t.me/BotFather"
                 target="_blank"
@@ -586,7 +586,7 @@ const ConnectorHub = () => {
               >
                 @BotFather
               </a>{" "}
-              и вставьте ниже
+              and paste it below
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
