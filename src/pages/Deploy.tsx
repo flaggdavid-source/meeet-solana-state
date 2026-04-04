@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import SEOHead from "@/components/SEOHead";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Navbar from "@/components/Navbar";
