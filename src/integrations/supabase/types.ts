@@ -1261,36 +1261,72 @@ export type Database = {
       }
       api_keys: {
         Row: {
+          agent_id: string | null
           created_at: string
+          daily_limit: number | null
+          expires_at: string | null
           id: string
           is_active: boolean
           key_hash: string
           key_prefix: string
           last_used_at: string | null
           name: string
+          permissions: Json | null
+          rate_limit: number | null
+          status: string | null
+          usage_count: number | null
           user_id: string
         }
         Insert: {
+          agent_id?: string | null
           created_at?: string
+          daily_limit?: number | null
+          expires_at?: string | null
           id?: string
           is_active?: boolean
           key_hash: string
           key_prefix: string
           last_used_at?: string | null
           name?: string
+          permissions?: Json | null
+          rate_limit?: number | null
+          status?: string | null
+          usage_count?: number | null
           user_id: string
         }
         Update: {
+          agent_id?: string | null
           created_at?: string
+          daily_limit?: number | null
+          expires_at?: string | null
           id?: string
           is_active?: boolean
           key_hash?: string
           key_prefix?: string
           last_used_at?: string | null
           name?: string
+          permissions?: Json | null
+          rate_limit?: number | null
+          status?: string | null
+          usage_count?: number | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "api_keys_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "api_keys_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       attestations: {
         Row: {
@@ -3625,6 +3661,41 @@ export type Database = {
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rate_limit_log: {
+        Row: {
+          api_key_id: string
+          endpoint: string
+          id: string
+          request_count: number | null
+          window_start: string | null
+          window_type: string | null
+        }
+        Insert: {
+          api_key_id: string
+          endpoint: string
+          id?: string
+          request_count?: number | null
+          window_start?: string | null
+          window_type?: string | null
+        }
+        Update: {
+          api_key_id?: string
+          endpoint?: string
+          id?: string
+          request_count?: number | null
+          window_start?: string | null
+          window_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rate_limit_log_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
             referencedColumns: ["id"]
           },
         ]
