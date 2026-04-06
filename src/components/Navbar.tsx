@@ -189,7 +189,7 @@ const Navbar = () => {
             {user && (
               <Popover>
                 <PopoverTrigger asChild>
-                  <button className="relative p-2 text-muted-foreground hover:text-foreground transition-colors">
+                <button className="relative p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Notifications">
                     <Bell className="w-4 h-4" />
                     {unreadCount > 0 && (
                       <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
@@ -202,7 +202,7 @@ const Navbar = () => {
                   <div className="flex items-center justify-between px-3 py-2 border-b border-border">
                     <span className="text-sm font-bold">Notifications</span>
                     {unreadCount > 0 && (
-                      <button onClick={markAllRead} className="text-[10px] text-primary hover:underline">Mark all read</button>
+                      <button onClick={markAllRead} className="text-[10px] text-primary hover:underline" aria-label="Mark all notifications as read">Mark all read</button>
                     )}
                   </div>
                   <ScrollArea className="max-h-64">
@@ -237,8 +237,8 @@ const Navbar = () => {
                 <Link to="/dashboard" className="hidden lg:block px-3 py-1.5 text-sm font-semibold bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors">
                   Dashboard
                 </Link>
-                <button onClick={signOut} className="hidden lg:flex items-center p-2 text-muted-foreground hover:text-foreground transition-colors">
-                  <LogOut className="w-4 h-4" />
+                <button onClick={signOut} className="hidden lg:flex items-center p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Sign out">
+                   <LogOut className="w-4 h-4" />
                 </button>
               </>
             ) : (

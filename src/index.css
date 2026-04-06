@@ -112,6 +112,22 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-display;
   }
+
+  /* Skip to content link */
+  .skip-to-content {
+    @apply absolute z-[60] px-4 py-2 text-sm font-semibold bg-primary text-primary-foreground rounded-b-md;
+    top: -3rem;
+    left: 1rem;
+    transition: top 0.2s ease;
+  }
+  .skip-to-content:focus {
+    top: 0;
+  }
+
+  /* Focus ring for keyboard navigation */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
 }
 
 /* Glassmorphism utility */

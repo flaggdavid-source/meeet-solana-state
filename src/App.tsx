@@ -122,8 +122,10 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <RealtimeProvider>
-              <Suspense fallback={<PageLoader />}>
+             <a href="#main-content" className="skip-to-content">Skip to main content</a>
+             <RealtimeProvider>
+               <Suspense fallback={<PageLoader />}>
+                 <div id="main-content">
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/live" element={<LiveMap />} />
@@ -203,8 +205,9 @@ const App = () => (
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-                <MobileBottomNav />
-              </Suspense>
+                 <MobileBottomNav />
+                 </div>
+               </Suspense>
             </RealtimeProvider>
           </BrowserRouter>
         </TooltipProvider>
