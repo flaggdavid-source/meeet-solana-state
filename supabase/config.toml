@@ -297,3 +297,9 @@ verify_jwt = false
 
 [functions.twitter-poster]
 verify_jwt = false
+
+[functions.adk-before-tool]
+verify_jwt = false
+
+[functions.adk-after-tool]
+verify_jwt = false
