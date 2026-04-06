@@ -201,6 +201,62 @@ const Developer = () => {
     toast.success("Copied to clipboard!");
   };
 
+  const handleRegisterWebhook = async () => {
+    if (!newKeyAgentId || !webhookUrl || selectedEvents.length === 0) {
+      toast.error("Agent ID, URL, and at least one event required");
+      return;
+    }
+    if (!webhookUrl.startsWith("https://")) {
+      toast.error("Only HTTPS URLs are allowed");
+      return;
+    }
+    setRegisteringWh(true);
+    try {
+      const r = await fetch(`${whUrl}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ agent_id: newKeyAgentId, url: webhookUrl, events: selectedEvents }),
+      });
+      const d = await r.json();
+      if (d.secret) {
+        setWebhookSecret(d.secret);
+        toast.success("Webhook registered! Copy the secret now.");
+        setWebhookUrl("");
+        setSelectedEvents([]);
+        fetchWebhooks();
+      } else {
+        toast.error(d.error || "Failed to register");
+      }
+    } catch { toast.error("Network error"); }
+    setRegisteringWh(false);
+  };
+
+  const handleTestWebhook = async (whId: string) => {
+    try {
+      const r = await fetch(`${whUrl}/test/${whId}`, { method: "POST" });
+      const d = await r.json();
+      if (d.delivered) toast.success(`Test delivered! Status: ${d.response_status}`);
+      else toast.error(`Test failed. Status: ${d.response_status}`);
+      fetchDeliveries(whId);
+    } catch { toast.error("Failed to send test"); }
+  };
+
+  const handleToggleWebhook = async (whId: string, action: "pause" | "resume") => {
+    try {
+      await fetch(`${whUrl}/${action}/${whId}`, { method: "POST" });
+      toast.success(action === "pause" ? "Webhook paused" : "Webhook resumed");
+      fetchWebhooks();
+    } catch { toast.error("Failed"); }
+  };
+
+  const handleDeleteWebhook = async (whId: string) => {
+    try {
+      await fetch(`${whUrl}/delete/${whId}`, { method: "DELETE" });
+      toast.success("Webhook deleted");
+      fetchWebhooks();
+    } catch { toast.error("Failed"); }
+  };
+
   return (
     <PageWrapper>
       <SEOHead title="Developer Portal — MEEET STATE" description="Generate API keys, explore endpoints, and integrate with the MEEET agent platform." path="/developer" />
