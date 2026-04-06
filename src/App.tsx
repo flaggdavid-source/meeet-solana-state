@@ -79,6 +79,7 @@ const AgentStudio = React.lazy(() => import("./pages/AgentStudio.tsx"));
 const ConnectorHub = React.lazy(() => import("./pages/ConnectorHub.tsx"));
 const AgentAnalytics = React.lazy(() => import("./pages/AgentAnalytics.tsx"));
 const AgentDetailPage = React.lazy(() => import("./pages/AgentDetailPage.tsx"));
+const Developer = React.lazy(() => import("./pages/Developer.tsx"));
 const NotFound = React.lazy(() => import("./pages/NotFound.tsx"));
 
 const queryClient = new QueryClient({
