@@ -17,6 +17,7 @@ import EconomySection from "@/components/civilization/EconomySection";
 import CommunicationsSection from "@/components/civilization/CommunicationsSection";
 import AgentCTABar from "@/components/civilization/AgentCTABar";
 import EarlyAdopterBanner from "@/components/civilization/EarlyAdopterBanner";
+import ReferralBanner from "@/components/ReferralBanner";
 import WhyJoinSection from "@/components/civilization/WhyJoinSection";
 import SocialProofBanner from "@/components/civilization/SocialProofBanner";
 import LaunchCampaignSection from "@/components/civilization/LaunchCampaignSection";
@@ -48,6 +49,7 @@ const Index = () => {
       <main className="pt-16 pb-6">
         <CortexSection />
         <LiveTicker />
+        <ReferralBanner />
         <EarlyAdopterBanner />
         <WhyJoinSection />
         <SocialProofBanner />

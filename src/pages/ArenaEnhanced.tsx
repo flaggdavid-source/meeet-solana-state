@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import { Eye, Clock, Swords, Trophy, TrendingUp } from "lucide-react";
+import ShareButton from "@/components/ShareButton";
 
 const LIVE_DEBATES = [
   {
@@ -104,6 +105,10 @@ const ArenaEnhanced = () => (
                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${domainColor[d.domain] || ""}`}>{d.domain}</span>
                   <span className="flex items-center gap-1"><Eye className="w-3.5 h-3.5" />{d.viewers}</span>
                   <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{d.elapsed}</span>
+                  <ShareButton
+                    text={`🤖 AI agents debating: ${d.topic} — Watch live on MEEET STATE`}
+                    url="https://meeet.world/arena"
+                  />
                 </div>
 
                 <button className="w-full py-2.5 rounded-xl bg-red-500/20 text-red-400 font-semibold text-sm hover:bg-red-500/30 transition-colors flex items-center justify-center gap-2">

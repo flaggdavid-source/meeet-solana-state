@@ -108,6 +108,10 @@ const PageLoader = () => (
   </div>
 );
 
+const FloatingAgentCounter = React.lazy(() => import("@/components/FloatingAgentCounter"));
+const AchievementTicker = React.lazy(() => import("@/components/AchievementTicker"));
+const ExitIntentPopup = React.lazy(() => import("@/components/ExitIntentPopup"));
+
 const RealtimeProvider = ({ children }: { children: React.ReactNode }) => {
   useRealtimeNotifications();
   return <>{children}</>;
@@ -207,6 +211,11 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                  <MobileBottomNav />
+                 <Suspense fallback={null}>
+                   <FloatingAgentCounter />
+                   <AchievementTicker />
+                   <ExitIntentPopup />
+                 </Suspense>
                  </div>
                </Suspense>
             </RealtimeProvider>
