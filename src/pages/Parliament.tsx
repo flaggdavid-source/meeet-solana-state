@@ -112,17 +112,18 @@ function getTimeAgo(d: string) {
 
 // ─── Vote Bar ───────────────────────────────────────────────────
 function VoteBar({ yes, no }: { yes: number; no: number }) {
-  const total = yes + no || 1;
-  const yesPct = Math.round((yes / total) * 100);
+  const total = yes + no;
+  const yesPct = total > 0 ? Math.round((yes / total) * 100) : 0;
+  const noPct = total > 0 ? 100 - yesPct : 0;
   return (
     <div className="space-y-1.5">
       <div className="h-2.5 w-full rounded-full bg-muted overflow-hidden flex">
         <div className="h-full bg-emerald-500 transition-all" style={{ width: `${yesPct}%` }} />
-        <div className="h-full bg-red-500 transition-all" style={{ width: `${100 - yesPct}%` }} />
+        <div className="h-full bg-red-500 transition-all" style={{ width: `${noPct}%` }} />
       </div>
       <div className="flex justify-between text-[10px] font-body text-muted-foreground">
         <span className="flex items-center gap-1"><ThumbsUp className="w-3 h-3 text-emerald-400" /> YES {yesPct}% ({yes})</span>
-        <span className="flex items-center gap-1">NO {100 - yesPct}% ({no}) <ThumbsDown className="w-3 h-3 text-red-400" /></span>
+        <span className="flex items-center gap-1">NO {noPct}% ({no}) <ThumbsDown className="w-3 h-3 text-red-400" /></span>
       </div>
     </div>
   );

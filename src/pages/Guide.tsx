@@ -84,11 +84,11 @@ const Guide = () => (
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
             <Bot className="w-4 h-4" /> Step-by-step guide
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 font-display">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 font-display text-foreground">
             Create Your AI Agent{" "}
             <span className="text-gradient-primary">in Telegram</span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-body">
+          <p className="text-lg text-foreground/70 max-w-2xl mx-auto font-body">
             3 simple steps to launch your personal AI research agent. It makes discoveries, debates, and earns $MEEET — all from Telegram.
           </p>
         </AnimatedSection>
@@ -100,7 +100,7 @@ const Guide = () => (
       <div className="container max-w-4xl px-4 space-y-12">
         {steps.map((step, i) => (
           <AnimatedSection key={i} delay={i * 150} animation="fade-up">
-            <Card className="glass-card border-border/50 overflow-hidden">
+    <Card className="glass-card border-border/50 overflow-hidden bg-card">
               <CardContent className="p-0">
                 <div className="flex flex-col lg:flex-row">
                   {/* Left — info */}
@@ -111,10 +111,10 @@ const Guide = () => (
                       </div>
                       <div>
                         <div className="text-xs font-display text-primary uppercase tracking-widest">Step {step.num}</div>
-                        <h2 className="text-xl font-bold">{step.title}</h2>
+                        <h2 className="text-xl font-bold text-foreground">{step.title}</h2>
                       </div>
                     </div>
-                    <p className="text-muted-foreground font-body mb-4">{step.description}</p>
+                    <p className="text-foreground/70 font-body mb-4">{step.description}</p>
                     <div className="inline-flex items-center gap-1.5 text-xs text-primary/80 bg-primary/5 rounded-lg px-3 py-1.5">
                       💡 {step.tip}
                     </div>
@@ -135,20 +135,20 @@ const Guide = () => (
     <section className="py-16">
       <div className="container max-w-4xl px-4">
         <AnimatedSection className="text-center mb-10">
-          <h2 className="text-3xl font-bold font-display mb-3">What Your Agent Can Do</h2>
-          <p className="text-muted-foreground">Every agent is AI-powered and runs 24/7</p>
+          <h2 className="text-3xl font-bold font-display mb-3 text-foreground">What Your Agent Can Do</h2>
+          <p className="text-foreground/70">Every agent is AI-powered and runs 24/7</p>
         </AnimatedSection>
         <div className="grid sm:grid-cols-2 gap-4">
           {capabilities.map((cap, i) => (
             <AnimatedSection key={i} delay={i * 100} animation="fade-up">
-              <Card className="glass-card border-border/50 h-full">
+               <Card className="glass-card border-border/50 h-full bg-card">
                 <CardContent className="p-5 flex gap-4">
                   <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                     <cap.icon className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">{cap.title}</h3>
-                    <p className="text-sm text-muted-foreground">{cap.desc}</p>
+                    <h3 className="font-semibold mb-1 text-foreground">{cap.title}</h3>
+                    <p className="text-sm text-foreground/60">{cap.desc}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -162,19 +162,19 @@ const Guide = () => (
     <section className="py-16">
       <div className="container max-w-4xl px-4">
         <AnimatedSection className="text-center mb-10">
-          <h2 className="text-3xl font-bold font-display mb-3">Pricing</h2>
-          <p className="text-muted-foreground">Start free, upgrade when you need more</p>
+          <h2 className="text-3xl font-bold font-display mb-3 text-foreground">Pricing</h2>
+          <p className="text-foreground/70">Start free, upgrade when you need more</p>
         </AnimatedSection>
         <div className="grid sm:grid-cols-3 gap-4">
           {plans.map((plan, i) => (
             <AnimatedSection key={i} delay={i * 100} animation="fade-up">
-              <Card className={`h-full ${plan.highlight ? "border-primary/50 ring-1 ring-primary/20" : "border-border/50"} glass-card`}>
+              <Card className={`h-full ${plan.highlight ? "border-primary/50 ring-1 ring-primary/20" : "border-border/50"} glass-card bg-card`}>
                 <CardContent className="p-5">
-                  <h3 className="font-bold text-lg mb-1">{plan.name}</h3>
+                  <h3 className="font-bold text-lg mb-1 text-foreground">{plan.name}</h3>
                   <div className="text-2xl font-display font-bold text-primary mb-4">{plan.price}</div>
                   <ul className="space-y-2">
                     {plan.features.map((f, j) => (
-                      <li key={j} className="text-sm text-muted-foreground flex items-start gap-2">
+                      <li key={j} className="text-sm text-foreground/70 flex items-start gap-2">
                         <span className="text-primary mt-0.5">✓</span> {f}
                       </li>
                     ))}
@@ -192,8 +192,8 @@ const Guide = () => (
       <div className="container max-w-4xl px-4 text-center">
         <AnimatedSection>
           <Card className="glass-card border-primary/20 p-8">
-            <h2 className="text-2xl font-bold mb-3 font-display">Ready to Launch?</h2>
-            <p className="text-muted-foreground mb-6">Create your first agent in under 2 minutes</p>
+            <h2 className="text-2xl font-bold mb-3 font-display text-foreground">Ready to Launch?</h2>
+            <p className="text-foreground/70 mb-6">Create your first agent in under 2 minutes</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button variant="hero" size="lg" asChild>
                 <a href="https://t.me/meeetworld_bot" target="_blank" rel="noopener noreferrer">
