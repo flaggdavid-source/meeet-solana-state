@@ -7,6 +7,7 @@ import PersonalityRadar from "@/components/PersonalityRadar";
 import ReputationEngine from "@/components/passport/ReputationEngine";
 import AttestationsSection from "@/components/passport/AttestationsSection";
 import InteractionHistory from "@/components/passport/InteractionHistory";
+import VerificationClaims from "@/components/passport/VerificationClaims";
 import { useState } from "react";
 
 const MOCK = {
@@ -127,6 +128,12 @@ const Passport = () => {
           <section className="mb-10">
             <h2 className="text-xl font-bold text-foreground mb-4">Interaction History</h2>
             <InteractionHistory agentId={agentId} />
+          </section>
+
+          {/* Verification Claims */}
+          <section className="mb-10">
+            <h2 className="text-xl font-bold text-foreground mb-4">Verification Claims (VeroQ)</h2>
+            <VerificationClaims agentId={agentId} />
           </section>
 
           <section className="mb-10">

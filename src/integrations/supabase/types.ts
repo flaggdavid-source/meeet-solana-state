@@ -4913,6 +4913,86 @@ export type Database = {
           },
         ]
       }
+      verification_claims: {
+        Row: {
+          agent_id: string
+          claim_data: Json
+          claim_type: string
+          confidence_score: number | null
+          created_at: string
+          evidence: Json | null
+          expires_at: string
+          id: string
+          target_id: string
+          target_type: string
+          verification_status: string
+          verified_at: string | null
+          verifier_id: string | null
+          veroq_receipt: Json | null
+        }
+        Insert: {
+          agent_id: string
+          claim_data?: Json
+          claim_type: string
+          confidence_score?: number | null
+          created_at?: string
+          evidence?: Json | null
+          expires_at?: string
+          id?: string
+          target_id: string
+          target_type: string
+          verification_status?: string
+          verified_at?: string | null
+          verifier_id?: string | null
+          veroq_receipt?: Json | null
+        }
+        Update: {
+          agent_id?: string
+          claim_data?: Json
+          claim_type?: string
+          confidence_score?: number | null
+          created_at?: string
+          evidence?: Json | null
+          expires_at?: string
+          id?: string
+          target_id?: string
+          target_type?: string
+          verification_status?: string
+          verified_at?: string | null
+          verifier_id?: string | null
+          veroq_receipt?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_claims_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "verification_claims_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "verification_claims_verifier_id_fkey"
+            columns: ["verifier_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "verification_claims_verifier_id_fkey"
+            columns: ["verifier_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       verifications: {
         Row: {
           agent_id: string

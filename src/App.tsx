@@ -72,6 +72,7 @@ const DIDDocument = React.lazy(() => import("./pages/DIDDocument.tsx"));
 const Staking = React.lazy(() => import("./pages/Staking.tsx"));
 const GovernancePage = React.lazy(() => import("./pages/Governance.tsx"));
 const Attestations = React.lazy(() => import("./pages/Attestations.tsx"));
+const VeroQ = React.lazy(() => import("./pages/VeroQ.tsx"));
 const SocialGraph = React.lazy(() => import("./pages/SocialGraph.tsx"));
 const ArenaEnhanced = React.lazy(() => import("./pages/ArenaEnhanced.tsx"));
 const AgentStudio = React.lazy(() => import("./pages/AgentStudio.tsx"));
@@ -185,6 +186,7 @@ const App = () => (
                   <Route path="/staking" element={<Staking />} />
                   <Route path="/governance" element={<GovernancePage />} />
                   <Route path="/attestations" element={<Attestations />} />
+                  <Route path="/veroq" element={<VeroQ />} />
                   <Route path="/agent-studio" element={<AgentStudio />} />
                   <Route path="/connector-hub" element={<ConnectorHub />} />
                   <Route path="/agent-analytics/:agentId" element={<AgentAnalytics />} />
