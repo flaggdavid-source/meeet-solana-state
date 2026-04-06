@@ -5,6 +5,7 @@ import SEOHead from "@/components/SEOHead";
 import { Copy, CheckCircle, Shield, Users, Coins, Award, Flame, Vote, Swords, FlaskConical, Share2 } from "lucide-react";
 import PersonalityRadar from "@/components/PersonalityRadar";
 import ReputationEngine from "@/components/passport/ReputationEngine";
+import AttestationsSection from "@/components/passport/AttestationsSection";
 import { useState } from "react";
 
 const MOCK = {
