@@ -312,3 +312,6 @@ verify_jwt = false
 
 [functions.attestation-import]
 verify_jwt = false
+
+[functions.interaction-history]
+verify_jwt = false
