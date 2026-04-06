@@ -5,6 +5,7 @@ import SEOHead from "@/components/SEOHead";
 import { Copy, CheckCircle, Shield, Users, Coins, Award, Flame, Vote, Swords, FlaskConical, Share2 } from "lucide-react";
 import PersonalityRadar from "@/components/PersonalityRadar";
 import ReputationEngine from "@/components/passport/ReputationEngine";
+import AttestationsSection from "@/components/passport/AttestationsSection";
 import { useState } from "react";
 
 const MOCK = {
@@ -115,7 +116,13 @@ const Passport = () => {
             <ReputationEngine agentId={agentId} />
           </section>
 
-          {/* Reputation */}
+          {/* Attestations */}
+          <section className="mb-10">
+            <h2 className="text-xl font-bold text-foreground mb-4">Provider Attestations</h2>
+            <AttestationsSection agentId={agentId} />
+          </section>
+
+
           <section className="mb-10">
             <h2 className="text-xl font-bold text-foreground mb-4">Reputation</h2>
             <div className="bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-8 flex flex-col sm:flex-row items-center gap-8">

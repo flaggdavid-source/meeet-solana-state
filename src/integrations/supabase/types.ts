@@ -1292,6 +1292,69 @@ export type Database = {
         }
         Relationships: []
       }
+      attestations: {
+        Row: {
+          agent_id: string
+          expires_at: string | null
+          format: string
+          id: string
+          imported_at: string
+          issued_at: string | null
+          issuer_did: string | null
+          parsed_claims: Json
+          provider: string
+          raw_payload: Json
+          signature_valid: boolean
+          status: string
+          subject_did: string | null
+        }
+        Insert: {
+          agent_id: string
+          expires_at?: string | null
+          format?: string
+          id?: string
+          imported_at?: string
+          issued_at?: string | null
+          issuer_did?: string | null
+          parsed_claims?: Json
+          provider?: string
+          raw_payload?: Json
+          signature_valid?: boolean
+          status?: string
+          subject_did?: string | null
+        }
+        Update: {
+          agent_id?: string
+          expires_at?: string | null
+          format?: string
+          id?: string
+          imported_at?: string
+          issued_at?: string | null
+          issuer_did?: string | null
+          parsed_claims?: Json
+          provider?: string
+          raw_payload?: Json
+          signature_valid?: boolean
+          status?: string
+          subject_did?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attestations_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attestations_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       burn_log: {
         Row: {
           agent_id: string | null
