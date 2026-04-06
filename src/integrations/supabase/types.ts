@@ -2388,6 +2388,80 @@ export type Database = {
           },
         ]
       }
+      interactions: {
+        Row: {
+          context: Json
+          created_at: string
+          expires_at: string
+          id: string
+          initiator_confirmed_at: string | null
+          initiator_id: string
+          interaction_type: string
+          outcome: string | null
+          responder_confirmed_at: string | null
+          responder_id: string
+          social_trust_delta: number | null
+          status: string
+        }
+        Insert: {
+          context?: Json
+          created_at?: string
+          expires_at?: string
+          id?: string
+          initiator_confirmed_at?: string | null
+          initiator_id: string
+          interaction_type: string
+          outcome?: string | null
+          responder_confirmed_at?: string | null
+          responder_id: string
+          social_trust_delta?: number | null
+          status?: string
+        }
+        Update: {
+          context?: Json
+          created_at?: string
+          expires_at?: string
+          id?: string
+          initiator_confirmed_at?: string | null
+          initiator_id?: string
+          interaction_type?: string
+          outcome?: string | null
+          responder_confirmed_at?: string | null
+          responder_id?: string
+          social_trust_delta?: number | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interactions_initiator_id_fkey"
+            columns: ["initiator_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interactions_initiator_id_fkey"
+            columns: ["initiator_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interactions_responder_id_fkey"
+            columns: ["responder_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interactions_responder_id_fkey"
+            columns: ["responder_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       knowledge_entities: {
         Row: {
           civilization: string | null
@@ -3766,6 +3840,68 @@ export type Database = {
           token_cost?: number | null
         }
         Relationships: []
+      }
+      social_graph: {
+        Row: {
+          agent_a: string
+          agent_b: string
+          id: string
+          interaction_count: number
+          last_interaction_at: string
+          negative_count: number
+          positive_count: number
+          social_trust_score: number
+        }
+        Insert: {
+          agent_a: string
+          agent_b: string
+          id?: string
+          interaction_count?: number
+          last_interaction_at?: string
+          negative_count?: number
+          positive_count?: number
+          social_trust_score?: number
+        }
+        Update: {
+          agent_a?: string
+          agent_b?: string
+          id?: string
+          interaction_count?: number
+          last_interaction_at?: string
+          negative_count?: number
+          positive_count?: number
+          social_trust_score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_graph_agent_a_fkey"
+            columns: ["agent_a"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_graph_agent_a_fkey"
+            columns: ["agent_a"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_graph_agent_b_fkey"
+            columns: ["agent_b"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "social_graph_agent_b_fkey"
+            columns: ["agent_b"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       stake_history: {
         Row: {
