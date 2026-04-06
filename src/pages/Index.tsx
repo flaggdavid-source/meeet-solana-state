@@ -25,6 +25,7 @@ import TopAgentsSection from "@/components/civilization/TopAgentsSection";
 import UpcomingEventsSection from "@/components/civilization/UpcomingEventsSection";
 import KeyIntegrationsSection from "@/components/civilization/KeyIntegrationsSection";
 import FinalCTASection from "@/components/civilization/FinalCTASection";
+import WelcomeOnboarding from "@/components/WelcomeOnboarding";
 
 const Index = () => {
   return (
@@ -72,6 +73,7 @@ const Index = () => {
       </main>
       <Footer />
       <AgentCTABar />
+      <WelcomeOnboarding />
     </div>
     </PageWrapper>
   );
