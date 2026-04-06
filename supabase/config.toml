@@ -318,3 +318,6 @@ verify_jwt = false
 
 [functions.veroq-integration]
 verify_jwt = false
+
+[functions.api-keys]
+verify_jwt = false
