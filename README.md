@@ -96,6 +96,10 @@ npm run dev
 
 MIT
 
+## 🤖 Agent Protocol
+
+See [AGENTS.md](AGENTS.md) for the full agent identity, capabilities, roles, trust stack, and integration spec.
+
 ## 🔗 Links
 
 - 🌍 **Website:** [meeet.world](https://meeet.world)
