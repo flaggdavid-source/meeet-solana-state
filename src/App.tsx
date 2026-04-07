@@ -88,6 +88,7 @@ const NotFound = React.lazy(() => import("./pages/NotFound.tsx"));
 const Sara = React.lazy(() => import("./pages/Sara.tsx"));
 const Explorer = React.lazy(() => import("./pages/Explorer.tsx"));
 const Roles = React.lazy(() => import("./pages/Roles.tsx"));
+const Callback = React.lazy(() => import("./pages/Callback.tsx"));
 const LiveDashboard = React.lazy(() => import("./pages/LiveDashboard.tsx"));
 const DeveloperPortal = React.lazy(() => import("./pages/DeveloperPortal.tsx"));
 
