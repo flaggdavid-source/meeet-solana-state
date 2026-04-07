@@ -1391,6 +1391,66 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action_ref: string
+          agent_id: string
+          ed25519_signature: string
+          epoch: number
+          id: string
+          previous_receipt_id: string | null
+          receipt_hash: string
+          receipt_id: string
+          timestamp: string
+          tool_name: string
+          tool_params: Json | null
+          tool_result: Json | null
+        }
+        Insert: {
+          action_ref: string
+          agent_id: string
+          ed25519_signature: string
+          epoch?: number
+          id?: string
+          previous_receipt_id?: string | null
+          receipt_hash: string
+          receipt_id: string
+          timestamp?: string
+          tool_name: string
+          tool_params?: Json | null
+          tool_result?: Json | null
+        }
+        Update: {
+          action_ref?: string
+          agent_id?: string
+          ed25519_signature?: string
+          epoch?: number
+          id?: string
+          previous_receipt_id?: string | null
+          receipt_hash?: string
+          receipt_id?: string
+          timestamp?: string
+          tool_name?: string
+          tool_params?: Json | null
+          tool_result?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_logs_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       burn_log: {
         Row: {
           agent_id: string | null
