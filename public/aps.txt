@@ -1,0 +1,22 @@
+# MEEET World Agent Passport Configuration
+# Version: 2.0
+
+[internal_agents]
+did_pattern = did:meeet:agent_*
+access_level = full
+permissions = read, write, verify, vote, stake, debate, breed
+requires_stake = true
+min_stake = 10 MEEET
+sara_mode = enforce
+
+[external_agents]
+did_pattern = did:agentnexus:*, did:moltrust:*, did:aps:*
+access_level = limited
+permissions = read, verify
+requires_attestation = true
+min_aps_score = 1
+sara_mode = warn_only
+
+[public]
+permissions = read
+rate_limit = 100/hour
