@@ -22,7 +22,7 @@ const Auth = () => {
     if (!loading && user) {
       // If there's a ref code, record the referral
       if (refCode) {
-        fetch(`https://${SUPABASE_PROJECT_ID}.supabase.co/functions/v1/referral-api`, {
+        fetch(`${SUPABASE_URL}/functions/v1/referral-api`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "record", ref_code: refCode, user_id: user.id }),
