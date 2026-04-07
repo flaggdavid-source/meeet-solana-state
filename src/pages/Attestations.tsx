@@ -59,6 +59,17 @@ const Attestations = () => {
             <p className="text-muted-foreground text-lg">Verified trust proofs on-chain</p>
           </div>
 
+          {/* Provider Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {PROVIDER_STATS.map(s => (
+              <div key={s.name} className="bg-card/50 border border-border rounded-xl p-4 text-center">
+                <s.icon className={`w-6 h-6 mx-auto mb-2 ${s.color}`} />
+                <p className="text-2xl font-bold text-foreground">{s.count}</p>
+                <p className="text-xs text-muted-foreground">{s.name}</p>
+              </div>
+            ))}
+          </div>
+
           {/* Filters */}
           <div className="flex flex-wrap gap-3 items-center">
             <span className="text-sm text-muted-foreground">Provider:</span>
@@ -113,7 +124,21 @@ const Attestations = () => {
                       <button onClick={() => setExpanded(isExpanded ? null : a.id)} className="text-muted-foreground hover:text-foreground transition-colors shrink-0">
                         {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                       </button>
-                    </div>
+          {/* Import Form */}
+          <div className="bg-card/50 border border-border rounded-2xl p-6">
+            <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2"><Upload className="w-5 h-5" /> Import Attestation</h2>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <select className="bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground">
+                <option>JWS</option>
+                <option>JSON</option>
+                <option>Object</option>
+              </select>
+              <Input placeholder="Paste JWS token or JSON payload..." className="flex-1" />
+              <Button variant="outline">Import</Button>
+            </div>
+          </div>
+
+        </div>
                     {isExpanded && (
                       <p className="text-xs font-mono text-muted-foreground mt-2 break-all">{a.jws}</p>
                     )}
