@@ -201,7 +201,7 @@ const App = () => (
                   <Route path="/leaderboard" element={<Navigate to="/rankings" replace />} />
                   <Route path="/intellra" element={<Navigate to="/marketplace" replace />} />
                   <Route path="/staking" element={<Staking />} />
-                  <Route path="/governance" element={<Navigate to="/parliament" replace />} />
+                  <Route path="/governance" element={<GovernancePage />} />
                   <Route path="/attestations" element={<Attestations />} />
                   <Route path="/veroq" element={<VeroQ />} />
                   <Route path="/agent-studio" element={<AgentStudio />} />
