@@ -52,9 +52,17 @@ function useCountUp(target: number, duration = 2000) {
   return { count, ref };
 }
 
-function StatsRowAnimated({ totalCount, weekCount }: { totalCount: number; weekCount: number }) {
+function StatsRowAnimated({
+  totalCount,
+  domainsCount,
+  weekCount,
+}: {
+  totalCount: number;
+  domainsCount: number;
+  weekCount: number;
+}) {
   const disc = useCountUp(totalCount);
-  const domains = useCountUp(6);
+  const domains = useCountUp(domainsCount);
   const week = useCountUp(weekCount);
   const stats = [
     { label: "Discoveries", countRef: disc.ref, value: disc.count.toLocaleString(), icon: <Sparkles className="w-4 h-4" /> },
@@ -200,7 +208,7 @@ export default function CortexSection() {
         </div>
 
         {/* Stats row with animated counting */}
-        <StatsRowAnimated totalCount={discoveriesCount} weekCount={thisWeekCount} />
+        <StatsRowAnimated totalCount={discoveriesCount} domainsCount={domainsCount} weekCount={thisWeekCount} />
 
         {/* Discovery stream */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
