@@ -5,6 +5,7 @@ import { FlaskConical, FileText, Eye, Quote, Sparkles, TrendingUp, Loader2 } fro
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { DiscoveryShareIcon } from "@/components/DiscoveryShareButtons";
 
 const DOMAIN_META: Record<string, { label: string; glowColor: string; text: string }> = {
   crypto:   { label: "Crypto",   glowColor: "#f59e0b", text: "text-amber-400" },
@@ -201,6 +202,7 @@ export default function KnowledgeLibrarySection() {
                       <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                         <TrendingUp className="w-3 h-3" /> {article.upvotes || 0}
                       </span>
+                      <DiscoveryShareIcon title={article.title} />
                     </div>
                   </Link>
                 );
