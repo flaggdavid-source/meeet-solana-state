@@ -2982,6 +2982,36 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_subscribers: {
+        Row: {
+          email: string
+          id: string
+          name: string | null
+          preferences: Json | null
+          status: string
+          subscribed_at: string
+          unsubscribe_token: string | null
+        }
+        Insert: {
+          email: string
+          id?: string
+          name?: string | null
+          preferences?: Json | null
+          status?: string
+          subscribed_at?: string
+          unsubscribe_token?: string | null
+        }
+        Update: {
+          email?: string
+          id?: string
+          name?: string | null
+          preferences?: Json | null
+          status?: string
+          subscribed_at?: string
+          unsubscribe_token?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           agent_id: string | null
