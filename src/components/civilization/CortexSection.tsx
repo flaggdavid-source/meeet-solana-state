@@ -52,9 +52,17 @@ function useCountUp(target: number, duration = 2000) {
   return { count, ref };
 }
 
-function StatsRowAnimated({ totalCount, weekCount }: { totalCount: number; weekCount: number }) {
+function StatsRowAnimated({
+  totalCount,
+  domainsCount,
+  weekCount,
+}: {
+  totalCount: number;
+  domainsCount: number;
+  weekCount: number;
+}) {
   const disc = useCountUp(totalCount);
-  const domains = useCountUp(6);
+  const domains = useCountUp(domainsCount);
   const week = useCountUp(weekCount);
   const stats = [
     { label: "Discoveries", countRef: disc.ref, value: disc.count.toLocaleString(), icon: <Sparkles className="w-4 h-4" /> },
@@ -76,8 +84,9 @@ function StatsRowAnimated({ totalCount, weekCount }: { totalCount: number; weekC
 
 export default function CortexSection() {
   const [discoveries, setDiscoveries] = useState<Discovery[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [weekCount, setWeekCount] = useState(0);
+  const [discoveriesCount, setDiscoveriesCount] = useState(0);
+  const [domainsCount, setDomainsCount] = useState(0);
+  const [thisWeekCount, setThisWeekCount] = useState(0);
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
@@ -89,15 +98,48 @@ export default function CortexSection() {
 
   useEffect(() => {
     (async () => {
-      const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
-      const [{ data }, { count }, { count: wCount }] = await Promise.all([
-        supabase.from("discoveries").select("id,title,domain,impact_score,created_at").eq("is_approved", true).order("created_at", { ascending: false }).limit(8),
-        supabase.from("discoveries").select("*", { count: "exact", head: true }).eq("is_approved", true),
-        supabase.from("discoveries").select("*", { count: "exact", head: true }).eq("is_approved", true).gte("created_at", weekAgo),
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+      const [discoveriesResponse, totalResponse, domainsResponse, weekResponse] = await Promise.all([
+        supabase
+          .from("discoveries")
+          .select("id,title,domain,impact_score,created_at")
+          .eq("is_approved", true)
+          .order("created_at", { ascending: false })
+          .limit(8),
+        supabase
+          .from("discoveries")
+          .select("*", { count: "exact", head: true })
+          .eq("is_approved", true),
+        supabase
+          .from("discoveries")
+          .select("domain")
+          .eq("is_approved", true),
+        supabase
+          .from("discoveries")
+          .select("*", { count: "exact", head: true })
+          .eq("is_approved", true)
+          .gte("created_at", oneWeekAgo.toISOString()),
       ]);
+
+      const { data } = discoveriesResponse;
+      const { count: totalCount } = totalResponse;
+      const { data: domainData } = domainsResponse;
+      const { count: weekCount } = weekResponse;
+
+      const uniqueDomains = new Set(domainData?.map((d) => d.domain)).size;
+
+      console.log("[CortexSection] counts", {
+        totalCount,
+        uniqueDomains,
+        weekCount,
+      });
+
       setDiscoveries(data || []);
-      setTotalCount(count ?? 0);
-      setWeekCount(wCount ?? 0);
+      setDiscoveriesCount(totalCount || 0);
+      setDomainsCount(uniqueDomains || 0);
+      setThisWeekCount(weekCount || 0);
     })();
   }, []);
 
@@ -166,7 +208,7 @@ export default function CortexSection() {
         </div>
 
         {/* Stats row with animated counting */}
-        <StatsRowAnimated totalCount={totalCount} weekCount={weekCount} />
+        <StatsRowAnimated totalCount={discoveriesCount} domainsCount={domainsCount} weekCount={thisWeekCount} />
 
         {/* Discovery stream */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
