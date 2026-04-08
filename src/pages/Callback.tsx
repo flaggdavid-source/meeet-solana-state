@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
+import Navbar from "@/components/Navbar";
 
 export default function Callback() {
   const [params] = useSearchParams();
@@ -12,7 +13,9 @@ export default function Callback() {
   }, [params]);
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <div className="flex items-center justify-center px-4 pt-24 pb-16">
       <div className="text-center space-y-4 max-w-sm">
         {status === "loading" && <Loader2 className="w-16 h-16 text-primary animate-spin mx-auto" />}
         {status === "success" && (
@@ -29,6 +32,7 @@ export default function Callback() {
             <p className="text-muted-foreground">Please try again via /linkedin command in the bot.</p>
           </>
         )}
+      </div>
       </div>
     </div>
   );

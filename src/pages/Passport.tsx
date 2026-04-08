@@ -47,6 +47,7 @@ const resultBadge: Record<string, string> = {
 const Passport = () => {
   const { agentId } = useParams();
   const id = agentId || "001";
+  const displayName = id.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   const factionIdx = parseInt(id, 10) % FACTIONS.length || 0;
   const faction = FACTIONS[factionIdx];
   const factionColor = FACTION_COLORS[factionIdx];
@@ -75,7 +76,7 @@ const Passport = () => {
               {id.slice(0, 2).toUpperCase()}
             </div>
             <div className="text-center sm:text-left">
-              <h1 className="text-3xl font-bold text-foreground">Agent_{id}</h1>
+              <h1 className="text-3xl font-bold text-foreground">{displayName}</h1>
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-2">
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-primary">{faction}</span>
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400">APS Level 2</span>
