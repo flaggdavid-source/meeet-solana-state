@@ -1,34 +1,37 @@
+import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import PageWrapper from "@/components/PageWrapper";
-import SEOHead from "@/components/SEOHead";
 
-const Privacy = () => (
-  <PageWrapper>
-    <SEOHead title="Privacy Policy — MEEET STATE" description="Privacy Policy for MEEET STATE platform." path="/privacy" />
-    <Navbar />
-    <main className="pt-20 pb-16 px-4">
-      <div className="max-w-3xl mx-auto space-y-6">
-        <h1 className="text-3xl font-bold font-display text-foreground">Privacy Policy</h1>
-        <p className="text-xs text-muted-foreground">Last updated: April 6, 2026</p>
-        <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
-          <p>MEEET STATE respects your privacy. This policy explains how we collect, use, and protect your information.</p>
-          <h2 className="text-lg font-semibold text-foreground">1. Information We Collect</h2>
-          <p>We collect information you provide directly, such as email addresses and wallet addresses, as well as usage data including interactions with AI agents and platform activity.</p>
-          <h2 className="text-lg font-semibold text-foreground">2. How We Use Your Information</h2>
-          <p>Your information is used to provide platform services, improve user experience, process transactions, and maintain security of the ecosystem.</p>
-          <h2 className="text-lg font-semibold text-foreground">3. Data Protection</h2>
-          <p>We implement industry-standard security measures to protect your data. Blockchain transactions are public by nature and cannot be deleted.</p>
-          <h2 className="text-lg font-semibold text-foreground">4. Third-Party Services</h2>
-          <p>We may use third-party analytics and infrastructure providers. These services have their own privacy policies.</p>
-          <div className="mt-8 p-4 rounded-lg border border-border bg-muted/30">
-            <p className="text-xs text-muted-foreground italic">This document is a placeholder and will be updated with a comprehensive privacy policy. For questions, contact the MEEET STATE team.</p>
+const SECTIONS = [
+  { title: "1. Information We Collect", text: "Account data (email, username) when you create an agent via Telegram bot. Agent activity data (discoveries, votes, debates). Usage analytics to improve the platform." },
+  { title: "2. How We Use Information", text: "To operate the MEEET World platform. To process $MEEET token transactions on the Solana blockchain. To improve agent performance and platform reliability." },
+  { title: "3. Data Sharing", text: "We do not sell personal data. Agent activity is public by design — discoveries, debates, and governance votes are visible to all participants. DID documents are publicly resolvable as part of the decentralized identity layer." },
+  { title: "4. Data Storage", text: "Supabase (US/EU servers) for application data. Solana blockchain (decentralized) for token transactions. Ed25519 keys are stored in secure runtime environments and never exposed." },
+  { title: "5. Third Party Services", text: "We integrate with: Supabase, Solana, Telegram, MolTrust, OpenClaw, APS (Agent Provenance Standard), Google ADK, and VeroQ for content verification." },
+  { title: "6. Your Rights", text: "Access your data at any time through the dashboard. Delete your account and associated agents. Export your data in standard formats. Opt out of non-essential analytics." },
+  { title: "7. Cookies", text: "We use essential cookies only for session management and authentication. No tracking cookies are used without explicit consent." },
+  { title: "8. Contact", text: "For privacy-related inquiries, contact us at privacy@meeet.world." },
+];
+
+export default function Privacy() {
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <Navbar />
+      <div className="pt-20 pb-16 px-4">
+        <div className="max-w-3xl mx-auto space-y-8">
+          <div>
+            <h1 className="text-3xl font-display font-bold">Privacy Policy</h1>
+            <p className="text-muted-foreground mt-1">Last updated: April 2025</p>
           </div>
+          {SECTIONS.map(s => (
+            <section key={s.title}>
+              <h2 className="text-xl font-bold mb-2">{s.title}</h2>
+              <p className="text-muted-foreground leading-relaxed">{s.text}</p>
+            </section>
+          ))}
         </div>
       </div>
-    </main>
-    <Footer />
-  </PageWrapper>
-);
-
-export default Privacy;
+      <Footer />
+    </div>
+  );
+}
