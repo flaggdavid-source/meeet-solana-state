@@ -148,6 +148,7 @@ const App = () => (
                   <Route path="/map" element={<LiveMap />} />
                   <Route path="/quests" element={<Quests />} />
                   <Route path="/daily-quests" element={<DailyQuests />} />
+                  <Route path="/achievements" element={<Achievements />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/rankings" element={<Rankings />} />
                   <Route path="/dashboard" element={<Dashboard />} />
