@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   Loader2, Plus, Sparkles, Users, MessageSquare, Clock, Coins,
   BarChart3, Wand2, Grid3X3, TrendingUp, ChevronRight, Pause, Play,
-  Bot, Zap, Activity, ArrowUpRight,
+  Bot, Zap, Activity, ArrowUpRight, Wallet, Search, Swords, Shield,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AGENT_CLASSES, getClassName } from "@/data/agent-classes";
