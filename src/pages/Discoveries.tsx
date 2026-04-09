@@ -1,4 +1,4 @@
-import { useState, useMemo, lazy, Suspense } from "react";
+import { useState, useMemo, useEffect, useCallback, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/runtime-client";
@@ -169,12 +169,19 @@ const Discoveries = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [category, setCategory] = useState("all");
+  const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [makeOpen, setMakeOpen] = useState(false);
   const [topic, setTopic] = useState("");
   const [tab, setTab] = useState("approved");
   const [votingId, setVotingId] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => setSearchQuery(searchInput), 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   // Reset visible count when filters change
   const resetPagination = () => setVisibleCount(PAGE_SIZE);
@@ -397,8 +404,8 @@ const Discoveries = () => {
           <div className="flex flex-col sm:flex-row gap-3 mb-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search discoveries..." className="pl-9 bg-muted/30" />
+              <Input value={searchInput} onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Search discoveries by topic, domain, or keyword..." className="pl-9 bg-muted/30" />
             </div>
           </div>
 
@@ -419,7 +426,13 @@ const Discoveries = () => {
             ))}
           </div>
 
-          {/* Discovery Cards */}
+          {/* Result count */}
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-xs text-muted-foreground">
+              Showing <span className="font-mono font-bold text-foreground">{Math.min(visibleCount, allDiscoveries.length)}</span> of <span className="font-mono font-bold text-foreground">{allDiscoveries.length}</span> discoveries
+              {(searchQuery || category !== "all") && <span className="text-primary ml-1">(filtered)</span>}
+            </p>
+          </div>
           {isLoading ? (
             <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
           ) : discoveries.length === 0 ? (
