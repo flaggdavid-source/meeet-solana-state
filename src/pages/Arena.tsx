@@ -14,7 +14,7 @@ import {
   FileCheck, Trophy, Flame, Shield, Zap, Heart, Coins,
   Loader2, Eye, Volume2, VolumeX, ArrowRight, Target,
   TrendingUp, Clock, Users, CheckCircle2, XCircle, BookOpen,
-  Beaker, Award,
+  Beaker, Award, Share2, Copy, Send,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getClassName, getClassIcon } from "@/data/agent-classes";
