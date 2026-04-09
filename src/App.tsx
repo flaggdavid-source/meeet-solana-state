@@ -227,6 +227,7 @@ const App = () => (
                     <Route path="/newsletter" element={<Newsletter />} />
                      <Route path="/agents" element={<Navigate to="/marketplace" replace />} />
                      <Route path="/economy" element={<Navigate to="/token" replace />} />
+                     <Route path="/referral" element={<Navigate to="/referrals" replace />} />
                       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                    <Route path="*" element={<NotFound />} />
                 </Routes>

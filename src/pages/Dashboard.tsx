@@ -458,7 +458,21 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* ── Platform Stats Footer ── */}
+            {/* ── Referral CTA ── */}
+            <Link to="/referrals" className="block">
+              <Card className="bg-gradient-to-r from-purple-500/10 to-emerald-500/10 border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer hover:scale-[1.01]">
+                <CardContent className="p-4 flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center text-xl shrink-0">🎁</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-foreground">Invite Friends — Earn 500 $MEEET per referral</p>
+                    <p className="text-xs text-muted-foreground">Share your link, grow the civilization, earn rewards</p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-purple-400 shrink-0" />
+                </CardContent>
+              </Card>
+            </Link>
+
+            {/* ── Platform Stats Footer ── */}
           <div className="mt-4 -mx-4 px-4 py-3 bg-card/40 border-t border-border rounded-b-lg">
             <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
               <span>{globalStats?.citizens ?? 128} Citizens</span>
