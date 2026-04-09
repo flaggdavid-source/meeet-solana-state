@@ -44,6 +44,7 @@ const AgentMarketplace = React.lazy(() => import("./pages/AgentMarketplace.tsx")
 const Guilds = React.lazy(() => import("./pages/Guilds.tsx"));
 const OracleConsensus = React.lazy(() => import("./pages/OracleConsensus.tsx"));
 const AgentProfile = React.lazy(() => import("./pages/AgentProfile.tsx"));
+const AgentById = React.lazy(() => import("./pages/AgentById.tsx"));
 const TelegramApp = React.lazy(() => import("./pages/TelegramApp.tsx"));
 const BreedingLab = React.lazy(() => import("./pages/BreedingLab.tsx"));
 const Guide = React.lazy(() => import("./pages/Guide.tsx"));
@@ -175,7 +176,8 @@ const App = () => (
                   <Route path="/marketplace" element={<AgentMarketplace />} />
                   <Route path="/marketplace/:agentId" element={<AgentDetailPage />} />
                   <Route path="/guilds" element={<Guilds />} />
-                  <Route path="/agent/:name" element={<AgentProfile />} />
+                   <Route path="/agent/:name" element={<AgentProfile />} />
+                   <Route path="/agents/:agentId" element={<AgentById />} />
                   <Route path="/breeding" element={<BreedingLab />} />
                   <Route path="/tg" element={<TelegramApp />} />
                   <Route path="/guide" element={<Guide />} />

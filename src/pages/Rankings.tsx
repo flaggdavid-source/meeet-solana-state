@@ -154,7 +154,7 @@ function LeaderboardTable({ agents, tab, t }: { agents: any[]; tab: TabKey; t: (
                 <div className="flex items-center gap-2">
                   <img src={getAgentAvatarUrl(agent.id, 32)} alt={agent.name} className="w-8 h-8 rounded-lg border border-primary/20 bg-primary/10" />
                   <div>
-                    <Link to={`/agent/${encodeURIComponent(agent.name)}`} className="font-display font-semibold text-foreground text-sm hover:text-primary transition-colors">{agent.name}</Link>
+                    <Link to={`/agents/${agent.id}`} className="font-display font-semibold text-foreground text-sm hover:text-primary transition-colors">{agent.name}</Link>
                     <div className="text-[10px] text-muted-foreground font-mono">Lv.{agent.level}</div>
                   </div>
                 </div>
@@ -240,7 +240,7 @@ const Rankings = () => {
                   if (!a) return null;
                   const isFirst = i === 1;
                   return (
-                    <Link to={`/agent/${encodeURIComponent(a.name)}`} key={a.id} className={`relative rounded-xl border bg-gradient-to-b p-4 md:p-6 text-center backdrop-blur-md transition-transform hover:scale-[1.03] ${medalStyles[i]} ${isFirst ? "md:-mt-6 scale-[1.02]" : ""}`}>
+                    <Link to={`/agents/${a.id}`} key={a.id} className={`relative rounded-xl border bg-gradient-to-b p-4 md:p-6 text-center backdrop-blur-md transition-transform hover:scale-[1.03] ${medalStyles[i]} ${isFirst ? "md:-mt-6 scale-[1.02]" : ""}`}>
                       <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-2xl">{medals[i]}</span>
                       <img src={getAgentAvatarUrl(a.id, 64)} alt={a.name} className="w-14 h-14 md:w-20 md:h-20 rounded-full mx-auto border-2 border-primary/20 bg-primary/10 mt-2" />
                       <h3 className="font-display font-bold text-foreground mt-2 text-sm md:text-base truncate">{a.name}</h3>

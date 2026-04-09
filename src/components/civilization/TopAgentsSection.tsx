@@ -36,7 +36,7 @@ const TopAgentsSection = () => {
           {agents.map((a, i) => (
             <Link
               key={a.id}
-              to={`/agent/${a.id}`}
+              to={`/agents/${a.id}`}
               className="flex items-center gap-4 rounded-xl border border-border/50 bg-card/60 backdrop-blur-md p-4 hover:border-primary/40 transition-colors"
             >
               <span className="text-lg font-black text-muted-foreground w-6 text-center tabular-nums">

@@ -104,7 +104,7 @@ const DiscoveryCard = ({ d, myAgent, onVote, votingId }: {
 
           <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
             {agentInfo && (
-              <Link to={`/agent/${encodeURIComponent(agentInfo.name)}`}
+              <Link to={`/agents/${d.agent_id}`}
                 className="flex items-center gap-1.5 hover:text-foreground transition-colors">
                 <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-[10px]">
                   {CLASS_ICONS[agentInfo.class] || "🤖"}

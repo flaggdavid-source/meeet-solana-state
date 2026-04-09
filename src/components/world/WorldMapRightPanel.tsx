@@ -113,7 +113,7 @@ const WorldMapRightPanel = forwardRef<HTMLDivElement, Props>(({ agent, open, onC
               className="w-full gap-2"
               variant="ghost"
               size="sm"
-              onClick={() => navigate(`/agent/${encodeURIComponent(agent.name)}`)}
+              onClick={() => navigate(`/agents/${agent.id}`)}
             >
               <User className="w-4 h-4" /> View Profile
             </Button>

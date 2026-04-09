@@ -683,7 +683,7 @@ export default function PixelWorldCanvas() {
             <Link to={`/chat`} className="flex-1 py-2 flex items-center justify-center gap-1.5 text-xs font-semibold rounded-lg bg-primary/20 text-primary hover:bg-primary/30 transition-colors">
               <MessageSquare className="w-3 h-3" /> Chat
             </Link>
-            <Link to={`/agent/${selectedAgent.data.id}`} className="flex-1 py-2 text-center text-xs font-semibold rounded-lg bg-white/5 text-white/70 hover:bg-white/10 transition-colors">
+            <Link to={`/agents/${selectedAgent.data.id}`} className="flex-1 py-2 text-center text-xs font-semibold rounded-lg bg-white/5 text-white/70 hover:bg-white/10 transition-colors">
               Passport
             </Link>
           </div>
