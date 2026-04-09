@@ -30,6 +30,7 @@ const NAV_ITEMS: NavItem[] = [
     label: "Explore",
     children: [
       { href: "/discoveries", label: "Discoveries", icon: "🔬" },
+      { href: "/leaderboard", label: "Leaderboard", icon: "🏆" },
       { href: "/herald", label: "Herald", icon: "📰" },
       { href: "/world", label: "World Map", icon: "🌍" },
       { href: "/live", label: "Live Dashboard", icon: "📡" },
