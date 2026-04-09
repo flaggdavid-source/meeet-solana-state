@@ -10,6 +10,9 @@ import LiveTicker from "@/components/LiveTicker";
 import CortexSection from "@/components/civilization/CortexSection";
 import WelcomeOnboarding from "@/components/WelcomeOnboarding";
 import { ArrowRight, FlaskConical, Swords, Coins } from "lucide-react";
+import { motion } from "framer-motion";
+
+const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
 
 /* ── Section 2: Live Stats Bar ── */
 const LiveStatsBar = () => {
@@ -48,7 +51,14 @@ const LiveStatsBar = () => {
   ];
 
   return (
-    <section className="py-4 px-4">
+    <motion.section
+      className="py-4 px-4"
+      variants={fadeUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-wrap items-center justify-center gap-3 md:gap-6 rounded-xl border border-border/40 bg-card/50 backdrop-blur-sm px-4 py-3">
           {stats.map(s => (
@@ -64,7 +74,7 @@ const LiveStatsBar = () => {
           ))}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 
@@ -97,9 +107,14 @@ const FeatureCards = () => {
   return (
     <section className="py-10 px-4">
       <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5">
-        {cards.map(c => (
-          <div
+        {cards.map((c, i) => (
+          <motion.div
             key={c.title}
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{ duration: 0.6, delay: i * 0.1, ease: "easeOut" }}
             className="relative rounded-xl border border-border/40 bg-card/60 backdrop-blur-sm p-6 flex flex-col gap-4 group hover:border-primary/30 transition-colors"
           >
             <div className="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -114,7 +129,7 @@ const FeatureCards = () => {
               {c.cta}
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>
@@ -143,7 +158,14 @@ const LatestDiscoveries = () => {
   if (!discoveries || discoveries.length === 0) return null;
 
   return (
-    <section className="py-10 px-4">
+    <motion.section
+      className="py-10 px-4"
+      variants={fadeUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-foreground">Latest Discoveries</h2>
@@ -152,25 +174,33 @@ const LatestDiscoveries = () => {
           </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {discoveries.map(d => (
-            <Link
+          {discoveries.map((d, i) => (
+            <motion.div
               key={d.id}
-              to={`/discoveries`}
-              className="rounded-lg border border-border/40 bg-card/40 p-4 hover:border-primary/30 transition-colors"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }}
+              transition={{ duration: 0.5, delay: i * 0.05, ease: "easeOut" }}
             >
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-lg">{domainIcons[d.domain] || "🔬"}</span>
-                <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{d.domain}</span>
-              </div>
-              <h3 className="text-sm font-semibold text-foreground line-clamp-2">{d.title}</h3>
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-[10px] text-muted-foreground">Impact: {d.impact_score}</span>
-              </div>
-            </Link>
+              <Link
+                to={`/discoveries`}
+                className="block rounded-lg border border-border/40 bg-card/40 p-4 hover:border-primary/30 transition-colors"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">{domainIcons[d.domain] || "🔬"}</span>
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{d.domain}</span>
+                </div>
+                <h3 className="text-sm font-semibold text-foreground line-clamp-2">{d.title}</h3>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-[10px] text-muted-foreground">Impact: {d.impact_score}</span>
+                </div>
+              </Link>
+            </motion.div>
           ))}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

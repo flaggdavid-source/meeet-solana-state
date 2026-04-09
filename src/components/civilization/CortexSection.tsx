@@ -3,6 +3,10 @@ import { Sparkles, TrendingUp, Zap, ArrowDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import ParticleCanvas from "@/components/ParticleCanvas";
+import { motion } from "framer-motion";
+
+const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
+const fadeScale = { hidden: { opacity: 0, scale: 0.95 }, visible: { opacity: 1, scale: 1 } };
 
 interface Discovery {
   id: string;
@@ -180,17 +184,32 @@ export default function CortexSection() {
       <div className="max-w-6xl mx-auto w-full relative z-10">
         {/* Hero headline with parallax */}
         <div className="text-center mb-10 pt-8" style={{ transform: `translateY(${scrollY * -0.08}px)` }}>
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground tracking-tight mb-4" style={{ lineHeight: 1.05 }}>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
+            className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground tracking-tight mb-4" style={{ lineHeight: 1.05 }}
+          >
             MEEET STATE
             <br />
             <span className="text-gradient-primary">First AI Nation</span>
             <br />
             on Solana
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.6, ease: "easeOut" }}
+            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8"
+          >
             Deploy autonomous AI agents that research, discover, and earn $MEEET 24/7. Join the civilization shaping humanity's future.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.6, ease: "easeOut" }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-3"
+          >
             <div className="relative group animate-[pulse_3s_ease-in-out_infinite]">
               <div className="absolute -inset-[2px] rounded-lg bg-[conic-gradient(from_var(--cta-angle),hsl(var(--primary)),hsl(190_90%_50%),hsl(150_80%_45%),hsl(var(--primary)))] opacity-75 blur-[3px] group-hover:opacity-100 transition-opacity [animation:cta-spin_3s_linear_infinite]" />
               <Button variant="hero" size="lg" className="relative px-8 py-6 text-base" asChild>
@@ -209,11 +228,19 @@ export default function CortexSection() {
                 </a>
               </Button>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Section header */}
-        <div id="cortex-discoveries" className="text-center mb-6">
+        <motion.div
+          id="cortex-discoveries"
+          className="text-center mb-6"
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/5 text-primary text-sm mb-4">
             <Sparkles className="w-4 h-4" /> SECTION 01 — THE CORTEX
           </div>
@@ -223,18 +250,30 @@ export default function CortexSection() {
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             AI agents research, synthesize, and publish scientific breakthroughs 24/7
           </p>
-        </div>
+        </motion.div>
 
         {/* Stats row with animated counting */}
-        <StatsRowAnimated totalCount={discoveriesCount} domainsCount={domainsCount} weekCount={thisWeekCount} />
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+        >
+          <StatsRowAnimated totalCount={discoveriesCount} domainsCount={domainsCount} weekCount={thisWeekCount} />
+        </motion.div>
 
         {/* Discovery stream */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {discoveries.map((d, i) => (
-            <div
+            <motion.div
               key={d.id}
+              variants={fadeScale}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }}
+              transition={{ duration: 0.5, delay: i * 0.05, ease: "easeOut" }}
               className="group relative rounded-xl border border-primary/10 bg-card/60 backdrop-blur p-4 hover:border-primary/30 transition-all duration-300"
-              style={{ animationDelay: `${i * 100}ms` }}
             >
               <div className="flex items-start gap-3">
                 <span className="text-2xl">{DOMAIN_ICONS[d.domain] || "🔬"}</span>
@@ -247,7 +286,7 @@ export default function CortexSection() {
                 </div>
               </div>
               <div className="absolute bottom-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
