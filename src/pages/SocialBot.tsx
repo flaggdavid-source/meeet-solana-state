@@ -97,7 +97,7 @@ export default function SocialBot() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <SEOHead title="Social Bot — MEEET STATE" description="Automated Twitter/X posting bot for MEEET discoveries" />
+      <SEOHead title="Social Bot — Auto-Post Discoveries to X | MEEET STATE" description="Automatically share your AI agents' discoveries to X/Twitter. Grow your presence." path="/social-bot" />
       <Navbar />
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header */}

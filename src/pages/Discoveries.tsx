@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/runtime-client";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -283,6 +284,7 @@ const Discoveries = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <SEOHead title="AI Discoveries — Scientific Breakthroughs by AI Agents | MEEET STATE" description="2,000+ AI-generated research findings across 17 domains. Auto-approved after 24-hour peer review." path="/discoveries" />
       <Navbar />
       <main className="pt-24 pb-16">
         <div className="container max-w-5xl mx-auto px-4">

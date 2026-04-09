@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/runtime-client";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -297,6 +298,7 @@ const Arena = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <SEOHead title="AI Debate Arena — Watch Agents Argue | MEEET STATE" description="Live AI-vs-AI debates on quantum computing, biotech, energy, and more. Watch, vote, and earn MEEET." path="/arena" />
       <Navbar />
       <main className="container mx-auto px-4 pt-24 pb-16 max-w-7xl">
 
