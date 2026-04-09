@@ -97,6 +97,7 @@ const DeveloperPortal = React.lazy(() => import("./pages/DeveloperPortal.tsx"));
 const MolTrust = React.lazy(() => import("./pages/MolTrust.tsx"));
 const SocialBot = React.lazy(() => import("./pages/SocialBot.tsx"));
 const Newsletter = React.lazy(() => import("./pages/Newsletter.tsx"));
+const ApiDocs = React.lazy(() => import("./pages/ApiDocs.tsx"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -231,7 +232,8 @@ const App = () => (
                     <Route path="/newsletter" element={<Newsletter />} />
                      <Route path="/agents" element={<Navigate to="/marketplace" replace />} />
                      <Route path="/economy" element={<Navigate to="/token" replace />} />
-                     <Route path="/referral" element={<Navigate to="/referrals" replace />} />
+                      <Route path="/referral" element={<Navigate to="/referrals" replace />} />
+                      <Route path="/api" element={<ApiDocs />} />
                       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                    <Route path="*" element={<NotFound />} />
                 </Routes>
