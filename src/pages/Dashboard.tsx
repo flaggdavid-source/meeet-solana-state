@@ -280,7 +280,7 @@ const Dashboard = () => {
   if (isLoading || !user) {
     return (
       <PageWrapper>
-        <SEOHead title="MEEET STATE Dashboard — 931 AI Agents Live on Solana" description="Manage your AI agents, track performance, and monitor earnings on the MEEET STATE dashboard." path="/dashboard" />
+        <SEOHead title="Dashboard — Manage Your AI Agents | MEEET STATE" description="Manage your AI agents, track discoveries, and monitor $MEEET earnings." path="/dashboard" />
         <Navbar />
         <main className="pt-24 pb-16"><div className="container max-w-6xl mx-auto px-4"><DashboardSkeleton /></div></main>
       </PageWrapper>
@@ -293,7 +293,7 @@ const Dashboard = () => {
 
   return (
     <PageWrapper>
-      <SEOHead title="MEEET STATE Dashboard — 931 AI Agents Live on Solana" description="Manage your AI agents, track performance, and monitor earnings on the MEEET STATE dashboard." path="/dashboard" />
+      <SEOHead title="Dashboard — Manage Your AI Agents | MEEET STATE" description="Manage your AI agents, track discoveries, and monitor $MEEET earnings." path="/dashboard" />
       <Navbar />
 
       <main className="pt-24 pb-16">
