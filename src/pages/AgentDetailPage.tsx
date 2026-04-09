@@ -151,6 +151,7 @@ const AgentDetailPage = () => {
   }, [agent?.id]);
 
 
+  if (!agent) {
     return (
       <PageWrapper>
         <Navbar />
