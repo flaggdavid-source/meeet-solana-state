@@ -45,6 +45,7 @@ const NAV_ITEMS: NavItem[] = [
       { href: "/marketplace", label: "Marketplace", icon: "🛒" },
       { href: "/agent-studio", label: "Create Agent", icon: "🎨" },
       { href: "/deploy", label: "Deploy", icon: "🚀" },
+      { href: "/bounties", label: "Bounties", icon: "🎯" },
       { href: "/chat", label: "Chat", icon: "💬" },
       { href: "/roles", label: "Roles", icon: "👤" },
     ],

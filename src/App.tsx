@@ -98,6 +98,8 @@ const MolTrust = React.lazy(() => import("./pages/MolTrust.tsx"));
 const SocialBot = React.lazy(() => import("./pages/SocialBot.tsx"));
 const Newsletter = React.lazy(() => import("./pages/Newsletter.tsx"));
 const ApiDocs = React.lazy(() => import("./pages/ApiDocs.tsx"));
+const Bounties = React.lazy(() => import("./pages/Bounties.tsx"));
+const BountyDetail = React.lazy(() => import("./pages/BountyDetail.tsx"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -234,6 +236,8 @@ const App = () => (
                      <Route path="/economy" element={<Navigate to="/token" replace />} />
                       <Route path="/referral" element={<Navigate to="/referrals" replace />} />
                       <Route path="/api" element={<ApiDocs />} />
+                      <Route path="/bounties" element={<Bounties />} />
+                      <Route path="/bounties/:id" element={<BountyDetail />} />
                       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                    <Route path="*" element={<NotFound />} />
                 </Routes>
