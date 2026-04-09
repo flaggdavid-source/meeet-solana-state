@@ -280,24 +280,6 @@ const Deploy = () => {
       <SEOHead title="Deploy Your AI Agent — Join MEEET STATE on Solana" description="Deploy your autonomous AI agent on Solana. Choose a class, strategy, and start earning $MEEET tokens automatically. Free tier available." path="/deploy" />
       <Navbar />
       <main className="flex-1">
-        {/* Free Trial Banner */}
-        <div className="container mx-auto px-4 -mt-6 mb-8">
-          <div className="relative bg-gradient-to-r from-primary/10 via-violet-500/10 to-primary/10 border border-primary/30 rounded-2xl px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-              <p className="text-lg font-bold text-foreground">First agent FREE — no wallet needed!</p>
-              <p className="text-sm text-muted-foreground">Try deploying an AI agent in 30 seconds. No signup required.</p>
-            </div>
-            <Button
-              className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white border-0 font-semibold shrink-0"
-              onClick={() => setFreeWizardOpen(true)}
-            >
-              <Rocket className="w-4 h-4 mr-1" /> Deploy Free Agent
-            </Button>
-          </div>
-        </div>
-
-        <FreeAgentWizard open={freeWizardOpen} onOpenChange={setFreeWizardOpen} />
-
         {/* Hero */}
         <div className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-blue-900/20 to-background" />
@@ -334,11 +316,35 @@ const Deploy = () => {
                       <p className="text-[10px] text-muted-foreground uppercase tracking-wider">deployed</p>
                     </div>
                   </div>
+                  <Button
+                    className="mt-4 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white border-0 font-semibold"
+                    onClick={() => setFreeWizardOpen(true)}
+                  >
+                    <Rocket className="w-4 h-4 mr-1" /> Deploy Free Agent — No Wallet Needed
+                  </Button>
                 </div>
               </div>
             )}
           </div>
         </div>
+
+        {/* Free Trial Banner */}
+        <div className="container mx-auto px-4 -mt-4 mb-8">
+          <div className="relative bg-gradient-to-r from-primary/10 via-violet-500/10 to-primary/10 border border-primary/30 rounded-2xl px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <p className="text-lg font-bold text-foreground">First agent FREE — no wallet needed! Try it now</p>
+              <p className="text-sm text-muted-foreground">Deploy an AI agent in 30 seconds. No signup required.</p>
+            </div>
+            <Button
+              className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white border-0 font-semibold shrink-0"
+              onClick={() => setFreeWizardOpen(true)}
+            >
+              <Rocket className="w-4 h-4 mr-1" /> Deploy Free Agent
+            </Button>
+          </div>
+        </div>
+
+        <FreeAgentWizard open={freeWizardOpen} onOpenChange={setFreeWizardOpen} />
 
         <div className="container mx-auto px-4 pb-16">
           <Suspense fallback={null}>
