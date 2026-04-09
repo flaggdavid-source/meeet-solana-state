@@ -30,17 +30,17 @@ interface QuestDef {
 }
 
 const DAILY_QUESTS: QuestDef[] = [
-  { id: "dq1", title: "Discovery Voter", description: "Vote on 3 new discoveries today", reward: 50, type: "daily", category: "discovery", icon: <Vote className="w-5 h-5" />, requiredProgress: 3, currentProgress: 2, claimed: false },
-  { id: "dq2", title: "Debate Watcher", description: "Watch 2 arena debates", reward: 30, type: "daily", category: "arena", icon: <Eye className="w-5 h-5" />, requiredProgress: 2, currentProgress: 2, claimed: false },
-  { id: "dq3", title: "Leaderboard Explorer", description: "Check the leaderboard once", reward: 20, type: "daily", category: "explore", icon: <BarChart3 className="w-5 h-5" />, requiredProgress: 1, currentProgress: 1, claimed: false },
-  { id: "dq4", title: "Market Browser", description: "Browse 5 agents in the marketplace", reward: 25, type: "daily", category: "market", icon: <ShoppingBag className="w-5 h-5" />, requiredProgress: 5, currentProgress: 3, claimed: false },
-  { id: "dq5", title: "Herald Reader", description: "Read today's Herald report", reward: 10, type: "daily", category: "herald", icon: <Newspaper className="w-5 h-5" />, requiredProgress: 1, currentProgress: 0, claimed: false },
+  { id: "dq1", title: "Discovery Voter", description: "Vote on 3 discoveries", reward: 50, type: "daily", category: "discovery", icon: <span className="text-lg">🔬</span>, requiredProgress: 3, currentProgress: 3, claimed: false },
+  { id: "dq2", title: "Debate Watcher", description: "Watch 1 live debate", reward: 30, type: "daily", category: "arena", icon: <span className="text-lg">⚔️</span>, requiredProgress: 1, currentProgress: 1, claimed: true },
+  { id: "dq3", title: "Leaderboard Explorer", description: "Check all 4 leaderboard tabs", reward: 20, type: "daily", category: "explore", icon: <span className="text-lg">📊</span>, requiredProgress: 4, currentProgress: 2, claimed: false },
+  { id: "dq4", title: "World Explorer", description: "Visit the World Map", reward: 15, type: "daily", category: "world", icon: <span className="text-lg">🗺️</span>, requiredProgress: 1, currentProgress: 0, claimed: false },
+  { id: "dq5", title: "Social Agent", description: "Send 1 message in agent chat", reward: 40, type: "daily", category: "social", icon: <span className="text-lg">💬</span>, requiredProgress: 1, currentProgress: 0, claimed: false },
 ];
 
 const WEEKLY_QUESTS: QuestDef[] = [
   { id: "wq1", title: "Weekly Warrior", description: "Complete all daily quests for 5 days", reward: 500, type: "weekly", category: "streak", icon: <Swords className="w-5 h-5" />, requiredProgress: 5, currentProgress: 3, claimed: false },
-  { id: "wq2", title: "Discovery Champion", description: "Submit or vote on 15 discoveries", reward: 300, type: "weekly", category: "discovery", icon: <Award className="w-5 h-5" />, requiredProgress: 15, currentProgress: 9, claimed: false },
-  { id: "wq3", title: "Arena Master", description: "Watch or participate in 10 debates", reward: 400, type: "weekly", category: "arena", icon: <Target className="w-5 h-5" />, requiredProgress: 10, currentProgress: 6, claimed: false },
+  { id: "wq2", title: "Discovery Champion", description: "Make 3 discoveries this week", reward: 300, type: "weekly", category: "discovery", icon: <Award className="w-5 h-5" />, requiredProgress: 3, currentProgress: 1, claimed: false },
+  { id: "wq3", title: "Arena Master", description: "Win 2 debates", reward: 400, type: "weekly", category: "arena", icon: <Target className="w-5 h-5" />, requiredProgress: 2, currentProgress: 0, claimed: false },
 ];
 
 // Streak calendar mock – mark some past days as completed
