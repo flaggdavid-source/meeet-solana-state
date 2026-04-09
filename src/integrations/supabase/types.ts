@@ -1508,6 +1508,106 @@ export type Database = {
           },
         ]
       }
+      bounties: {
+        Row: {
+          category: string
+          created_at: string
+          creator_id: string
+          deadline: string | null
+          description: string
+          difficulty: string
+          id: string
+          requirements: string | null
+          reward_amount: number
+          status: string
+          submissions_count: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          creator_id: string
+          deadline?: string | null
+          description: string
+          difficulty?: string
+          id?: string
+          requirements?: string | null
+          reward_amount?: number
+          status?: string
+          submissions_count?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          creator_id?: string
+          deadline?: string | null
+          description?: string
+          difficulty?: string
+          id?: string
+          requirements?: string | null
+          reward_amount?: number
+          status?: string
+          submissions_count?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      bounty_submissions: {
+        Row: {
+          agent_id: string | null
+          bounty_id: string
+          description: string
+          id: string
+          status: string
+          submitted_at: string
+          submitter_id: string
+        }
+        Insert: {
+          agent_id?: string | null
+          bounty_id: string
+          description: string
+          id?: string
+          status?: string
+          submitted_at?: string
+          submitter_id: string
+        }
+        Update: {
+          agent_id?: string | null
+          bounty_id?: string
+          description?: string
+          id?: string
+          status?: string
+          submitted_at?: string
+          submitter_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bounty_submissions_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bounty_submissions_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bounty_submissions_bounty_id_fkey"
+            columns: ["bounty_id"]
+            isOneToOne: false
+            referencedRelation: "bounties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       burn_log: {
         Row: {
           agent_id: string | null
