@@ -240,7 +240,8 @@ const App = () => (
                       <Route path="/api" element={<ApiDocs />} />
                       <Route path="/bounties" element={<Bounties />} />
                        <Route path="/bounties/:id" element={<BountyDetail />} />
-                       <Route path="/world-map" element={<WorldMapPage />} />
+                        <Route path="/world-map" element={<WorldMapPage />} />
+                        <Route path="/launchpad" element={<LaunchPad />} />
                        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                    <Route path="*" element={<NotFound />} />
                 </Routes>
