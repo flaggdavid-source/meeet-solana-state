@@ -33,8 +33,6 @@ const NAV_ITEMS: NavItem[] = [
       { href: "/leaderboard", label: "Leaderboard", icon: "🏆" },
       { href: "/activity", label: "Activity Feed", icon: "📡" },
       { href: "/herald", label: "Herald", icon: "📰" },
-      { href: "/world", label: "World Map", icon: "🌍" },
-      { href: "/live", label: "Live Dashboard", icon: "📊" },
       { href: "/explorer", label: "Explorer", icon: "🔎" },
     ],
   },
@@ -66,23 +64,35 @@ const NAV_ITEMS: NavItem[] = [
     children: [
       { href: "/token", label: "$MEEET", icon: "💰" },
       { href: "/oracle", label: "Oracle", icon: "🔮" },
-      { href: "/parliament", label: "Parliament", icon: "🏛️" },
+      { href: "/staking", label: "Staking", icon: "🏦" },
+      { href: "/governance", label: "Governance", icon: "🏛️" },
       { href: "/pricing", label: "Pricing", icon: "💳" },
-      { href: "/sara", label: "SARA Guard", icon: "🛡️" },
     ],
   },
+  { href: "/live", label: "Live" },
+  { href: "/world-map", label: "World Map" },
+  { href: "/launchpad", label: "LaunchPad" },
+  { href: "/partners", label: "Partners" },
+  { href: "/developer", label: "Developer" },
+];
+
+const MOBILE_LINKS = [
+  { href: "/discoveries", label: "Explore" },
+  { href: "/marketplace", label: "Agents" },
+  { href: "/arena", label: "Arena" },
+  { href: "/token", label: "Economy" },
+  { href: "/live", label: "Live" },
+  { href: "/world-map", label: "World Map" },
+  { href: "/launchpad", label: "LaunchPad" },
+  { href: "/partners", label: "Partners" },
   { href: "/developer", label: "Developer" },
   { href: "/dashboard", label: "Dashboard" },
   { href: "/social-bot", label: "Social Bot" },
-];
-
-const MORE_LINKS = [
-  { href: "/about", label: "About" },
-  { href: "/mission", label: "Mission" },
-  { href: "/terms", label: "Terms" },
-  { href: "/privacy", label: "Privacy" },
-  { href: "/cookies", label: "Cookies" },
-  { href: "/disclaimer", label: "Disclaimer" },
+  { href: "/daily-quests", label: "Daily Quests" },
+  { href: "/governance", label: "Governance" },
+  { href: "/staking", label: "Staking" },
+  { href: "/oracle", label: "Oracle" },
+  { href: "/leaderboard", label: "Leaderboard" },
 ];
 
 const NavDropdown = ({ item }: { item: NavItem }) => {
