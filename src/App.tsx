@@ -100,6 +100,7 @@ const Newsletter = React.lazy(() => import("./pages/Newsletter.tsx"));
 const ApiDocs = React.lazy(() => import("./pages/ApiDocs.tsx"));
 const Bounties = React.lazy(() => import("./pages/Bounties.tsx"));
 const BountyDetail = React.lazy(() => import("./pages/BountyDetail.tsx"));
+const WorldMapPage = React.lazy(() => import("./pages/WorldMap.tsx"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -237,8 +238,9 @@ const App = () => (
                       <Route path="/referral" element={<Navigate to="/referrals" replace />} />
                       <Route path="/api" element={<ApiDocs />} />
                       <Route path="/bounties" element={<Bounties />} />
-                      <Route path="/bounties/:id" element={<BountyDetail />} />
-                      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                       <Route path="/bounties/:id" element={<BountyDetail />} />
+                       <Route path="/world-map" element={<WorldMapPage />} />
+                       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                    <Route path="*" element={<NotFound />} />
                 </Routes>
                  <MobileBottomNav />
