@@ -101,6 +101,7 @@ const ApiDocs = React.lazy(() => import("./pages/ApiDocs.tsx"));
 const Bounties = React.lazy(() => import("./pages/Bounties.tsx"));
 const BountyDetail = React.lazy(() => import("./pages/BountyDetail.tsx"));
 const WorldMapPage = React.lazy(() => import("./pages/WorldMap.tsx"));
+const LaunchPad = React.lazy(() => import("./pages/LaunchPad.tsx"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
