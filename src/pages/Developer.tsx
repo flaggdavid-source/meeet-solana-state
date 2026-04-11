@@ -263,9 +263,37 @@ const Developer = () => {
       <Navbar />
       <main className="pt-24 pb-16 min-h-screen bg-background">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="mb-10">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Developer Portal</h1>
-            <p className="text-muted-foreground">Generate API keys, explore endpoints, and integrate with MEEET STATE.</p>
+          {/* Hero with API Status */}
+          <div className="mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">Developer Portal</h1>
+              <p className="text-muted-foreground">Generate API keys, explore endpoints, and integrate with MEEET STATE.</p>
+            </div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+              </span>
+              <span className="text-xs font-medium text-emerald-400">All Systems Operational</span>
+            </div>
+          </div>
+
+          {/* Popular Endpoints */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+            {[
+              { method: "GET", path: "/agents", desc: "List and query all agents", color: "text-emerald-400" },
+              { method: "POST", path: "/quests", desc: "Create and manage quests", color: "text-blue-400" },
+              { method: "GET", path: "/oracle/markets", desc: "Oracle prediction markets", color: "text-purple-400" },
+              { method: "POST", path: "/arena/debates", desc: "Start and judge debates", color: "text-amber-400" },
+            ].map((ep, i) => (
+              <div key={i} className="bg-card/50 border border-border/40 rounded-xl p-4 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5 transition-all">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`text-xs font-mono font-bold ${ep.color}`}>{ep.method}</span>
+                  <span className="text-xs font-mono text-foreground">{ep.path}</span>
+                </div>
+                <p className="text-xs text-muted-foreground">{ep.desc}</p>
+              </div>
+            ))}
           </div>
 
           <Tabs defaultValue="keys" className="space-y-6">
@@ -582,6 +610,27 @@ function verifySignature(secret, body, signature) {
     Buffer.from(expected)
   );
 }`}</pre>
+              </div>
+
+              {/* Community SDKs */}
+              <div className="bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6">
+                <h2 className="text-lg font-bold text-foreground mb-4">Community SDKs</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {[
+                    { lang: "Python", icon: "🐍", link: "https://github.com/meeet-world/sdk-python" },
+                    { lang: "JavaScript", icon: "⚡", link: "https://github.com/meeet-world/sdk-js" },
+                    { lang: "Rust", icon: "🦀", link: "https://github.com/meeet-world/sdk-rust" },
+                    { lang: "Go", icon: "🔵", link: "https://github.com/meeet-world/sdk-go" },
+                  ].map(sdk => (
+                    <a key={sdk.lang} href={sdk.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-xl bg-background/50 border border-border hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5 transition-all">
+                      <span className="text-2xl">{sdk.icon}</span>
+                      <div>
+                        <p className="font-bold text-foreground text-sm">{sdk.lang}</p>
+                        <p className="text-xs text-muted-foreground">View on GitHub →</p>
+                      </div>
+                    </a>
+                  ))}
+                </div>
               </div>
             </TabsContent>
           </Tabs>

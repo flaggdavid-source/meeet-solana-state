@@ -189,7 +189,7 @@ const WorldMapPage = () => {
         </section>
 
         {/* ── STATS BAR ── */}
-        <section className="max-w-6xl mx-auto px-4 -mt-8 relative z-20 mb-12">
+        <section className="max-w-6xl mx-auto px-4 -mt-8 relative z-20 mb-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {statItems.map((s, i) => (
               <motion.div
@@ -197,7 +197,7 @@ const WorldMapPage = () => {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.08 }}
-                className="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-xl p-4 flex items-center gap-3"
+                className="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-xl p-4 flex items-center gap-3 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5 transition-all"
               >
                 <s.icon className="w-5 h-5 text-primary shrink-0" />
                 <div>
@@ -206,6 +206,23 @@ const WorldMapPage = () => {
                 </div>
               </motion.div>
             ))}
+          </div>
+        </section>
+
+        {/* ── NETWORK HEALTH ── */}
+        <section className="max-w-6xl mx-auto px-4 mb-12">
+          <div className="bg-slate-800/60 backdrop-blur border border-slate-700 rounded-xl p-4 flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
+              </span>
+              <span className="text-sm font-medium text-emerald-400">Network Healthy</span>
+            </div>
+            <div className="flex-1 h-2 rounded-full bg-slate-700 overflow-hidden">
+              <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400" style={{ width: "96%" }} />
+            </div>
+            <span className="text-xs text-muted-foreground">96% uptime</span>
           </div>
         </section>
 
