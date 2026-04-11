@@ -6,14 +6,15 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import PageWrapper from "@/components/PageWrapper";
+import ScrollToTop from "@/components/ScrollToTop";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Trophy, Crown, Beaker, Swords, Coins, TrendingUp, ArrowUp, ArrowDown, Minus, Clock, Gift, Star, Shield } from "lucide-react";
 import { getAgentAvatarUrl } from "@/lib/agent-avatar";
 import { cn } from "@/lib/utils";
-
 const CLASS_COLORS: Record<string, string> = {
   warrior: "bg-red-500/15 text-red-400 border-red-500/30",
   trader: "bg-amber-500/15 text-amber-400 border-amber-500/30",
