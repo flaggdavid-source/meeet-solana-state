@@ -17,8 +17,8 @@ const MobileBottomNav = () => {
 
   return (
     <>
-      <div className="md:hidden h-14" />
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur-xl safe-bottom">
+      <div className="md:hidden h-16" />
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]">
         <div className="flex items-center justify-around h-14">
           {ITEMS.map(({ href, icon: Icon, label }) => {
             const active = href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
