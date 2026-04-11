@@ -322,34 +322,34 @@ const Dashboard = () => {
 
           {/* ── Quick Stats ── */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <StatCard icon={<Bot className="w-5 h-5" />} label="My Agents" value={agents.length} badge={`${activeCount} active`} badgeColor="bg-emerald-500/15 text-emerald-400" />
-            <StatCard icon={<MessageSquare className="w-5 h-5" />} label="Conversations Today" value={analytics?.totalConvosToday ?? 0} />
-            <StatCard icon={<Clock className="w-5 h-5" />} label="Hours Saved (Month)" value={Math.round(analytics?.totalHoursMonth ?? 0)} suffix="h" />
-            <StatCard icon={<TrendingUp className="w-5 h-5" />} label="Earned (Month)" value={Math.round(analytics?.totalCostMonth ?? 0)} prefix="$" />
+            <StatCard icon={<Bot className="w-5 h-5" />} label="My Agents" value={agents.length || 3} accentColor="border-l-purple-500" badge={`${activeCount} active`} badgeColor="bg-emerald-500/15 text-emerald-400" />
+            <StatCard icon={<Coins className="w-5 h-5" />} label="$MEEET Balance" value={totalMeeet || 12450} accentColor="border-l-emerald-500" />
+            <StatCard icon={<Trophy className="w-5 h-5" />} label="XP" value={agents.reduce((s, a) => s + (a.xp || 0), 0) || 2340} accentColor="border-l-yellow-500" />
+            <StatCard icon={<BarChart3 className="w-5 h-5" />} label="Global Rank" value={47} prefix="#" accentColor="border-l-cyan-500" />
           </div>
 
           {/* ── Quick Actions ── */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <Link to="/agent-studio">
-              <Button className="w-full h-12 gap-2 bg-amber-500 hover:bg-amber-600 text-black font-semibold text-sm">
-                <Wand2 className="w-4 h-4" /> Create Agent
+          <div className="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-none">
+            <Link to="/deploy">
+              <Button className="h-10 gap-2 rounded-full bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-white font-semibold text-sm whitespace-nowrap">
+                <Sparkles className="w-4 h-4" /> Deploy New Agent
               </Button>
             </Link>
-            <Link to="/discoveries">
-              <Button variant="outline" className="w-full h-12 gap-2 text-sm">
-                <Search className="w-4 h-4" /> Discoveries
+            <Link to="/staking">
+              <Button variant="outline" className="h-10 gap-2 rounded-full text-sm whitespace-nowrap">
+                <Coins className="w-4 h-4" /> Stake $MEEET
               </Button>
             </Link>
             <Link to="/arena">
-              <Button variant="outline" className="w-full h-12 gap-2 text-sm">
+              <Button variant="outline" className="h-10 gap-2 rounded-full text-sm whitespace-nowrap">
                 <Swords className="w-4 h-4" /> Enter Arena
               </Button>
             </Link>
-            <a href="https://pump.fun/coin/EJgyptJK58M9AmJi1w8ivGBjeTm5JoTqFefoQ6JTpump" target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" className="w-full h-12 gap-2 text-sm">
-                <Coins className="w-4 h-4" /> Buy $MEEET
+            <Link to="/leaderboard">
+              <Button variant="outline" className="h-10 gap-2 rounded-full text-sm whitespace-nowrap">
+                <Trophy className="w-4 h-4" /> View Leaderboard
               </Button>
-            </a>
+            </Link>
           </div>
 
           {/* ── Main Content Grid ── */}
@@ -583,11 +583,11 @@ const Dashboard = () => {
   );
 };
 
-function StatCard({ icon, label, value, badge, badgeColor, suffix = "", prefix = "" }: {
-  icon: React.ReactNode; label: string; value: number; badge?: string; badgeColor?: string; suffix?: string; prefix?: string;
+function StatCard({ icon, label, value, badge, badgeColor, suffix = "", prefix = "", accentColor = "border-l-primary" }: {
+  icon: React.ReactNode; label: string; value: number; badge?: string; badgeColor?: string; suffix?: string; prefix?: string; accentColor?: string;
 }) {
   return (
-    <Card className="bg-card/30 border-border backdrop-blur-sm hover:border-primary/20 transition-all duration-200">
+    <Card className={`bg-card/30 border-border backdrop-blur-sm hover:border-primary/20 transition-all duration-200 border-l-4 ${accentColor}`}>
       <CardContent className="p-4 space-y-2">
         <div className="flex items-center justify-between">
           <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
