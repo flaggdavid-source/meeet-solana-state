@@ -13,8 +13,11 @@ import WelcomeOnboarding from "@/components/WelcomeOnboarding";
 import { ArrowRight, FlaskConical, Swords, Coins, Terminal } from "lucide-react";
 import BondingCurveProgress from "@/components/BondingCurveProgress";
 import CommunityMetrics from "@/components/CommunityMetrics";
+import ScrollToTop from "@/components/ScrollToTop";
+import HomeSectionWrapper from "@/components/HomeSectionWrapper";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const fadeUp = { hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } };
 
@@ -168,7 +171,24 @@ const LatestDiscoveries = () => {
     quantum: "⚛️", biotech: "🧬", ai: "🤖", space: "🚀", energy: "⚡", physics: "🔭", other: "🔬",
   };
 
-  if (!discoveries || discoveries.length === 0) return null;
+  if (!discoveries || discoveries.length === 0) {
+    return (
+      <section className="py-10 px-4">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-xl font-bold text-foreground mb-6">Latest Discoveries</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="rounded-lg border border-border/40 bg-card/50 p-4 space-y-3">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-5 w-full" />
+                <Skeleton className="h-3 w-24" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <motion.section
@@ -203,14 +223,14 @@ const LatestDiscoveries = () => {
             >
               <Link
                 to={d.agent_id ? `/agents/${d.agent_id}` : "/discoveries"}
-                className="block rounded-lg border border-border/40 bg-card/50 p-4 hover:border-primary/40 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/5 transition-all duration-200"
+                className="block rounded-lg border border-border/40 bg-card/50 p-4 hover:border-emerald-500/40 hover:scale-[1.03] hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-200"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1.5">
                     <span className="text-base">{domainIcons[d.domain] || "🔬"}</span>
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{d.domain}</span>
                   </div>
-                  <span className="text-[10px] font-mono text-primary font-bold">{d.impact_score}</span>
+                  <span className="text-[10px] font-mono text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded">{d.impact_score}</span>
                 </div>
                 <h3 className="text-sm font-semibold text-foreground line-clamp-1 mb-2">{d.title}</h3>
                 {d.agent_id && (
@@ -255,16 +275,19 @@ const ArenaSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
           {debates.map((d, i) => (
             <motion.div key={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="rounded-xl border border-border/40 bg-card/60 backdrop-blur-sm p-5 flex flex-col gap-3 hover:border-primary/30 transition-colors"
+              className="rounded-xl border border-border/40 bg-card/60 backdrop-blur-sm p-5 flex flex-col gap-3 hover:border-purple-500/40 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300"
             >
               <div className="flex items-center justify-between">
                 <span className={`text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full border ${domainColors[d.domain] || ""}`}>{d.domain}</span>
-                <span className="text-[10px] text-muted-foreground flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />{d.viewers.toLocaleString()} watching</span>
+                <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                  <span className="inline-flex items-center gap-1 text-red-400 font-bold"><span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />LIVE</span>
+                  {d.viewers.toLocaleString()} watching
+                </span>
               </div>
               <p className="text-sm font-semibold text-foreground line-clamp-2">{d.topic}</p>
               <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                 <span className="font-medium text-foreground">{d.agent1}</span>
-                <span className="text-primary font-bold">VS</span>
+                <span className="text-primary font-black text-sm bg-primary/10 px-2 py-0.5 rounded">VS</span>
                 <span className="font-medium text-foreground">{d.agent2}</span>
               </div>
             </motion.div>
@@ -515,19 +538,20 @@ const Index = () => {
            <HeroSection />
           <CortexSection />
           <LiveTicker />
-          <LiveStatsBar />
-          <BondingCurveProgress />
-          <FeatureCards />
-          <LatestDiscoveries />
-          <ArenaSection />
-          <EconomySection />
-          <BuildSection />
-          <CommunityMetrics />
-          <EnhancedStatsBar />
-          <CTASection />
+          <HomeSectionWrapper index={0}><LiveStatsBar /></HomeSectionWrapper>
+          <HomeSectionWrapper index={1}><BondingCurveProgress /></HomeSectionWrapper>
+          <HomeSectionWrapper index={2}><FeatureCards /></HomeSectionWrapper>
+          <HomeSectionWrapper index={3}><LatestDiscoveries /></HomeSectionWrapper>
+          <HomeSectionWrapper index={4}><ArenaSection /></HomeSectionWrapper>
+          <HomeSectionWrapper index={5}><EconomySection /></HomeSectionWrapper>
+          <HomeSectionWrapper index={6}><BuildSection /></HomeSectionWrapper>
+          <HomeSectionWrapper index={7}><CommunityMetrics /></HomeSectionWrapper>
+          <HomeSectionWrapper index={8}><EnhancedStatsBar /></HomeSectionWrapper>
+          <HomeSectionWrapper index={9}><CTASection /></HomeSectionWrapper>
           <PartnersTicker />
         </main>
         <Footer />
+        <ScrollToTop />
         <WelcomeOnboarding />
       </div>
     </PageWrapper>

@@ -65,14 +65,18 @@ const BondingCurveProgress = () => {
             <Rocket className="w-5 h-5 text-purple-400" />
             <h3 className="text-sm font-bold text-foreground">Bonding Curve Progress</h3>
           </div>
-          <Progress value={progress} className="h-3 mb-2 bg-muted/50" />
+          <div className="relative">
+            <Progress value={progress} className="h-4 mb-2 bg-muted/50 [&>div]:bg-gradient-to-r [&>div]:from-purple-500 [&>div]:to-violet-400 [&>div]:shadow-[0_0_12px_rgba(139,92,246,0.5)]" />
+          </div>
           <div className="flex justify-between text-[11px]">
             <span className="text-purple-400 font-bold">{progress.toFixed(1)}% Complete</span>
             <span className="text-muted-foreground">{solNeeded.toFixed(1)} SOL to Raydium 🚀</span>
           </div>
-          <p className="text-[10px] text-muted-foreground mt-2 group-hover:text-foreground/60 transition-colors">
-            Click to buy on Pump.fun →
-          </p>
+          <div className="mt-3">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-purple-300 bg-purple-500/15 border border-purple-500/30 rounded-full px-3 py-1 group-hover:bg-purple-500/25 transition-colors">
+              Buy on Pump.fun →
+            </span>
+          </div>
         </a>
 
         {/* Countdown */}

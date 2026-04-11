@@ -168,7 +168,7 @@ export default function CortexSection() {
   return (
     <section
       id="cortex-section"
-      className="relative flex flex-col justify-center px-4 py-6 overflow-hidden"
+      className="relative flex flex-col justify-center px-4 py-6 overflow-hidden max-h-[600px]"
       style={{ background: "linear-gradient(180deg, hsl(262 40% 6%) 0%, hsl(262 60% 10%) 50%, hsl(262 40% 6%) 100%)" }}
     >
       {/* Floating particles */}
