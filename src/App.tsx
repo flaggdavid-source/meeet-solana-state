@@ -140,6 +140,121 @@ const RealtimeProvider = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.15 }}
+      >
+        <Routes location={location}>
+          <Route path="/" element={<Index />} />
+          <Route path="/live" element={<LiveDashboard />} />
+          <Route path="/map" element={<LiveMap />} />
+          <Route path="/quests" element={<Quests />} />
+          <Route path="/daily-quests" element={<DailyQuests />} />
+          <Route path="/achievements" element={<Achievements />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/rankings" element={<Rankings />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/agents" element={<AgentDashboard />} />
+          <Route path="/parliament" element={<Parliament />} />
+          <Route path="/herald" element={<Herald />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/tokenomics" element={<Tokenomics />} />
+          <Route path="/arena" element={<ArenaEnhanced />} />
+          <Route path="/social" element={<Social />} />
+          <Route path="/social-graph" element={<SocialGraph />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/connect" element={<Connect />} />
+          <Route path="/join" element={<Join />} />
+          <Route path="/tools/badge" element={<BadgeGenerator />} />
+          <Route path="/dashboard/referrals" element={<Referrals />} />
+          <Route path="/referrals" element={<Referrals />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/world" element={<World />} />
+          <Route path="/world/rankings" element={<WorldRankings />} />
+          <Route path="/country/:code" element={<CountryPage />} />
+          <Route path="/discoveries" element={<Discoveries />} />
+          <Route path="/oracle" element={<Oracle />} />
+          <Route path="/oracle/consensus" element={<OracleConsensus />} />
+          <Route path="/warnings" element={<Warnings />} />
+          <Route path="/deploy" element={<Deploy />} />
+          <Route path="/strategies" element={<Strategies />} />
+          <Route path="/marketplace" element={<AgentMarketplace />} />
+          <Route path="/marketplace/:agentId" element={<AgentDetailPage />} />
+          <Route path="/guilds" element={<Guilds />} />
+          <Route path="/agent/:name" element={<AgentProfile />} />
+          <Route path="/agents/:agentId" element={<AgentById />} />
+          <Route path="/breeding" element={<BreedingLab />} />
+          <Route path="/tg" element={<TelegramApp />} />
+          <Route path="/guide" element={<Guide />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/skyeprofile" element={<SkyeProfile />} />
+          <Route path="/monitor" element={<SystemMonitor />} />
+          <Route path="/product-hunt" element={<ProductHunt />} />
+          <Route path="/press" element={<Press />} />
+          <Route path="/social-content" element={<SocialContent />} />
+          <Route path="/agents-for-sale" element={<AgentsForSale />} />
+          <Route path="/academy" element={<Academy />} />
+          <Route path="/launch" element={<Launch />} />
+          <Route path="/simulation" element={<SimulationLab />} />
+          <Route path="/skills" element={<Skills />} />
+          <Route path="/partners" element={<Partners />} />
+          <Route path="/discord" element={<Discord />} />
+          <Route path="/install" element={<Install />} />
+          <Route path="/token" element={<Token />} />
+          <Route path="/mission" element={<Mission />} />
+          <Route path="/passport" element={<Passport />} />
+          <Route path="/passport/:agentId" element={<Passport />} />
+          <Route path="/did" element={<DIDDocument />} />
+          <Route path="/did/:agentId" element={<DIDDocument />} />
+          <Route path="/activity" element={<Activity />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/intellra" element={<Navigate to="/marketplace" replace />} />
+          <Route path="/staking" element={<Staking />} />
+          <Route path="/governance" element={<GovernancePage />} />
+          <Route path="/attestations" element={<Attestations />} />
+          <Route path="/veroq" element={<VeroQ />} />
+          <Route path="/agent-studio" element={<AgentStudio />} />
+          <Route path="/studio" element={<Navigate to="/agent-studio" replace />} />
+          <Route path="/connector-hub" element={<ConnectorHub />} />
+          <Route path="/agent-analytics/:agentId" element={<AgentAnalytics />} />
+          <Route path="/developer" element={<DeveloperPortal />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/cookies" element={<Cookies />} />
+          <Route path="/disclaimer" element={<Disclaimer />} />
+          <Route path="/sara" element={<Sara />} />
+          <Route path="/explorer" element={<Explorer />} />
+          <Route path="/roles" element={<Roles />} />
+          <Route path="/callback" element={<Callback />} />
+          <Route path="/moltrust" element={<MolTrust />} />
+          <Route path="/social-bot" element={<SocialBot />} />
+          <Route path="/newsletter" element={<Newsletter />} />
+          <Route path="/agents" element={<Navigate to="/marketplace" replace />} />
+          <Route path="/economy" element={<Navigate to="/token" replace />} />
+          <Route path="/referral" element={<Navigate to="/referrals" replace />} />
+          <Route path="/api" element={<ApiDocs />} />
+          <Route path="/bounties" element={<Bounties />} />
+          <Route path="/bounties/:id" element={<BountyDetail />} />
+          <Route path="/world-map" element={<WorldMapPage />} />
+          <Route path="/launchpad" element={<LaunchPad />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
 const App = () => (
   <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
