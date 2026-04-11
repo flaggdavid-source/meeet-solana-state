@@ -92,6 +92,7 @@ const Disclaimer = React.lazy(() => import("./pages/Disclaimer.tsx"));
 const NotFound = React.lazy(() => import("./pages/NotFound.tsx"));
 const Sara = React.lazy(() => import("./pages/Sara.tsx"));
 const Explorer = React.lazy(() => import("./pages/Explorer.tsx"));
+const Explore = React.lazy(() => import("./pages/Explore.tsx"));
 const Roles = React.lazy(() => import("./pages/Roles.tsx"));
 const Callback = React.lazy(() => import("./pages/Callback.tsx"));
 const LiveDashboard = React.lazy(() => import("./pages/LiveDashboard.tsx"));
@@ -233,6 +234,7 @@ const AnimatedRoutes = () => {
           <Route path="/cookies" element={<Cookies />} />
           <Route path="/disclaimer" element={<Disclaimer />} />
           <Route path="/sara" element={<Sara />} />
+          <Route path="/explore" element={<Explore />} />
           <Route path="/explorer" element={<Explorer />} />
           <Route path="/roles" element={<Roles />} />
           <Route path="/callback" element={<Callback />} />
