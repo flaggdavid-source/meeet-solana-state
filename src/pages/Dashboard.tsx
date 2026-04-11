@@ -329,22 +329,27 @@ const Dashboard = () => {
           </div>
 
           {/* ── Quick Actions ── */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <Link to="/agent-studio">
               <Button className="w-full h-12 gap-2 bg-amber-500 hover:bg-amber-600 text-black font-semibold text-sm">
-                <Wand2 className="w-4 h-4" /> Create New Agent
+                <Wand2 className="w-4 h-4" /> Create Agent
               </Button>
             </Link>
-            <Link to="/marketplace">
+            <Link to="/discoveries">
               <Button variant="outline" className="w-full h-12 gap-2 text-sm">
-                <Grid3X3 className="w-4 h-4" /> Browse Marketplace
+                <Search className="w-4 h-4" /> Discoveries
               </Button>
             </Link>
-            <Link to={agents.length > 0 ? `/agent-analytics/${agents[0].id}` : "#"}>
+            <Link to="/arena">
               <Button variant="outline" className="w-full h-12 gap-2 text-sm">
-                <BarChart3 className="w-4 h-4" /> View Analytics
+                <Swords className="w-4 h-4" /> Enter Arena
               </Button>
             </Link>
+            <a href="https://pump.fun/coin/EJgyptJK58M9AmJi1w8ivGBjeTm5JoTqFefoQ6JTpump" target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" className="w-full h-12 gap-2 text-sm">
+                <Coins className="w-4 h-4" /> Buy $MEEET
+              </Button>
+            </a>
           </div>
 
           {/* ── Main Content Grid ── */}
