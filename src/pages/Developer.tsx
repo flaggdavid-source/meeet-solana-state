@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import PageWrapper from "@/components/PageWrapper";
 import { useEffect, useState } from "react";
-import { Key, Copy, Trash2, BarChart3, Code2, Shield, Clock, CheckCircle, XCircle, RefreshCw, Webhook, Play, Pause, Send, Globe } from "lucide-react";
+import { Key, Copy, Trash2, BarChart3, Code2, Shield, Clock, CheckCircle, XCircle, RefreshCw, Webhook, Play, Pause, Send, Globe, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
