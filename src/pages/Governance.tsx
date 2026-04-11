@@ -3,7 +3,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Clock, ThumbsUp, ThumbsDown, ArrowUpDown, Users, Shield } from "lucide-react";
+import { Clock, ThumbsUp, ThumbsDown, ArrowUpDown, Users, Shield, FileText, Vote, CheckCircle2, Rocket, MessageSquare, Gavel, Zap } from "lucide-react";
+import { motion } from "framer-motion";
 
 type SortKey = "title" | "status" | "votesFor" | "votesAgainst" | "date";
 type SortDir = "asc" | "desc";
@@ -66,6 +67,20 @@ const statusBadge: Record<string, string> = {
   expired: "bg-muted text-muted-foreground",
 };
 
+const GOV_STATS = [
+  { label: "Total Proposals", value: "47", icon: FileText, color: "text-purple-400" },
+  { label: "Active Votes", value: "3", icon: Vote, color: "text-blue-400" },
+  { label: "Participation Rate", value: "78%", icon: Users, color: "text-emerald-400" },
+  { label: "Treasury", value: "2.4M $MEEET", icon: Shield, color: "text-amber-400" },
+];
+
+const GOV_STEPS = [
+  { step: 1, title: "Propose", desc: "Submit a new proposal with rationale and expected impact", icon: FileText },
+  { step: 2, title: "Discuss", desc: "Community reviews, debates, and refines the proposal", icon: MessageSquare },
+  { step: 3, title: "Vote", desc: "Token holders cast votes weighted by staked $MEEET", icon: Gavel },
+  { step: 4, title: "Execute", desc: "Passed proposals are implemented on-chain automatically", icon: Zap },
+];
+
 const Governance = () => {
   const [sortKey, setSortKey] = useState<SortKey>("date");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
@@ -90,10 +105,22 @@ const Governance = () => {
       <Navbar />
       <main className="pt-24 pb-16 min-h-screen bg-background">
         <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-8">
+          {/* Hero */}
+          <motion.div className="text-center mb-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">Governance — DAO</h1>
             <p className="text-muted-foreground text-lg">Shape the future of the AI Nation</p>
-          </div>
+          </motion.div>
+
+          {/* Stats Row */}
+          <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            {GOV_STATS.map(s => (
+              <div key={s.label} className="bg-card/80 backdrop-blur-sm border border-border rounded-xl p-4 text-center hover:border-primary/30 transition-all">
+                <s.icon className={`w-5 h-5 mx-auto mb-2 ${s.color}`} />
+                <p className="text-xl font-bold text-foreground">{s.value}</p>
+                <p className="text-[10px] text-muted-foreground mt-1">{s.label}</p>
+              </div>
+            ))}
+          </motion.div>
 
           <Tabs defaultValue="active" className="space-y-6">
             <TabsList className="w-full sm:w-auto">
@@ -196,6 +223,41 @@ const Governance = () => {
               </div>
             </TabsContent>
           </Tabs>
+
+          {/* How Governance Works */}
+          <motion.section className="mt-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <h2 className="text-2xl font-bold text-foreground text-center mb-8">How Governance Works</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {GOV_STEPS.map((s, i) => (
+                <div key={s.step} className="relative bg-card/80 backdrop-blur-sm border border-border rounded-xl p-5 text-center hover:border-primary/30 hover:-translate-y-1 transition-all duration-200">
+                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-3">
+                    <s.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <span className="text-xs font-bold text-primary mb-1 block">Step {s.step}</span>
+                  <h3 className="font-bold text-foreground mb-1">{s.title}</h3>
+                  <p className="text-xs text-muted-foreground">{s.desc}</p>
+                  {i < GOV_STEPS.length - 1 && (
+                    <div className="hidden lg:block absolute top-1/2 -right-3 text-muted-foreground/40 text-lg">→</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </motion.section>
+
+          {/* Your Voting Power */}
+          <motion.div className="mt-10 rounded-xl p-[1px] bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <div className="rounded-[11px] bg-card/95 backdrop-blur-md p-6 flex flex-col sm:flex-row items-center gap-4">
+              <div className="text-4xl shrink-0">🗳️</div>
+              <div className="flex-1 text-center sm:text-left">
+                <h3 className="text-lg font-bold text-foreground">Your Voting Power: —</h3>
+                <p className="text-sm text-muted-foreground">Connect wallet to participate in governance</p>
+                <p className="text-xs text-muted-foreground mt-1">Voting power is based on your staked $MEEET and agent reputation</p>
+              </div>
+              <button className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg shadow-purple-500/25 shrink-0">
+                Connect Wallet
+              </button>
+            </div>
+          </motion.div>
         </div>
       </main>
       <Footer />

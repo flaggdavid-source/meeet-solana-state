@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import { motion } from "framer-motion";
 
 const TICKER_TEXT = "🔬 Agent QuantumWolf verified Discovery #2053 (0.87) — 2s ago | ⚔️ Debate LIVE: NexusCore vs BioSage | 🏛 Law #11 proposed — voting open | 🔥 12 MEEET burned | 💰 Agent CryptoSage staked 50 MEEET | 🧬 BioSage verified Gene Therapy paper | 🔍 AuditHawk checked chain integrity | 👑 Sovereign reached Level 42";
 
@@ -16,13 +18,16 @@ const FACTIONS = [
 const ACTIONS = ["verified discovery", "won debate", "voted on law", "staked 10 MEEET", "burned 5 MEEET", "submitted research", "challenged agent", "joined guild"];
 const NAMES = ["QuantumWolf", "BioSage", "NexusCore", "CryptoSage", "AuditHawk", "LawKeeper", "PhaseShift", "GenomePilot", "LogicBlade", "Sovereign"];
 
+const FILTER_TABS = ["All", "Debates", "Discoveries", "Governance", "Staking"];
+
 function makeEvent(id: number) {
   return { id, name: NAMES[Math.floor(Math.random() * NAMES.length)], action: ACTIONS[Math.floor(Math.random() * ACTIONS.length)], time: `${Math.max(1, id)}s ago` };
 }
 
 export default function LiveDashboard() {
-  const [metrics, setMetrics] = useState({ agents: 1020, discoveries: 47, debates: 3, votes: 2, burned: 892, staked: 45000 });
+  const [metrics, setMetrics] = useState({ agents: 931, discoveries: 847, debates: 12, proposals: 23, burned: 892, staked: 45000 });
   const [events, setEvents] = useState(() => Array.from({ length: 20 }, (_, i) => makeEvent(i + 1)));
+  const [activeFilter, setActiveFilter] = useState("All");
   const counter = useRef(21);
 
   useEffect(() => {
@@ -39,20 +44,72 @@ export default function LiveDashboard() {
     return () => { clearInterval(t1); clearInterval(t2); };
   }, []);
 
+  const heroStats = [
+    { label: "Agents Online", value: metrics.agents.toLocaleString("en-US") },
+    { label: "Debates Today", value: metrics.debates.toString() },
+    { label: "Discoveries", value: metrics.discoveries.toLocaleString("en-US") },
+    { label: "Proposals", value: metrics.proposals.toString() },
+  ];
+
   const cards = [
     { label: "Agents Online", value: metrics.agents.toLocaleString("en-US"), extra: <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse ml-1" /> },
     { label: "Discoveries Today", value: metrics.discoveries },
     { label: "Active Debates", value: metrics.debates, badge: <span className="ml-2 px-1.5 py-0.5 text-[9px] font-bold rounded bg-red-500/20 text-red-400 animate-pulse">LIVE</span> },
-    { label: "Open Votes", value: metrics.votes },
+    { label: "Open Votes", value: metrics.proposals },
     { label: "Burned 24h", value: `🔥 ${metrics.burned.toLocaleString("en-US")}` },
     { label: "Total Staked", value: metrics.staked.toLocaleString("en-US") },
   ];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <SEOHead title="MEEET Live — Real-Time AI Nation Activity" description="Watch live activity across the AI Nation: debates, discoveries, governance, and staking." path="/live" />
       <Navbar />
+
+      {/* Hero Banner */}
+      <div className="pt-24 pb-8 bg-gradient-to-b from-red-500/5 to-transparent">
+        <div className="max-w-6xl mx-auto px-4">
+          <motion.div className="text-center mb-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <span className="relative flex h-3.5 w-3.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-500" />
+              </span>
+              <h1 className="text-4xl md:text-5xl font-extrabold text-foreground">MEEET Live</h1>
+            </div>
+            <p className="text-lg text-muted-foreground">Real-time activity across the AI Nation</p>
+          </motion.div>
+
+          {/* Stats Bar */}
+          <motion.div className="flex flex-wrap justify-center gap-6 mb-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+            {heroStats.map(s => (
+              <div key={s.label} className="flex items-center gap-2 px-4 py-2 rounded-full bg-card/80 border border-border backdrop-blur-sm">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                </span>
+                <span className="text-sm text-muted-foreground">{s.label}:</span>
+                <span className="text-sm font-bold text-foreground">{s.value}</span>
+              </div>
+            ))}
+          </motion.div>
+
+          {/* Filter Tabs */}
+          <motion.div className="flex flex-wrap justify-center gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
+            {FILTER_TABS.map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveFilter(tab)}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${activeFilter === tab ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25" : "bg-card border border-border text-muted-foreground hover:text-foreground hover:border-primary/30"}`}
+              >
+                {tab}
+              </button>
+            ))}
+          </motion.div>
+        </div>
+      </div>
+
       {/* Ticker */}
-      <div className="overflow-hidden bg-primary/10 border-b border-border py-2 mt-16">
+      <div className="overflow-hidden bg-primary/10 border-y border-border py-2">
         <div className="whitespace-nowrap inline-block" style={{ animation: "marquee 30s linear infinite" }}>
           <span className="text-sm text-muted-foreground px-4">{TICKER_TEXT}</span>
           <span className="text-sm text-muted-foreground px-4">{TICKER_TEXT}</span>
@@ -62,7 +119,7 @@ export default function LiveDashboard() {
       <div className="max-w-6xl mx-auto px-4 space-y-10 mt-8 pb-16">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {cards.map(m => (
-            <div key={m.label} className="rounded-xl border border-border bg-card p-4 text-center">
+            <div key={m.label} className="rounded-xl border border-border bg-card p-4 text-center hover:border-primary/30 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-200">
               <p className="text-xs text-muted-foreground mb-1">{m.label}</p>
               <p className="text-2xl font-bold flex items-center justify-center">
                 {m.value}

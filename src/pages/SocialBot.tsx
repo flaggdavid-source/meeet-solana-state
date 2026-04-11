@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 const SUPABASE_PROJECT_ID = import.meta.env.VITE_SUPABASE_PROJECT_ID || "zujrmifaabkletgnpoyw";
 const FUNCTIONS_URL = `https://${SUPABASE_PROJECT_ID}.supabase.co/functions/v1`;
@@ -28,7 +29,7 @@ const statusIcon = (status: string) => {
   return <AlertCircle className="w-4 h-4 text-yellow-400" />;
 };
 
-const statusBadge = (status: string) => {
+const statusBadgeEl = (status: string) => {
   const colors: Record<string, string> = {
     posted: "bg-green-500/20 text-green-300 border-green-500/30",
     failed: "bg-red-500/20 text-red-300 border-red-500/30",
@@ -40,6 +41,13 @@ const statusBadge = (status: string) => {
     </span>
   );
 };
+
+const BOT_FEATURES = [
+  { icon: "🤖", title: "Auto-Discovery Posts", desc: "Automatically share your agent's breakthroughs on X/Twitter", border: "border-t-purple-500" },
+  { icon: "📊", title: "Analytics Dashboard", desc: "Track engagement, impressions, and follower growth", border: "border-t-cyan-500" },
+  { icon: "⏰", title: "Smart Scheduling", desc: "AI-optimized posting times for maximum reach", border: "border-t-emerald-500" },
+  { icon: "🎨", title: "Custom Templates", desc: "Choose from 10+ post templates or create your own", border: "border-t-amber-500" },
+];
 
 export default function SocialBot() {
   const queryClient = useQueryClient();
@@ -128,7 +136,7 @@ export default function SocialBot() {
           </div>
         </div>
 
-        {/* Stats - only show when user has posts */}
+        {/* Stats or empty state */}
         {hasAnyPosts ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {statCards.map((s) => (
@@ -145,7 +153,6 @@ export default function SocialBot() {
           </div>
         ) : (
           <div className="mb-8 space-y-8">
-            {/* Hero empty state */}
             <div className="text-center py-12 px-6 rounded-2xl border border-primary/20 bg-gradient-to-b from-primary/5 to-transparent">
               <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary/30 to-purple-500/20 border border-primary/30 flex items-center justify-center">
                 <Bot className="w-8 h-8 text-primary" />
@@ -159,7 +166,6 @@ export default function SocialBot() {
               </Button>
             </div>
 
-            {/* Sample preview cards */}
             <div>
               <p className="text-sm text-muted-foreground mb-3 text-center">Example posts your bot would create:</p>
               <div className="grid md:grid-cols-3 gap-4">
@@ -182,7 +188,7 @@ export default function SocialBot() {
           </div>
         )}
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-3 gap-6 mb-12">
           {/* Preview */}
           <div className="lg:col-span-1">
             <div className="rounded-xl bg-card border border-border p-5">
@@ -215,7 +221,7 @@ export default function SocialBot() {
             </div>
           </div>
 
-          {/* Recent Posts Feed */}
+          {/* Recent Posts */}
           <div className="lg:col-span-2">
             <div className="rounded-xl bg-card border border-border p-5">
               <div className="flex items-center justify-between mb-4">
@@ -250,7 +256,7 @@ export default function SocialBot() {
                           <span className="text-xs font-medium uppercase tracking-wider text-purple-400">
                             {post.platform === "twitter" ? "𝕏" : post.platform}
                           </span>
-                          {statusBadge(post.status)}
+                          {statusBadgeEl(post.status)}
                         </div>
                         <span className="text-xs text-muted-foreground whitespace-nowrap">
                           {post.posted_at
@@ -261,19 +267,10 @@ export default function SocialBot() {
                       <p className="text-sm whitespace-pre-wrap break-words line-clamp-3">{post.post_content}</p>
                       {post.engagement_metrics && Object.keys(post.engagement_metrics).length > 0 && post.engagement_metrics.tweet_id && (
                         <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
-                          <a
-                            href={`https://x.com/i/status/${post.engagement_metrics.tweet_id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-purple-400 hover:underline"
-                          >
-                            View on 𝕏 →
-                          </a>
+                          <a href={`https://x.com/i/status/${post.engagement_metrics.tweet_id}`} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">View on 𝕏 →</a>
                         </div>
                       )}
-                      {post.error_message && (
-                        <p className="mt-1 text-xs text-red-400 truncate">Error: {post.error_message}</p>
-                      )}
+                      {post.error_message && <p className="mt-1 text-xs text-red-400 truncate">Error: {post.error_message}</p>}
                     </div>
                   ))}
                 </div>
@@ -281,6 +278,55 @@ export default function SocialBot() {
             </div>
           </div>
         </div>
+
+        {/* Bot Features */}
+        <motion.section className="mb-12" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <h2 className="text-2xl font-bold text-foreground text-center mb-2">Bot Features</h2>
+          <p className="text-muted-foreground text-center mb-6">Everything you need to automate your social presence</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {BOT_FEATURES.map(f => (
+              <div key={f.title} className={`bg-card/80 backdrop-blur-sm border border-border ${f.border} border-t-2 rounded-xl p-5 text-center hover:scale-[1.03] hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-200`}>
+                <span className="text-3xl block mb-3">{f.icon}</span>
+                <h3 className="font-bold text-foreground mb-1">{f.title}</h3>
+                <p className="text-sm text-muted-foreground">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </motion.section>
+
+        {/* Pricing Mini */}
+        <motion.section className="mb-8" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <h2 className="text-2xl font-bold text-foreground text-center mb-6">Simple Pricing</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+            <div className="bg-card border border-border rounded-xl p-6">
+              <h3 className="text-lg font-bold text-foreground mb-1">Free</h3>
+              <p className="text-3xl font-extrabold text-foreground mb-3">$0<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-center gap-2"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> 5 posts/day</li>
+                <li className="flex items-center gap-2"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Basic templates</li>
+                <li className="flex items-center gap-2"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Community support</li>
+              </ul>
+            </div>
+            <div className="rounded-xl p-[1px] bg-gradient-to-r from-purple-500 to-blue-500">
+              <div className="bg-card rounded-[11px] p-6 h-full">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-lg font-bold text-foreground">Pro</h3>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/20 text-primary">POPULAR</span>
+                </div>
+                <p className="text-3xl font-extrabold text-foreground mb-3">$9<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
+                <ul className="space-y-2 text-sm text-muted-foreground mb-4">
+                  <li className="flex items-center gap-2"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Unlimited posts</li>
+                  <li className="flex items-center gap-2"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> All templates</li>
+                  <li className="flex items-center gap-2"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Priority scheduling</li>
+                  <li className="flex items-center gap-2"><CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Analytics dashboard</li>
+                </ul>
+                <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                  Upgrade to Pro
+                </Button>
+              </div>
+            </div>
+          </div>
+        </motion.section>
       </main>
       <Footer />
     </div>
