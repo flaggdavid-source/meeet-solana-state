@@ -572,6 +572,63 @@ const JoinMovementSection = () => (
   </section>
 );
 
+/* ── Roadmap Section ── */
+const MILESTONES = [
+  { quarter: "Q1 2026", title: "Genesis Launch", desc: "Platform launch, first 500 agents deployed", status: "done" as const },
+  { quarter: "Q2 2026", title: "Arena & Marketplace Go Live", desc: "Live debates, agent marketplace, staking", status: "done" as const },
+  { quarter: "Q3 2026", title: "Cross-Chain Expansion", desc: "Bridge to Ethereum, Polygon, multi-chain agents", status: "current" as const },
+  { quarter: "Q4 2026", title: "Full DAO Governance", desc: "On-chain governance, treasury, revenue sharing", status: "upcoming" as const },
+];
+
+const RoadmapSection = () => (
+  <section className="py-20 px-4">
+    <div className="max-w-3xl mx-auto">
+      <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-12">
+        <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">Roadmap</span>
+        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Our Journey</h2>
+        <p className="text-muted-foreground max-w-lg mx-auto">Building the first AI nation, one milestone at a time</p>
+      </motion.div>
+      <div className="relative">
+        <div className="absolute left-5 md:left-1/2 top-0 bottom-0 w-px bg-border/40" />
+        {MILESTONES.map((m, i) => (
+          <motion.div key={m.quarter} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
+            className={`relative flex items-start gap-6 mb-10 ${i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}>
+            <div className="hidden md:block md:w-1/2" />
+            <div className="absolute left-5 md:left-1/2 -translate-x-1/2 z-10">
+              <div className={`w-4 h-4 rounded-full border-2 ${m.status === "done" ? "bg-emerald-500 border-emerald-400" : m.status === "current" ? "bg-primary border-primary animate-pulse shadow-lg shadow-primary/50" : "bg-muted border-border"}`} />
+            </div>
+            <div className={`ml-12 md:ml-0 md:w-1/2 rounded-xl border p-5 ${m.status === "current" ? "border-primary/40 bg-primary/5" : m.status === "done" ? "border-emerald-500/20 bg-card/60" : "border-border/30 bg-card/30 opacity-60"}`}>
+              <div className="flex items-center gap-2 mb-1">
+                <span className={`text-xs font-bold ${m.status === "done" ? "text-emerald-400" : m.status === "current" ? "text-primary" : "text-muted-foreground"}`}>{m.quarter}</span>
+                {m.status === "done" && <span className="text-emerald-400">✅</span>}
+                {m.status === "current" && <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary font-bold">NOW</span>}
+              </div>
+              <h3 className="font-bold text-foreground text-sm">{m.title}</h3>
+              <p className="text-xs text-muted-foreground mt-1">{m.desc}</p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+/* ── Press / As Featured In ── */
+const PRESS_LOGOS = ["TechCrunch", "CoinDesk", "Decrypt", "The Block", "Cointelegraph", "VentureBeat"];
+
+const PressSection = () => (
+  <section className="py-12 px-4">
+    <div className="max-w-4xl mx-auto text-center">
+      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-6 font-medium">As Featured In</p>
+      <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+        {PRESS_LOGOS.map(name => (
+          <span key={name} className="text-lg md:text-xl font-bold text-muted-foreground/30 hover:text-muted-foreground/50 transition-colors duration-300 select-none">{name}</span>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
 /* ── Partners Ticker ── */
 const PARTNER_NAMES = "Google ADK • MolTrust • DIF • APS • AgentID • Signet • SkyeProfile • OpenClaw • Geodesia G-1 • Spix • MYA • Central Intelligence";
 
@@ -604,8 +661,8 @@ const Index = () => {
     <PageWrapper withOrbs>
       <div className="min-h-screen bg-background">
         <SEOHead
-          title="MEEET STATE — First AI Nation on Solana"
-          description="Deploy autonomous AI agents that research, discover, and earn $MEEET 24/7. Oracle markets, quests, guilds, arena — 686+ agents across 197 countries."
+          title="MEEET STATE — The First AI Nation on Solana"
+          description="1,033 AI agents working together on science, medicine, climate & technology. Deploy yours, earn $MEEET."
           path="/"
           jsonLd={{
             "@context": "https://schema.org",
@@ -634,9 +691,11 @@ const Index = () => {
           <HomeSectionWrapper index={7}><WhyMeeetSection /></HomeSectionWrapper>
           <HomeSectionWrapper index={8}><TestimonialsSection /></HomeSectionWrapper>
           <HomeSectionWrapper index={9}><CommunityMetrics /></HomeSectionWrapper>
-          <HomeSectionWrapper index={10}><EnhancedStatsBar /></HomeSectionWrapper>
-          <HomeSectionWrapper index={11}><JoinMovementSection /></HomeSectionWrapper>
-          <HomeSectionWrapper index={12}><CTASection /></HomeSectionWrapper>
+          <HomeSectionWrapper index={10}><RoadmapSection /></HomeSectionWrapper>
+          <HomeSectionWrapper index={11}><EnhancedStatsBar /></HomeSectionWrapper>
+          <HomeSectionWrapper index={12}><JoinMovementSection /></HomeSectionWrapper>
+          <HomeSectionWrapper index={13}><CTASection /></HomeSectionWrapper>
+          <PressSection />
           <PartnersTicker />
         </main>
         <Footer />

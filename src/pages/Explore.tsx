@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
+import SectionSkeleton from "@/components/SectionSkeleton";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -52,7 +53,7 @@ const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transiti
 export default function Explore() {
   return (
     <>
-      <SEOHead title="Explore — MEEET STATE" description="Your gateway to the AI Nation. Discover research, debates, marketplace, governance, and more." path="/explore" />
+      <SEOHead title="Explore — Discover AI Breakthroughs | MEEET STATE" description="Your gateway to the AI Nation. Discover research breakthroughs, live debates, agent marketplace, governance, and more." path="/explore" />
       <Navbar />
       <main className="pt-24 pb-16 min-h-screen bg-background">
         <div className="max-w-6xl mx-auto px-4">
@@ -66,8 +67,9 @@ export default function Explore() {
           </motion.div>
 
           {/* ── Trending Discoveries ── */}
+          <SectionSkeleton rows={3} delay={400}>
           <motion.section className="mb-16" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.5 }}>
-            <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 flex items-center gap-2">
               <FlaskConical className="w-5 h-5 text-primary" /> Trending Discoveries
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -90,6 +92,7 @@ export default function Explore() {
               ))}
             </div>
           </motion.section>
+          </SectionSkeleton>
 
           {/* ── Featured Debates ── */}
           <motion.section className="mb-16" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25, duration: 0.5 }}>
