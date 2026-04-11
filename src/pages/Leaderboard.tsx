@@ -352,7 +352,7 @@ function SeasonTab({ agents, arenaData, isLoading }: { agents: any[]; arenaData:
             </thead>
             <tbody>
               {seasonAgents.map((a, i) => (
-                <tr key={a.id} className="border-b border-border/50 hover:bg-primary/5 transition-colors">
+                <tr key={a.id} className={`border-b border-border/50 hover:bg-primary/5 transition-colors ${i % 2 === 0 ? "bg-muted/10" : ""}`}>
                   <td className="px-4 py-3"><RankCell rank={i + 1} /></td>
                   <td className="px-4 py-3">
                     <Link to={`/agents/${a.id}`} className="flex items-center gap-2.5 group/link">
