@@ -54,14 +54,14 @@ const Footer = forwardRef<HTMLElement>((_props, ref) => {
   };
 
   return (
-    <footer ref={ref} className="bg-[hsl(240_15%_4%)] border-t border-purple-500/20">
+    <footer ref={ref} className="bg-[#0d0d1a] border-t border-purple-500/20">
       {/* Main grid */}
       <div className="py-12 px-4">
         <div className="container max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Brand column */}
           <div className="space-y-4">
-            <Link to="/" className="text-xl font-black tracking-tight text-foreground">MEEET</Link>
-            <p className="text-xs text-muted-foreground/80 leading-relaxed">
+            <Link to="/" className="text-xl font-black tracking-tight text-white">MEEET</Link>
+            <p className="text-xs text-gray-400 leading-relaxed">
               The first AI Nation on Solana. Deploy agents, earn $MEEET, shape the future.
             </p>
             <div className="flex items-center gap-3 pt-1">
@@ -71,7 +71,7 @@ const Footer = forwardRef<HTMLElement>((_props, ref) => {
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-lg bg-card/50 border border-border/30 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all"
+                  className="w-8 h-8 rounded-lg bg-gray-800/50 border border-gray-700/50 flex items-center justify-center text-gray-400 hover:text-white hover:border-purple-500/40 transition-all"
                   aria-label={s.label}
                 >
                   <s.icon className="w-4 h-4" />
@@ -83,18 +83,18 @@ const Footer = forwardRef<HTMLElement>((_props, ref) => {
           {/* Link columns */}
           {COLUMNS.map((col) => (
             <div key={col.title}>
-              <h4 className="text-sm font-semibold text-foreground mb-4">{col.title}</h4>
+              <h4 className="text-sm font-semibold text-white mb-4">{col.title}</h4>
               <ul className="space-y-2.5">
                 {col.links.map((l) =>
                   "external" in l && l.external ? (
                     <li key={l.label}>
-                      <a href={l.href} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                      <a href={l.href} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-400 hover:text-white transition-colors">
                         {l.label}
                       </a>
                     </li>
                   ) : (
                     <li key={l.label + l.href}>
-                      <Link to={l.href} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                      <Link to={l.href} className="text-xs text-gray-400 hover:text-white transition-colors">
                         {l.label}
                       </Link>
                     </li>
@@ -107,18 +107,18 @@ const Footer = forwardRef<HTMLElement>((_props, ref) => {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-border/10 py-5 px-4">
+      <div className="border-t border-gray-800 py-5 px-4">
         <div className="container max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-[11px] text-gray-400">
             © {new Date().getFullYear()} MEEET State. All rights reserved.
           </p>
-          <span className="text-[11px] text-muted-foreground/60">$MEEET · $0.000005</span>
+          <span className="text-[11px] text-gray-300">$MEEET · $0.000005</span>
           <div className="flex items-center gap-3">
-            <span className="text-[11px] text-muted-foreground/60">Built on Solana ◎</span>
+            <span className="text-[11px] text-gray-300">Built on Solana ◎</span>
             <button
               onClick={copyCA}
               title="Click to copy Contract Address"
-              className="inline-flex items-center gap-1.5 text-[11px] font-mono text-muted-foreground hover:text-foreground transition-colors group"
+              className="inline-flex items-center gap-1.5 text-[11px] font-mono text-gray-400 hover:text-white transition-colors group"
             >
               CA: {CA_SHORT}
               <Copy className="w-3 h-3 opacity-50 group-hover:opacity-100 transition-opacity" />

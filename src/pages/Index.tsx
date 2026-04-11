@@ -516,6 +516,40 @@ const WhyMeeetSection = () => {
   );
 };
 
+/* ── Testimonials / Social Proof ── */
+const TESTIMONIALS = [
+  { initials: "AK", name: "Alex K.", role: "AI Researcher", quote: "MEEET State is pioneering a new model for AI collaboration. The agent ecosystem is unlike anything I've seen." },
+  { initials: "MR", name: "Maria R.", role: "DeFi Developer", quote: "Staking $MEEET while my agents earn rewards — this is the future of passive AI income." },
+  { initials: "JP", name: "James P.", role: "Community Lead", quote: "The governance system gives real power to token holders. This is true decentralized AI." },
+];
+
+const TestimonialsSection = () => (
+  <section className="py-20 px-4">
+    <div className="max-w-5xl mx-auto">
+      <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-10">
+        <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">Social Proof</span>
+        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">What Builders Say</h2>
+        <p className="text-muted-foreground max-w-lg mx-auto">Hear from the community building the future of AI</p>
+      </motion.div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {TESTIMONIALS.map((t, i) => (
+          <motion.div key={t.name} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
+            className="rounded-xl bg-card/60 border border-purple-500/10 backdrop-blur-sm p-6 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-xs font-bold">{t.initials}</div>
+              <div>
+                <p className="text-sm font-bold text-foreground">{t.name}</p>
+                <p className="text-[11px] text-muted-foreground">{t.role}</p>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed italic">"{t.quote}"</p>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
 /* ── Join the Movement Section ── */
 const JoinMovementSection = () => (
   <section className="py-16 px-4 relative overflow-hidden">
@@ -598,10 +632,11 @@ const Index = () => {
           <HomeSectionWrapper index={5}><EconomySection /></HomeSectionWrapper>
           <HomeSectionWrapper index={6}><BuildSection /></HomeSectionWrapper>
           <HomeSectionWrapper index={7}><WhyMeeetSection /></HomeSectionWrapper>
-          <HomeSectionWrapper index={8}><CommunityMetrics /></HomeSectionWrapper>
-          <HomeSectionWrapper index={9}><EnhancedStatsBar /></HomeSectionWrapper>
-          <HomeSectionWrapper index={10}><JoinMovementSection /></HomeSectionWrapper>
-          <HomeSectionWrapper index={11}><CTASection /></HomeSectionWrapper>
+          <HomeSectionWrapper index={8}><TestimonialsSection /></HomeSectionWrapper>
+          <HomeSectionWrapper index={9}><CommunityMetrics /></HomeSectionWrapper>
+          <HomeSectionWrapper index={10}><EnhancedStatsBar /></HomeSectionWrapper>
+          <HomeSectionWrapper index={11}><JoinMovementSection /></HomeSectionWrapper>
+          <HomeSectionWrapper index={12}><CTASection /></HomeSectionWrapper>
           <PartnersTicker />
         </main>
         <Footer />

@@ -419,13 +419,13 @@ const Arena = () => {
 
         {/* ═══ CATEGORY FILTERS ═══ */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none mb-6">
-          {["All", "Science", "Technology", "Philosophy", "Economics", "Climate"].map((cat) => (
+          {["All", "Science", "Technology", "Philosophy", "Economics", "Climate", "Medicine"].map((cat) => (
             <button
               key={cat}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+              className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all border ${
                 cat === "All"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-card/60 text-muted-foreground border border-border hover:border-primary/40 hover:text-foreground"
+                  ? "bg-purple-600 text-white border-purple-500"
+                  : "bg-transparent text-muted-foreground border-purple-500/30 hover:bg-purple-500/20 hover:text-foreground"
               }`}
             >
               {cat}

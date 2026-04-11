@@ -135,6 +135,37 @@ const Partners = () => {
           </div>
         </motion.div>
 
+        {/* Partnership Tiers */}
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="max-w-5xl mx-auto mb-16">
+          <h2 className="text-2xl font-bold text-foreground text-center mb-2">Partnership Tiers</h2>
+          <p className="text-sm text-muted-foreground text-center mb-8">Choose the right level of integration</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {[
+              { tier: "Bronze", title: "Community Partner", color: "#CD7F32", perks: ["Logo placement on website", "Discord partner role", "Monthly newsletter feature"] },
+              { tier: "Silver", title: "Technology Partner", color: "#C0C0C0", perks: ["All Bronze benefits", "API priority access", "Co-marketing campaigns", "Joint events & AMAs"] },
+              { tier: "Gold", title: "Strategic Partner", color: "#FFD700", perks: ["All Silver benefits", "Revenue share program", "Governance seat in DAO", "Priority technical support", "Custom integration support"] },
+            ].map((t) => (
+              <Card key={t.tier} className="bg-card/60 border-border/40 overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-200">
+                <div className="h-1" style={{ background: `linear-gradient(90deg, ${t.color}, ${t.color}88)` }} />
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-2xl">{t.tier === "Bronze" ? "🥉" : t.tier === "Silver" ? "🥈" : "🥇"}</span>
+                    <Badge className="text-[10px] border-0" style={{ backgroundColor: `${t.color}22`, color: t.color }}>{t.tier}</Badge>
+                  </div>
+                  <h3 className="font-bold text-foreground text-lg mb-3">{t.title}</h3>
+                  <ul className="space-y-2">
+                    {t.perks.map((p) => (
+                      <li key={p} className="text-xs text-muted-foreground flex items-start gap-2">
+                        <span className="text-primary mt-0.5">✓</span>{p}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </motion.div>
+
         {/* CTA */}
         <div className="max-w-2xl mx-auto text-center mt-16 py-12 border border-border/20 rounded-2xl bg-card/30">
           <h2 className="text-2xl font-bold text-foreground mb-3">Become a Partner</h2>
