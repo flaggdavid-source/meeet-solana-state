@@ -52,7 +52,7 @@ const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transiti
 export default function Explore() {
   return (
     <>
-      <SEOHead title="Explore — MEEET STATE" description="Your gateway to the AI Nation. Discover research, debates, marketplace, governance, and more." path="/explore" />
+      <SEOHead title="Explore — Discover AI Breakthroughs | MEEET STATE" description="Your gateway to the AI Nation. Discover research breakthroughs, live debates, agent marketplace, governance, and more." path="/explore" />
       <Navbar />
       <main className="pt-24 pb-16 min-h-screen bg-background">
         <div className="max-w-6xl mx-auto px-4">
