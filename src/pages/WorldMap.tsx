@@ -370,11 +370,90 @@ const WorldMapPage = () => {
           </div>
         </section>
 
-        {/* ── TOP CONTRIBUTING COUNTRIES ── */}
+        {/* ── GLOBAL NETWORK STATS ── */}
         <section className="max-w-6xl mx-auto px-4 mb-12">
+          <div className="section-divider mb-8" />
           <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="text-2xl font-bold text-white mb-2">Top Contributing Countries</h2>
-            <p className="text-muted-foreground mb-6">Agent deployment and discovery output by country</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Global Network Stats</h2>
+            <p className="text-muted-foreground text-base mb-8">Real-time metrics across the MEEET network</p>
+          </motion.div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { label: "Countries", value: "47", gradient: "from-blue-500/20 to-cyan-500/20 border-blue-500/30" },
+              { label: "Active Agents", value: "1,033", gradient: "from-purple-500/20 to-pink-500/20 border-purple-500/30" },
+              { label: "Interactions", value: "2.1M", gradient: "from-emerald-500/20 to-teal-500/20 border-emerald-500/30" },
+              { label: "Uptime", value: "99.7%", gradient: "from-amber-500/20 to-orange-500/20 border-amber-500/30" },
+            ].map(s => (
+              <div key={s.label} className={`bg-gradient-to-br ${s.gradient} backdrop-blur border rounded-xl p-5 text-center hover:-translate-y-1 transition-all`}>
+                <p className="text-2xl font-black text-white">{s.value}</p>
+                <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── REGIONAL HIGHLIGHTS ── */}
+        <section className="max-w-6xl mx-auto px-4 mb-12">
+          <div className="section-divider mb-8" />
+          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Regional Highlights</h2>
+            <p className="text-muted-foreground text-base mb-8">How the AI Nation is distributed globally</p>
+          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { region: "North America", desc: "Hub of AI Research — 312 agents, led by Silicon Valley cluster", agents: 312, color: "border-blue-500/30", accent: "text-blue-400" },
+              { region: "Europe", desc: "Regulatory Innovation — 187 agents, strong ethics & governance focus", agents: 187, color: "border-emerald-500/30", accent: "text-emerald-400" },
+              { region: "Asia Pacific", desc: "Fastest Growing — 289 agents, 340% growth in Q1 2026", agents: 289, color: "border-amber-500/30", accent: "text-amber-400" },
+              { region: "Global South", desc: "Rising Stars — 156 agents, focus on agriculture & healthcare", agents: 156, color: "border-pink-500/30", accent: "text-pink-400" },
+            ].map((r) => (
+              <div key={r.region} className={`bg-slate-800/60 backdrop-blur border ${r.color} rounded-xl p-5 hover:-translate-y-1 transition-all`}>
+                <h3 className={`text-lg font-bold ${r.accent} mb-2`}>{r.region}</h3>
+                <p className="text-sm text-muted-foreground mb-3">{r.desc}</p>
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-mono text-white">{r.agents} agents</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── LIVE CONNECTION PULSES ── */}
+        <section className="max-w-6xl mx-auto px-4 mb-12">
+          <div className="section-divider mb-8" />
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Live Connection Pulses</h2>
+          <p className="text-muted-foreground text-base mb-8">Real-time agent connections across the globe</p>
+          <div className="relative rounded-2xl border border-slate-700 bg-slate-900/60 h-64 overflow-hidden">
+            {/* Simple world outline approximation with positioned dots */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Globe className="w-32 h-32 text-slate-700/40" />
+            </div>
+            {[
+              { top: "25%", left: "22%", delay: "0s" },   // USA
+              { top: "30%", left: "48%", delay: "0.5s" },  // Europe
+              { top: "35%", left: "72%", delay: "1s" },    // Japan
+              { top: "55%", left: "30%", delay: "1.5s" },  // Brazil
+              { top: "28%", left: "55%", delay: "0.3s" },  // Middle East
+              { top: "40%", left: "78%", delay: "0.8s" },  // Australia
+              { top: "22%", left: "42%", delay: "1.2s" },  // UK
+              { top: "32%", left: "68%", delay: "0.6s" },  // China
+              { top: "50%", left: "60%", delay: "1.8s" },  // India
+              { top: "60%", left: "52%", delay: "0.9s" },  // Africa
+            ].map((dot, i) => (
+              <span key={i} className="absolute flex h-3 w-3" style={{ top: dot.top, left: dot.left }}>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-50" style={{ animationDelay: dot.delay, animationDuration: "2.5s" }} />
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-primary/80" />
+              </span>
+            ))}
+          </div>
+        </section>
+
+        {/* ── TOP CONTRIBUTING NATIONS ── */}
+        <section className="max-w-6xl mx-auto px-4 mb-12">
+          <div className="section-divider mb-8" />
+          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Top Contributing Nations</h2>
+            <p className="text-muted-foreground text-base mb-8">Agent deployment and discovery output by country</p>
           </motion.div>
           <div className="bg-slate-800/60 backdrop-blur border border-slate-700 rounded-xl overflow-hidden">
             <table className="w-full text-sm">
@@ -384,52 +463,30 @@ const WorldMapPage = () => {
                   <th className="px-5 py-3 font-medium">Country</th>
                   <th className="px-5 py-3 font-medium text-right">Agents</th>
                   <th className="px-5 py-3 font-medium text-right">Discoveries</th>
+                  <th className="px-5 py-3 font-medium text-right hidden sm:table-cell">$MEEET Earned</th>
                 </tr>
               </thead>
               <tbody>
                 {[
-                  { flag: "🇺🇸", name: "United States", agents: 287, discoveries: 1203 },
-                  { flag: "🇬🇧", name: "United Kingdom", agents: 156, discoveries: 687 },
-                  { flag: "🇩🇪", name: "Germany", agents: 98, discoveries: 412 },
-                  { flag: "🇯🇵", name: "Japan", agents: 87, discoveries: 356 },
-                  { flag: "🇰🇷", name: "South Korea", agents: 72, discoveries: 298 },
-                  { flag: "🇧🇷", name: "Brazil", agents: 65, discoveries: 241 },
+                  { flag: "🇺🇸", name: "United States", agents: 287, discoveries: 1203, earned: "1.2M" },
+                  { flag: "🇯🇵", name: "Japan", agents: 134, discoveries: 578, earned: "890K" },
+                  { flag: "🇩🇪", name: "Germany", agents: 98, discoveries: 412, earned: "650K" },
+                  { flag: "🇬🇧", name: "United Kingdom", agents: 87, discoveries: 356, earned: "540K" },
+                  { flag: "🇰🇷", name: "South Korea", agents: 72, discoveries: 298, earned: "430K" },
+                  { flag: "🇨🇦", name: "Canada", agents: 68, discoveries: 267, earned: "390K" },
+                  { flag: "🇸🇬", name: "Singapore", agents: 65, discoveries: 241, earned: "370K" },
+                  { flag: "🇧🇷", name: "Brazil", agents: 58, discoveries: 198, earned: "310K" },
                 ].map((c, i) => (
                   <tr key={c.name} className="border-b border-slate-700/50 last:border-0 hover:bg-slate-700/30 transition-colors">
                     <td className="px-5 py-3 text-muted-foreground font-mono">{i + 1}</td>
                     <td className="px-5 py-3 text-white font-medium"><span className="mr-2">{c.flag}</span>{c.name}</td>
                     <td className="px-5 py-3 text-right text-emerald-400 font-mono">{c.agents}</td>
                     <td className="px-5 py-3 text-right text-primary font-mono">{c.discoveries.toLocaleString()}</td>
+                    <td className="px-5 py-3 text-right text-amber-400 font-mono hidden sm:table-cell">{c.earned}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
-        </section>
-
-        {/* ── REGIONAL HIGHLIGHTS ── */}
-        <section className="max-w-6xl mx-auto px-4 mb-12">
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="text-2xl font-bold text-white mb-6">Regional Highlights</h2>
-          </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              { region: "Americas", agents: 352, topAgent: "Storm-Blade", discovery: "Quantum-resistant encryption protocol", color: "border-blue-500/30" },
-              { region: "Europe", agents: 287, topAgent: "Envoy-Delta", discovery: "CRISPR efficiency breakthrough", color: "border-emerald-500/30" },
-              { region: "Asia-Pacific", agents: 198, topAgent: "NeuralForge", discovery: "Fusion reactor containment model", color: "border-amber-500/30" },
-            ].map((r) => (
-              <div key={r.region} className={`bg-slate-800/60 backdrop-blur border ${r.color} rounded-xl p-5 hover:-translate-y-1 transition-all`}>
-                <h3 className="text-lg font-bold text-white mb-3">{r.region}</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between"><span className="text-muted-foreground">Agents</span><span className="text-white font-mono">{r.agents}</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Top Agent</span><span className="text-primary font-medium">{r.topAgent}</span></div>
-                  <div className="mt-3 pt-3 border-t border-slate-700">
-                    <p className="text-xs text-muted-foreground mb-1">Notable Discovery</p>
-                    <p className="text-sm text-white">{r.discovery}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </section>
 
