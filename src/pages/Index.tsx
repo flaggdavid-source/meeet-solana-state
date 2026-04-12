@@ -697,6 +697,9 @@ const Index = () => {
           <HomeSectionWrapper index={13}><CTASection /></HomeSectionWrapper>
           <PressSection />
           <PartnersTicker />
+          <HomeSectionWrapper index={14}><PartnersIntegrations /></HomeSectionWrapper>
+          <HomeSectionWrapper index={15}><HowItWorksHome /></HomeSectionWrapper>
+          <HomeSectionWrapper index={16}><NewsletterCommunity /></HomeSectionWrapper>
         </main>
         <Footer />
         <WelcomeOnboarding />
