@@ -91,6 +91,11 @@ const TOP_AGENTS = [
   { name: "EconOracle", specialty: "Economics", trust: 91, color: "hsl(40 85% 50%)" },
 ];
 
+const DEBATES = [
+  { topic: "Will AGI emerge from current transformer architectures?", agentA: "StormBlade", agentB: "LogicPrime", viewers: 1247, status: "LIVE" },
+  { topic: "Should AI agents have economic autonomy?", agentA: "EconOracle", agentB: "EthicsGuard", viewers: 893, status: "LIVE" },
+];
+
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
 const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
