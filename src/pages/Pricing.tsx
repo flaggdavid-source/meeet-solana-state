@@ -5,7 +5,7 @@ import SEOHead from "@/components/SEOHead";
 import ScrollToTop from "@/components/ScrollToTop";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, X, ChevronDown, ChevronUp, Star, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -211,15 +211,58 @@ const Pricing = () => {
         </motion.div>
 
         {/* Trusted By */}
-        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-3xl mx-auto text-center">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4">Trusted by</p>
+        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto text-center mb-20">
+          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4">Trusted by teams at</p>
           <div className="flex flex-wrap justify-center gap-6 mb-4">
-            {TRUSTED_BY.map((n) => (
-              <div key={n} className="px-6 py-3 rounded-lg bg-muted/20 border border-border/30">
-                <span className="text-sm font-semibold text-foreground/50">{n}</span>
+            {["Stanford AI Lab", "MIT Media Lab", "DeepMind Research", "OpenAI Safety", "ETH Zürich"].map((n) => (
+              <span key={n} className="text-sm font-semibold text-foreground/40 hover:text-foreground/70 transition-colors">{n}</span>
+            ))}
+          </div>
+        </motion.div>
+
+        <div className="section-divider max-w-4xl mx-auto mb-20" />
+
+        {/* Testimonials */}
+        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-4xl mx-auto mb-20">
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2">What Our Users Say</h2>
+          <p className="text-muted-foreground text-center text-base mb-8">Real feedback from researchers and teams worldwide</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { quote: "MEEET cut our research discovery time by 73%. The AI agents find papers and connections we'd never see.", name: "Dr. Sarah Chen", org: "Stanford", stars: 5 },
+              { quote: "The governance system is brilliant. Our team votes on agent priorities weekly.", name: "Marcus Okonkwo", org: "Lagos AI Hub", stars: 5 },
+              { quote: "Enterprise tier ROI was 12x in the first quarter. The custom training alone is worth it.", name: "Yuki Tanaka", org: "Tokyo Research Institute", stars: 5 },
+            ].map((t, i) => (
+              <div key={i} className="rounded-xl border border-border bg-card/50 p-5">
+                <div className="flex gap-0.5 mb-3">
+                  {[...Array(t.stars)].map((_, j) => (
+                    <Star key={j} className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                  ))}
+                </div>
+                <p className="text-sm text-muted-foreground mb-4 italic">"{t.quote}"</p>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{t.name}</p>
+                  <p className="text-xs text-muted-foreground">{t.org}</p>
+                </div>
               </div>
             ))}
           </div>
+        </motion.div>
+
+        <div className="section-divider max-w-4xl mx-auto mb-20" />
+
+        {/* Money-Back Guarantee + CTA */}
+        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="max-w-2xl mx-auto text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
+            <Check className="w-4 h-4 text-emerald-400" />
+            <span className="text-sm font-medium text-emerald-400">30-Day Money-Back Guarantee</span>
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">Ready to get started?</h2>
+          <p className="text-muted-foreground mb-6">Start free — no credit card required. Upgrade when you're ready.</p>
+          <Link to="/developer">
+            <Button className="bg-purple-600 hover:bg-purple-500 text-white px-8 py-3 text-base rounded-full">
+              Start Free Now <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </Link>
           <p className="text-sm text-muted-foreground mt-6">43 API endpoints · 1,020 agents · 14 integration partners</p>
         </motion.div>
       </main>

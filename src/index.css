@@ -612,3 +612,20 @@ canvas {
   background-size: 300% 100%;
   animation: shimmer-border 4s ease infinite;
 }
+
+/* ── Section divider ── */
+@keyframes divider-shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.section-divider {
+  height: 2px;
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, hsl(var(--primary) / 0.3), hsl(var(--accent) / 0.5), hsl(var(--primary) / 0.3));
+  background-size: 200% 100%;
+  animation: divider-shimmer 3s ease infinite;
+}
