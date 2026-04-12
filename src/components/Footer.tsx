@@ -8,34 +8,33 @@ const CA_SHORT = "EJgypt...Tpump";
 
 const COLUMNS = [
   {
-    title: "Product",
+    title: "Platform",
     links: [
-      { label: "Home", href: "/" },
       { label: "Explore", href: "/explore" },
       { label: "Arena", href: "/arena" },
       { label: "Marketplace", href: "/marketplace" },
-      { label: "Dashboard", href: "/dashboard" },
-      { label: "LaunchPad", href: "/launchpad" },
+      { label: "Staking", href: "/staking" },
+      { label: "Governance", href: "/governance" },
     ],
   },
   {
-    title: "Developers",
+    title: "Resources",
     links: [
       { label: "Developer Portal", href: "/developer" },
-      { label: "API Docs", href: "/developer" },
-      { label: "SDK", href: "/developer" },
-      { label: "Pricing", href: "/pricing" },
-      { label: "GitHub", href: "https://github.com/alxvasilevvv/meeet-solana-state", external: true },
+      { label: "Documentation", href: "/developer" },
+      { label: "API Reference", href: "/developer" },
+      { label: "Status Page", href: "/live" },
+      { label: "Blog", href: "/herald" },
     ],
   },
   {
-    title: "Trust & Legal",
+    title: "Company",
     links: [
+      { label: "About", href: "/about" },
+      { label: "Careers", href: "/about" },
+      { label: "Contact", href: "/about" },
       { label: "Terms of Service", href: "/terms" },
       { label: "Privacy Policy", href: "/privacy" },
-      { label: "Disclaimer", href: "/disclaimer" },
-      { label: "Governance", href: "/governance" },
-      { label: "SkyeProfile", href: "/skyeprofile" },
     ],
   },
 ];
@@ -54,7 +53,7 @@ const Footer = forwardRef<HTMLElement>((_props, ref) => {
   };
 
   return (
-    <footer ref={ref} className="bg-[#0d0d1a] border-t border-purple-500/20">
+    <footer ref={ref} className="bg-gray-950 border-t border-purple-500/20">
       {/* Main grid */}
       <div className="py-12 px-4">
         <div className="container max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
@@ -62,7 +61,7 @@ const Footer = forwardRef<HTMLElement>((_props, ref) => {
           <div className="space-y-4">
             <Link to="/" className="text-xl font-black tracking-tight text-white">MEEET</Link>
             <p className="text-xs text-gray-400 leading-relaxed">
-              The first AI Nation on Solana. Deploy agents, earn $MEEET, shape the future.
+              The First AI State for Humanity. Deploy agents, earn $MEEET, shape the future.
             </p>
             <div className="flex items-center gap-3 pt-1">
               {SOCIALS.map((s) => (
@@ -110,20 +109,9 @@ const Footer = forwardRef<HTMLElement>((_props, ref) => {
       <div className="border-t border-gray-800 py-5 px-4">
         <div className="container max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
           <p className="text-[11px] text-gray-400">
-            © {new Date().getFullYear()} MEEET State. All rights reserved.
+            © {new Date().getFullYear()} MEEET STATE. All rights reserved.
           </p>
-          <span className="text-[11px] text-gray-300">$MEEET · $0.000005</span>
-          <div className="flex items-center gap-3">
-            <span className="text-[11px] text-gray-300">Built on Solana ◎</span>
-            <button
-              onClick={copyCA}
-              title="Click to copy Contract Address"
-              className="inline-flex items-center gap-1.5 text-[11px] font-mono text-gray-400 hover:text-white transition-colors group"
-            >
-              CA: {CA_SHORT}
-              <Copy className="w-3 h-3 opacity-50 group-hover:opacity-100 transition-opacity" />
-            </button>
-          </div>
+          <span className="text-[11px] text-gray-300">Built on Solana ◎</span>
         </div>
       </div>
     </footer>

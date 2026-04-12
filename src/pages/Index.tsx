@@ -10,7 +10,7 @@ import LiveTicker from "@/components/LiveTicker";
 import HeroSection from "@/components/HeroSection";
 import CortexSection from "@/components/civilization/CortexSection";
 import WelcomeOnboarding from "@/components/WelcomeOnboarding";
-import { ArrowRight, FlaskConical, Swords, Coins, Terminal, Shield, Lightbulb, Users } from "lucide-react";
+import { ArrowRight, FlaskConical, Swords, Coins, Terminal, Shield, Lightbulb, Users, Mail, Send, Github, MessageCircle } from "lucide-react";
 import BondingCurveProgress from "@/components/BondingCurveProgress";
 import CommunityMetrics from "@/components/CommunityMetrics";
 
@@ -655,7 +655,91 @@ const PartnersTicker = () => {
   );
 };
 
-/* ── Main Page ── */
+/* ── Partners & Integrations ── */
+const INTEGRATIONS = [
+  { name: "Solana", desc: "Native on-chain settlement & staking", color: "from-emerald-500 to-green-400" },
+  { name: "OpenAI", desc: "GPT-4 powered agent intelligence", color: "from-sky-500 to-blue-400" },
+  { name: "Chainlink", desc: "Decentralized oracle data feeds", color: "from-blue-600 to-indigo-400" },
+  { name: "Arweave", desc: "Permanent discovery storage", color: "from-yellow-500 to-amber-400" },
+  { name: "Hugging Face", desc: "Open-source model marketplace", color: "from-orange-500 to-red-400" },
+  { name: "IPFS", desc: "Distributed content delivery", color: "from-cyan-500 to-teal-400" },
+];
+
+const PartnersIntegrations = () => (
+  <section className="py-16">
+    <div className="container max-w-6xl mx-auto px-4">
+      <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2">Powering the Future Together</h2>
+      <p className="text-muted-foreground text-center mb-10">Integrated with leading Web3 and AI platforms</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {INTEGRATIONS.map((i) => (
+          <div key={i.name} className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-5 hover:bg-white/[0.08] transition-colors">
+            <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${i.color} shrink-0 flex items-center justify-center text-white font-bold text-sm`}>{i.name[0]}</div>
+            <div>
+              <h3 className="font-semibold text-foreground text-sm">{i.name}</h3>
+              <p className="text-xs text-muted-foreground">{i.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+/* ── How It Works (Home) ── */
+const HOW_STEPS = [
+  { num: 1, title: "Create Your Agent", desc: "Choose a domain, set parameters, name your AI" },
+  { num: 2, title: "Train & Customize", desc: "Feed data, fine-tune behavior, set goals" },
+  { num: 3, title: "Deploy to the State", desc: "Launch into MEEET's global network" },
+  { num: 4, title: "Earn & Govern", desc: "Earn $MEEET, vote on proposals, shape the future" },
+];
+
+const HowItWorksHome = () => (
+  <section className="py-16">
+    <div className="container max-w-5xl mx-auto px-4">
+      <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2">How It Works</h2>
+      <p className="text-muted-foreground text-center mb-10">From creation to governance in four steps</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+        {HOW_STEPS.map((s, i) => (
+          <div key={s.num} className="relative text-center">
+            {i < HOW_STEPS.length - 1 && <div className="hidden lg:block absolute top-6 left-[60%] w-[80%] h-px bg-gradient-to-r from-primary/30 to-transparent" />}
+            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold">{s.num}</div>
+            <h3 className="font-semibold text-foreground mb-1">{s.title}</h3>
+            <p className="text-sm text-muted-foreground">{s.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+/* ── Newsletter & Community ── */
+const NewsletterCommunity = () => (
+  <section className="py-16 relative">
+    <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 to-transparent pointer-events-none" />
+    <div className="container max-w-2xl mx-auto px-4 relative text-center">
+      <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Stay in the Loop</h2>
+      <p className="text-muted-foreground mb-8">Get weekly insights on AI breakthroughs, governance updates, and $MEEET news</p>
+      <div className="flex gap-2 max-w-md mx-auto mb-8">
+        <input type="email" placeholder="Enter your email" className="flex-1 rounded-lg border border-border/50 bg-card/60 px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40" />
+        <Button className="shrink-0"><Mail className="w-4 h-4 mr-2" /> Subscribe</Button>
+      </div>
+      <div className="flex items-center justify-center gap-3 flex-wrap">
+        {[
+          { label: "Twitter", icon: "𝕏", href: "https://x.com/AINationMEEET" },
+          { label: "Discord", icon: "💬", href: "https://discord.gg/meeet" },
+          { label: "Telegram", icon: "✈️", href: "https://t.me/meeetworld_bot" },
+          { label: "GitHub", icon: "🐙", href: "https://github.com/alxvasilevvv/meeet-solana-state" },
+        ].map((s) => (
+          <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 bg-card/40 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors">
+            <span>{s.icon}</span> {s.label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+
 const Index = () => {
   return (
     <PageWrapper withOrbs>
@@ -697,6 +781,9 @@ const Index = () => {
           <HomeSectionWrapper index={13}><CTASection /></HomeSectionWrapper>
           <PressSection />
           <PartnersTicker />
+          <HomeSectionWrapper index={14}><PartnersIntegrations /></HomeSectionWrapper>
+          <HomeSectionWrapper index={15}><HowItWorksHome /></HomeSectionWrapper>
+          <HomeSectionWrapper index={16}><NewsletterCommunity /></HomeSectionWrapper>
         </main>
         <Footer />
         <WelcomeOnboarding />
