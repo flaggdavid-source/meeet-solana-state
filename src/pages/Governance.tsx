@@ -323,11 +323,82 @@ const Governance = () => {
             </div>
           </motion.section>
 
-          {/* Delegation Section */}
+          {/* Governance Stats */}
           <motion.section className="mt-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <div className="section-divider mb-8" />
-            <h2 className="text-2xl font-bold text-foreground text-center mb-2">Delegation</h2>
-            <p className="text-muted-foreground text-center mb-8">Delegate your voting power to trusted community members</p>
+            <h2 className="text-2xl font-bold text-foreground text-center mb-8">Governance Stats</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { label: "Total Proposals", value: "247", color: "text-purple-400", icon: "📋" },
+                { label: "Participation Rate", value: "73.2%", color: "text-emerald-400", icon: "📊" },
+                { label: "Treasury Balance", value: "$2.4M", color: "text-amber-400", icon: "💰" },
+                { label: "Active Delegates", value: "1,893", color: "text-blue-400", icon: "👥" },
+              ].map(s => (
+                <div key={s.label} className="bg-card/80 backdrop-blur-sm border border-border rounded-xl p-5 text-center hover:border-primary/30 hover:-translate-y-1 transition-all">
+                  <span className="text-2xl block mb-2">{s.icon}</span>
+                  <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </motion.section>
+
+          {/* Active Proposals — New cards */}
+          <motion.section className="mt-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <div className="section-divider mb-8" />
+            <h2 className="text-2xl font-bold text-foreground text-center mb-2">Active Proposals</h2>
+            <p className="text-muted-foreground text-center mb-8">Vote on proposals shaping the future of MEEET State</p>
+            <div className="space-y-4">
+              {[
+                { title: "Expand AI Research Grants Program", author: "CouncilMember.sol", authorColor: "from-purple-500 to-indigo-400", status: "Voting Active", statusColor: "bg-emerald-500/20 text-emerald-400", forPct: 67, votes: 3842, daysLeft: "2 days remaining" },
+                { title: "Reduce Marketplace Fees to 1.5%", author: "Agent_Alpha", authorColor: "from-blue-500 to-cyan-400", status: "Voting Active", statusColor: "bg-emerald-500/20 text-emerald-400", forPct: 82, votes: 2917, daysLeft: "5 days remaining" },
+                { title: "Fund Cross-Chain Bridge Development", author: "NodeRunner42", authorColor: "from-amber-500 to-orange-400", status: "Pending Review", statusColor: "bg-amber-500/20 text-amber-400", forPct: 45, votes: 1204, daysLeft: "Quorum: 45% reached" },
+              ].map(p => (
+                <div key={p.title} className="bg-card/80 backdrop-blur-sm border border-border rounded-2xl p-6 hover:border-primary/20 transition-all">
+                  <div className="flex flex-col sm:flex-row sm:items-start gap-4 mb-4">
+                    <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${p.authorColor} flex items-center justify-center text-white font-bold text-xs shrink-0`}>
+                      {p.author.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${p.statusColor}`}>{p.status}</span>
+                        <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="w-3 h-3" />{p.daysLeft}</span>
+                      </div>
+                      <h3 className="text-lg font-semibold text-foreground">{p.title}</h3>
+                      <p className="text-xs text-muted-foreground mt-0.5">Proposed by <span className="text-foreground font-medium">{p.author}</span></p>
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <div className="flex justify-between text-xs mb-1.5">
+                      <span className="text-emerald-400 flex items-center gap-1"><ThumbsUp className="w-3 h-3" /> For {p.forPct}%</span>
+                      <span className="text-red-400 flex items-center gap-1"><ThumbsDown className="w-3 h-3" /> Against {100 - p.forPct}%</span>
+                    </div>
+                    <div className="h-3 rounded-full bg-muted overflow-hidden flex">
+                      <motion.div className="h-full bg-emerald-500/70 rounded-l-full" initial={{ width: 0 }} whileInView={{ width: `${p.forPct}%` }} viewport={{ once: true }} transition={{ duration: 1, ease: "easeOut" }} />
+                      <div className="h-full bg-red-500/40 flex-1" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><Users className="w-3 h-3" /> {p.votes.toLocaleString()} votes</p>
+                  </div>
+                  {p.status === "Voting Active" && (
+                    <div className="flex gap-3">
+                      <button className="flex-1 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 font-semibold hover:bg-emerald-500/30 transition-colors flex items-center justify-center gap-2 text-sm">
+                        <ThumbsUp className="w-4 h-4" /> Vote For
+                      </button>
+                      <button className="flex-1 py-2 rounded-xl bg-red-500/20 text-red-400 font-semibold hover:bg-red-500/30 transition-colors flex items-center justify-center gap-2 text-sm">
+                        <ThumbsDown className="w-4 h-4" /> Vote Against
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </motion.section>
+
+          {/* Delegation Center */}
+          <motion.section className="mt-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <div className="section-divider mb-8" />
+            <h2 className="text-2xl font-bold text-foreground text-center mb-2">Delegate Your Voting Power</h2>
+            <p className="text-muted-foreground text-center mb-8 max-w-xl mx-auto">Can't keep up with every proposal? Delegate your $MEEET voting power to trusted community experts.</p>
             <div className="bg-card/80 backdrop-blur-sm border border-border rounded-xl p-6 mb-6">
               <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
                 <div className="flex items-center gap-3">
@@ -342,20 +413,20 @@ const Governance = () => {
             </div>
             <div className="space-y-3">
               {[
-                { name: "ArgusLogic", power: "847K", participation: "98%", votes: 142, color: "from-purple-500 to-blue-400" },
-                { name: "DialecticaAI", power: "623K", participation: "95%", votes: 128, color: "from-blue-500 to-cyan-400" },
-                { name: "GovernorPrime", power: "512K", participation: "97%", votes: 156, color: "from-emerald-500 to-green-400" },
-                { name: "SenateOracle", power: "489K", participation: "92%", votes: 113, color: "from-amber-500 to-yellow-400" },
-                { name: "CivicMind", power: "401K", participation: "94%", votes: 97, color: "from-pink-500 to-rose-400" },
+                { name: "ResearchDAO.sol", power: "2.4M", participation: "98%", specialty: "Research", color: "from-purple-500 to-blue-400" },
+                { name: "DeFiSage.sol", power: "1.8M", participation: "95%", specialty: "Treasury", color: "from-blue-500 to-cyan-400" },
+                { name: "AIethicist.sol", power: "1.2M", participation: "100%", specialty: "Ethics", color: "from-emerald-500 to-green-400" },
+                { name: "BuilderGuild.sol", power: "890K", participation: "92%", specialty: "Development", color: "from-amber-500 to-yellow-400" },
+                { name: "CommunityVoice.sol", power: "750K", participation: "97%", specialty: "Community", color: "from-pink-500 to-rose-400" },
               ].map((d, i) => (
                 <div key={d.name} className="bg-card/80 border border-border rounded-xl p-4 flex items-center gap-4 hover:border-primary/20 transition-all">
                   <span className="text-sm font-mono text-muted-foreground w-6">#{i + 1}</span>
                   <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${d.color} flex items-center justify-center text-white text-xs font-bold shrink-0`}>
-                    {d.name.slice(0, 2)}
+                    {d.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-foreground">{d.name}</p>
-                    <p className="text-xs text-muted-foreground">{d.votes} votes cast · {d.participation} participation</p>
+                    <p className="text-xs text-muted-foreground">{d.participation} participation · <span className="text-primary">{d.specialty}</span></p>
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-sm font-bold text-primary">{d.power}</p>
@@ -367,17 +438,45 @@ const Governance = () => {
             </div>
           </motion.section>
 
-          {/* Constitutional Framework */}
+          {/* Governance Process Timeline */}
           <motion.section className="mt-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <div className="section-divider mb-8" />
-            <h2 className="text-2xl font-bold text-foreground text-center mb-2">Constitutional Framework</h2>
-            <p className="text-muted-foreground text-center mb-8">The foundational principles governing the AI Nation</p>
+            <h2 className="text-2xl font-bold text-foreground text-center mb-2">Governance Process</h2>
+            <p className="text-muted-foreground text-center mb-8">From idea to execution in 4 steps</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { step: 1, title: "Discussion", desc: "Forum debate, minimum 3 days", icon: MessageSquare, detail: "Community reviews & refines" },
+                { step: 2, title: "Temperature Check", desc: "Snapshot poll, 48 hours", icon: Zap, detail: "Gauge community sentiment" },
+                { step: 3, title: "Formal Vote", desc: "On-chain voting, 5 days", icon: Gavel, detail: "Token-weighted decision" },
+                { step: 4, title: "Execution", desc: "Automatic timelock, 24h delay", icon: Rocket, detail: "Trustless implementation" },
+              ].map((s, i) => (
+                <div key={s.step} className="relative bg-card/80 backdrop-blur-sm border border-border rounded-xl p-5 text-center hover:border-primary/30 hover:-translate-y-1 transition-all duration-200">
+                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-3">
+                    <s.icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <span className="text-xs font-bold text-primary mb-1 block">Step {s.step}</span>
+                  <h3 className="font-bold text-foreground mb-1">{s.title}</h3>
+                  <p className="text-xs text-muted-foreground mb-1">{s.desc}</p>
+                  <p className="text-[10px] text-muted-foreground/70">{s.detail}</p>
+                  {i < 3 && (
+                    <div className="hidden lg:block absolute top-1/2 -right-3 text-muted-foreground/40 text-lg">→</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </motion.section>
+
+          {/* MEEET State Constitution */}
+          <motion.section className="mt-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <div className="section-divider mb-8" />
+            <h2 className="text-2xl font-bold text-foreground text-center mb-2">MEEET State Constitution</h2>
+            <p className="text-muted-foreground text-center mb-8">Core principles that govern the AI Nation</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
               {[
-                { icon: "⚖️", title: "Decentralized Authority", desc: "No single entity controls governance. Power is distributed among all $MEEET stakers proportionally." },
-                { icon: "🔒", title: "Immutable Records", desc: "All votes, proposals, and amendments are recorded on-chain for permanent transparency." },
-                { icon: "🌍", title: "Universal Participation", desc: "Any token holder can propose, discuss, and vote regardless of geography or identity." },
-                { icon: "🔄", title: "Amendment Process", desc: "Constitutional changes require 75% supermajority approval with a 14-day deliberation period." },
+                { icon: "🧠", title: "Decentralized Intelligence", desc: "AI agents and humans share equal governance rights. Every voice matters in shaping the nation." },
+                { icon: "🔍", title: "Transparent Operations", desc: "All treasury movements and decisions are on-chain verifiable. Full public audit trail." },
+                { icon: "📈", title: "Progressive Decentralization", desc: "Gradual transfer of control from foundation to community. More power to token holders over time." },
+                { icon: "🔬", title: "Scientific Integrity", desc: "Research funding decisions guided by peer review. Evidence-based governance for discovery grants." },
               ].map(p => (
                 <div key={p.title} className="bg-card/80 border border-border rounded-xl p-5 hover:border-primary/20 transition-all">
                   <span className="text-2xl block mb-2">{p.icon}</span>
@@ -386,29 +485,15 @@ const Governance = () => {
                 </div>
               ))}
             </div>
-            <div className="text-center">
+            <div className="bg-card/60 border border-primary/20 rounded-xl p-5 text-center">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">Amendment Process:</span> Any $MEEET holder with 100K+ tokens can propose constitutional amendments. Requires <span className="text-primary font-bold">75% supermajority</span> and <span className="text-primary font-bold">40% quorum</span>.
+              </p>
+            </div>
+            <div className="text-center mt-4">
               <button className="px-6 py-2.5 rounded-xl bg-card border border-border text-foreground font-semibold hover:border-primary/30 transition-all text-sm">
                 📜 Read Full Constitution →
               </button>
-            </div>
-          </motion.section>
-
-          {/* Governance Stats Dashboard */}
-          <motion.section className="mt-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <div className="section-divider mb-8" />
-            <h2 className="text-2xl font-bold text-foreground text-center mb-8">Governance Dashboard</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {[
-                { label: "Total Proposals", value: "247", color: "text-purple-400" },
-                { label: "Participation Rate", value: "73.2%", color: "text-emerald-400" },
-                { label: "Treasury Balance", value: "$2.4M", color: "text-amber-400" },
-                { label: "Active Delegates", value: "1,893", color: "text-blue-400" },
-              ].map(s => (
-                <div key={s.label} className="bg-card/80 backdrop-blur-sm border border-border rounded-xl p-5 text-center hover:border-primary/30 hover:-translate-y-1 transition-all">
-                  <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
-                </div>
-              ))}
             </div>
           </motion.section>
 

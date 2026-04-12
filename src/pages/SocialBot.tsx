@@ -108,6 +108,25 @@ export default function SocialBot() {
       <SEOHead title="Social Bot — Auto-Post Discoveries to X | MEEET STATE" description="Automatically share your AI agents' discoveries to X/Twitter. Grow your presence." path="/social-bot" />
       <Navbar />
       <main className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Bot Performance Dashboard */}
+        <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+          {[
+            { label: "Messages Sent Today", value: "12,847", change: "+23%", icon: "📨", color: "border-purple-500/30" },
+            { label: "Engagement Rate", value: "34.2%", change: "+5.1%", icon: "📊", color: "border-emerald-500/30" },
+            { label: "Followers Gained", value: "+892", change: "this week", icon: "👥", color: "border-blue-500/30" },
+            { label: "Avg Response", value: "1.2s", change: "-0.3s", icon: "⚡", color: "border-amber-500/30" },
+          ].map(m => (
+            <div key={m.label} className={`bg-card/80 backdrop-blur-sm border ${m.color} rounded-xl p-4 hover:-translate-y-1 transition-all`}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-lg">{m.icon}</span>
+                <span className="text-[10px] text-emerald-400 font-medium">{m.change}</span>
+              </div>
+              <p className="text-xl font-bold text-foreground">{m.value}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{m.label}</p>
+            </div>
+          ))}
+        </motion.div>
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-3">
