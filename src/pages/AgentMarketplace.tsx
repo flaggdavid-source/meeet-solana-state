@@ -187,10 +187,11 @@ const AgentMarketplace = () => {
       <div className="min-h-screen bg-background text-foreground flex flex-col">
         <Navbar />
         <main className="flex-1">
+          {/* ═══ MARKETPLACE STATS BANNER ═══ */}
           <section className="relative overflow-hidden border-b border-border/40">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5" />
             <div className="container mx-auto px-4 py-12 md:py-16 relative">
-              <div className="max-w-3xl">
+              <div className="max-w-3xl mb-10">
                 <h1 className="text-3xl md:text-5xl font-bold mb-3">
                   <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-orange-400 bg-clip-text text-transparent">AI Agent Marketplace</span>
                 </h1>
@@ -201,6 +202,40 @@ const AgentMarketplace = () => {
                   <span className="flex items-center gap-1.5"><Zap className="w-4 h-4 text-emerald-400" />Instant deploy</span>
                 </div>
               </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { label: "Listed Agents", value: "847" },
+                  { label: "Active Sellers", value: "234" },
+                  { label: "Total Volume", value: "$1.2M" },
+                  { label: "Avg Rating", value: "4.8★" },
+                ].map((s) => (
+                  <div key={s.label} className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-4 text-center">
+                    <p className="text-lg md:text-xl font-bold text-foreground">{s.value}</p>
+                    <p className="text-xs text-muted-foreground">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* ═══ FEATURED COLLECTIONS ═══ */}
+          <section className="container mx-auto px-4 py-8">
+            <h2 className="text-2xl font-bold text-foreground mb-6">Featured Collections</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+              {[
+                { name: "Climate Warriors", count: 23, desc: "Specialized in climate modeling, carbon tracking, and sustainability research", color: "from-emerald-600/20 to-green-600/10" },
+                { name: "BioTech Pioneers", count: 18, desc: "Gene editing, drug discovery, and protein folding specialists", color: "from-purple-600/20 to-pink-600/10" },
+                { name: "Quantum Minds", count: 12, desc: "Quantum computing, cryptography, and optimization agents", color: "from-blue-600/20 to-cyan-600/10" },
+              ].map((c) => (
+                <div key={c.name} className={`rounded-xl border border-border/50 bg-gradient-to-br ${c.color} p-5 card-lift`}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="font-bold text-foreground">{c.name}</h3>
+                    <Badge variant="outline" className="text-[10px]">{c.count} agents</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{c.desc}</p>
+                </div>
+              ))}
             </div>
           </section>
 
@@ -372,10 +407,29 @@ const AgentMarketplace = () => {
                   { icon: "💳", title: "Pay-per-Task", desc: "Only pay for what you use, no waste" },
                   { icon: "🛡️", title: "Verified Trust Score", desc: "Every agent is audited & reputation-scored" },
                 ].map(b => (
-                  <div key={b.title} className="rounded-xl border border-border bg-card p-5 text-center hover:scale-105 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
+                  <div key={b.title} className="rounded-xl border border-border bg-card p-5 text-center card-lift">
                     <span className="text-3xl mb-2 block">{b.icon}</span>
                     <h3 className="font-bold text-foreground mb-1">{b.title}</h3>
                     <p className="text-sm text-muted-foreground">{b.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* How to List Your Agent */}
+            <div className="mt-8 mb-8">
+              <h2 className="text-2xl font-bold text-foreground text-center mb-6">How to List Your Agent</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                  { num: 1, title: "Build & Test", desc: "Create your agent, train it, and run QA tests", time: "~1 day" },
+                  { num: 2, title: "Submit for Review", desc: "Our trust system verifies performance & safety", time: "~2 days review" },
+                  { num: 3, title: "Go Live on Marketplace", desc: "Start earning from hires and build reputation", time: "Instant" },
+                ].map((s) => (
+                  <div key={s.num} className="rounded-xl border border-border/50 bg-card/60 p-5 text-center relative">
+                    <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold text-sm">{s.num}</div>
+                    <h3 className="font-bold text-foreground mb-1">{s.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-2">{s.desc}</p>
+                    <Badge variant="outline" className="text-[10px]">{s.time}</Badge>
                   </div>
                 ))}
               </div>
