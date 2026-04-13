@@ -72,6 +72,7 @@ function useNavItems(): { navItems: NavItem[]; mobileLinks: { href: string; labe
           { href: "/staking", label: t("nav.staking"), icon: "🏦" },
           { href: "/governance", label: t("nav.governance"), icon: "🏛️" },
           { href: "/pricing", label: t("nav.pricing"), icon: "💳" },
+          { href: "/calculator", label: t("nav.calculator"), icon: "📈" },
         ],
       },
       { href: "/live", label: t("nav.live") },
