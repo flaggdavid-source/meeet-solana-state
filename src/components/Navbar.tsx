@@ -324,10 +324,10 @@ const Navbar = () => {
             {/* Hamburger — visible below lg */}
             <button
               onClick={() => setOpen(!open)}
-              className="lg:hidden p-2 text-muted-foreground hover:text-foreground transition-colors"
+              className="lg:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Toggle menu"
             >
-              {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
@@ -341,24 +341,29 @@ const Navbar = () => {
 
       {/* Mobile slide-out drawer from right */}
       <div
-        className={`fixed top-0 right-0 z-50 h-full w-[280px] max-w-[85vw] bg-background border-l border-border shadow-2xl lg:hidden transition-transform duration-300 ease-out flex flex-col ${open ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed top-0 right-0 z-50 h-full w-full sm:w-[320px] sm:max-w-[85vw] bg-background border-l border-border shadow-2xl lg:hidden transition-transform duration-300 ease-out flex flex-col ${open ? "translate-x-0" : "translate-x-full"}`}
       >
         {/* Drawer header */}
         <div className="flex items-center justify-between px-4 h-14 border-b border-border/30 shrink-0">
           <span className="text-sm font-bold text-foreground">{t("nav.menu")}</span>
-          <button onClick={() => setOpen(false)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Close menu">
-            <X className="w-5 h-5" />
+          <button onClick={() => setOpen(false)} className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors" aria-label="Close menu">
+            <X className="w-6 h-6" />
           </button>
         </div>
 
+        {/* Language switcher in mobile */}
+        <div className="px-4 py-3 border-b border-border/20">
+          <LanguageSwitcher />
+        </div>
+
         {/* Scrollable links */}
-        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+        <div className="flex-1 overflow-y-auto py-3 px-3 space-y-0.5">
           {mobileLinks.map(l => (
             <Link
               key={l.href}
               to={l.href}
               onClick={() => setOpen(false)}
-              className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${location.pathname === l.href ? "text-primary bg-primary/10 border-l-2 border-primary" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"}`}
+              className={`block px-3 py-3 min-h-[48px] flex items-center rounded-lg text-sm font-medium transition-colors ${location.pathname === l.href ? "text-primary bg-primary/10 border-l-2 border-primary" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"}`}
             >
               {l.label}
             </Link>
