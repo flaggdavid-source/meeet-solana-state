@@ -345,7 +345,7 @@ const Navbar = () => {
       >
         {/* Drawer header */}
         <div className="flex items-center justify-between px-4 h-14 border-b border-border/30 shrink-0">
-          <span className="text-sm font-bold text-foreground">Menu</span>
+          <span className="text-sm font-bold text-foreground">{t("nav.menu")}</span>
           <button onClick={() => setOpen(false)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Close menu">
             <X className="w-5 h-5" />
           </button>
@@ -369,11 +369,11 @@ const Navbar = () => {
         <div className="shrink-0 border-t border-border/30 p-4 space-y-2">
           {user ? (
             <button onClick={() => { signOut(); setOpen(false); }} className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
-              <LogOut className="w-4 h-4" /> Sign Out
+              <LogOut className="w-4 h-4" /> {t("nav.signOut")}
             </button>
           ) : (
             <Link to="/auth" onClick={() => setOpen(false)} className="block text-center px-4 py-2.5 rounded-lg text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary/90 transition-colors">
-              Sign In
+              {t("nav.signIn")}
             </Link>
           )}
           <div className="pt-1">
