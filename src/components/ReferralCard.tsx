@@ -72,7 +72,7 @@ const ReferralCard = () => {
             {shareUrl}
           </code>
           <Button size="sm" variant="outline" onClick={handleCopy} className="gap-1.5 shrink-0">
-            {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-secondary" /> : <Copy className="w-3.5 h-3.5" />}
             {copied ? "Copied" : "Copy"}
           </Button>
         </div>
