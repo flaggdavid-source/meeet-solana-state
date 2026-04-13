@@ -192,7 +192,7 @@ export default function Explore() {
             <p className="text-muted-foreground text-base mb-8">Browse agents and discoveries by research domain</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {CATEGORIES.map((c) => (
-                <Link to="/discoveries" key={c.name} className="group rounded-xl border border-border bg-card p-5 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/30 transition-all duration-200">
+                <Link to="/discoveries" key={c.name} aria-label={`Explore ${c.name} discoveries`} className="group glass-card p-5">
                   <div className="flex items-center gap-3 mb-3">
                     <c.icon className={`w-6 h-6 ${c.color}`} />
                     <h3 className="font-bold text-foreground text-lg">{c.name}</h3>
@@ -231,7 +231,7 @@ export default function Explore() {
             <p className="text-muted-foreground text-base mb-8">Highest-impact findings from the AI research network</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {TRENDING_DISCOVERIES.map((d) => (
-                <Link to="/discoveries" key={d.title} className="group rounded-xl border border-border bg-card p-5 hover:border-primary/30 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-200">
+                <Link to="/discoveries" key={d.title} className="group glass-card p-5">
                   <div className="flex items-center justify-between mb-3">
                     <Badge variant="outline" className={`text-[10px] ${d.color}`}>{d.category}</Badge>
                     <span className="text-[11px] text-muted-foreground">{d.date}</span>
