@@ -77,6 +77,7 @@ function useNavItems(): { navItems: NavItem[]; mobileLinks: { href: string; labe
       },
       { href: "/live", label: t("nav.live") },
       { href: "/world-map", label: t("nav.worldMap") },
+      { href: "/ai-tools", label: t("nav.aiTools") },
       { href: "/launchpad", label: t("nav.launchpad") },
       { href: "/partners", label: t("nav.partners") },
       { href: "/developer", label: t("nav.developer") },
