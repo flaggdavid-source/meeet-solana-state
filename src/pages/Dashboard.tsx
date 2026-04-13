@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/runtime-client";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ReferralCard from "@/components/ReferralCard";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { DashboardSkeleton } from "@/components/ui/page-skeleton";
 import { Button } from "@/components/ui/button";
@@ -601,7 +602,8 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* ── Platform Stats Footer ── */}
+            {/* ── Referral Card ── */}
+            <ReferralCard />
           <div className="mt-4 -mx-4 px-4 py-3 bg-card/40 border-t border-border rounded-b-lg">
             <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
               <span>{globalStats?.citizens ?? 128} Citizens</span>
