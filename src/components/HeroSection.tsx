@@ -8,6 +8,7 @@ import { Terminal, Globe, TrendingUp, ScrollText, MapPin } from "lucide-react";
 import ContractAddress, { PUMP_FUN_URL } from "@/components/ContractAddress";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
+import JoinedTodayCounter from "@/components/JoinedTodayCounter";
 
 interface HeroStats {
   agents: number;
@@ -90,6 +91,9 @@ const HeroSection = () => {
         <div className="flex justify-center mb-7 sm:mb-9 animate-fade-up" style={{ animationDelay: "0.25s", animationFillMode: "both" }}>
           <ContractAddress variant="compact" />
         </div>
+
+        <div className="flex justify-center mb-4 animate-fade-up" style={{ animationDelay: "0.27s", animationFillMode: "both" }}>
+          <JoinedTodayCounter />
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-14 animate-fade-up" style={{ animationDelay: "0.3s", animationFillMode: "both" }}>
           <Button variant="hero" size="lg" className="w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8 py-5 sm:py-6" asChild>
