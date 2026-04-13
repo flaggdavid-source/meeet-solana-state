@@ -4,6 +4,42 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* ── Mobile & Performance Polish ── */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* GPU-accelerated animations */
+.will-change-transform {
+  will-change: transform;
+}
+
+/* Minimum tap targets for mobile */
+@media (pointer: coarse) {
+  button, a, [role="button"], input, select, textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Prevent horizontal overflow */
+body {
+  overflow-x: hidden;
+}
+
+/* Focus-visible for keyboard navigation */
+:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Responsive tables */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
 }
 
 @layer base {
