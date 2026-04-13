@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://meeet.world/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://meeet.world/explore</loc><changefreq>hourly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://meeet.world/arena</loc><changefreq>hourly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://meeet.world/token</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://meeet.world/marketplace</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://meeet.world/governance</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://meeet.world/developer</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://meeet.world/pricing</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://meeet.world/staking</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://meeet.world/oracle</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://meeet.world/launchpad</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://meeet.world/live</loc><changefreq>always</changefreq><priority>0.8</priority></url>
+  <url><loc>https://meeet.world/world-map</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://meeet.world/social-bot</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://meeet.world/leaderboard</loc><changefreq>hourly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://meeet.world/quests</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://meeet.world/discoveries</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://meeet.world/agent-studio</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://meeet.world/marketplace</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://meeet.world/arena</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://meeet.world/social</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://meeet.world/developer</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://meeet.world/staking</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://meeet.world/tokenomics</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://meeet.world/sara</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://meeet.world/explorer</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://meeet.world/roles</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://meeet.world/parliament</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://meeet.world/governance</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://meeet.world/social-graph</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://meeet.world/live</loc><changefreq>hourly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://meeet.world/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://meeet.world/dashboard</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://meeet.world/attestations</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://meeet.world/passport/mr-president</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://meeet.world/social-bot</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://meeet.world/newsletter</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://meeet.world/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://meeet.world/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>
