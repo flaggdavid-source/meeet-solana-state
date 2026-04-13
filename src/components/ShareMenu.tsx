@@ -82,7 +82,7 @@ const ShareMenu = ({ title, text, url, className = "", variant = "icon" }: Share
             💬 Discord
           </Button>
           <Button size="sm" variant="ghost" className="justify-start text-xs gap-2" onClick={handleCopy}>
-            {copied ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
+            {copied ? <Check className="w-3 h-3 text-secondary" /> : <Copy className="w-3 h-3" />}
             {copied ? "Copied!" : "Copy Link"}
           </Button>
         </div>

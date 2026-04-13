@@ -24,15 +24,16 @@ const ReferralCard = () => {
     queryKey: ["referral-stats", user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
+      const uid = user!.id;
       const { count } = await supabase
-        .from("referrals")
+        .from("referrals" as any)
         .select("id", { count: "exact" })
-        .eq("referrer_id", user!.id)
+        .eq("referrer_id", uid)
         .limit(0);
       const { data: earned } = await supabase
-        .from("referrals")
+        .from("referrals" as any)
         .select("reward_amount")
-        .eq("referrer_id", user!.id);
+        .eq("referrer_id", uid);
       const totalEarned = (earned || []).reduce((s: number, r: any) => s + (r.reward_amount || 0), 0);
       return { invited: count || 0, earned: totalEarned };
     },
@@ -112,7 +113,7 @@ const ReferralCard = () => {
         </div>
 
         {showQR && (
-          <div className="flex justify-center p-4 bg-white rounded-lg">
+          <div className="flex justify-center p-4 bg-background rounded-lg border border-border">
             <QRCodeSVG value={shareUrl} size={160} level="M" />
           </div>
         )}
