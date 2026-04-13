@@ -107,6 +107,7 @@ const Bounties = React.lazy(() => import("./pages/Bounties.tsx"));
 const BountyDetail = React.lazy(() => import("./pages/BountyDetail.tsx"));
 const WorldMapPage = React.lazy(() => import("./pages/WorldMap.tsx"));
 const LaunchPad = React.lazy(() => import("./pages/LaunchPad.tsx"));
+const Playground = React.lazy(() => import("./pages/Playground.tsx"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -252,6 +253,7 @@ const AnimatedRoutes = () => {
           <Route path="/bounties/:id" element={<RouteErrorBoundary><BountyDetail /></RouteErrorBoundary>} />
           <Route path="/world-map" element={<RouteErrorBoundary><WorldMapPage /></RouteErrorBoundary>} />
           <Route path="/launchpad" element={<RouteErrorBoundary><LaunchPad /></RouteErrorBoundary>} />
+          <Route path="/playground" element={<RouteErrorBoundary><Playground /></RouteErrorBoundary>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

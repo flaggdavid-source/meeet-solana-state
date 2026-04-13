@@ -38,6 +38,7 @@ function useNavItems(): { navItems: NavItem[]; mobileLinks: { href: string; labe
           { href: "/activity", label: t("nav.activityFeed"), icon: "📡" },
           { href: "/herald", label: t("nav.herald"), icon: "📰" },
           { href: "/explorer", label: t("nav.explorer"), icon: "🔎" },
+          { href: "/playground", label: t("nav.aiLab"), icon: "🧪" },
         ],
       },
       {

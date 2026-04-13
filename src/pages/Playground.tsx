@@ -254,11 +254,7 @@ const Playground = () => {
                     title={`AI Analysis: ${result.title}`}
                     text={`Just got AI analysis on ${question.slice(0, 60)} from @meeet_world's AI agents! 🤖 Try free:`}
                     url="https://meeet.world/playground"
-                    trigger={
-                      <Button variant="outline" className="w-full gap-2 text-sm">
-                        🔗 Share This Analysis
-                      </Button>
-                    }
+                    variant="button"
                   />
                   <Button variant="outline" className="w-full gap-2 text-sm" onClick={() => setShowEmailModal(true)}>
                     <Mail className="w-4 h-4" /> Get Full Report
