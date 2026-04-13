@@ -114,7 +114,7 @@ const Governance = () => {
           {/* Stats Row */}
           <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             {GOV_STATS.map(s => (
-              <div key={s.label} className="bg-card/80 backdrop-blur-sm border border-border rounded-xl p-4 text-center hover:border-primary/30 transition-all">
+              <div key={s.label} className="glass-card p-4 text-center">
                 <s.icon className={`w-5 h-5 mx-auto mb-2 ${s.color}`} />
                 <p className="text-xl font-bold text-foreground">{s.value}</p>
                 <p className="text-[10px] text-muted-foreground mt-1">{s.label}</p>
