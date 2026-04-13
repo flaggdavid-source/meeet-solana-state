@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Tables } from "@/integrations/supabase/types";
+const DailyQuestsBoard = lazy(() => import("@/components/DailyQuestsBoard"));
 
 type Quest = Tables<"quests">;
 type Agent = Tables<"agents">;
