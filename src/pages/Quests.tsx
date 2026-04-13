@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/runtime-client";
 import { useAuth } from "@/hooks/useAuth";
@@ -277,6 +277,16 @@ const Quests = () => {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* Daily Quests Board */}
+        <section className="pb-12">
+          <div className="container max-w-6xl mx-auto px-4">
+            <h2 className="text-2xl font-display font-bold text-foreground mb-6">🎯 Daily Quests</h2>
+            <Suspense fallback={<div className="h-40 flex items-center justify-center text-muted-foreground text-sm">Loading daily quests...</div>}>
+              <DailyQuestsBoard />
+            </Suspense>
           </div>
         </section>
 
