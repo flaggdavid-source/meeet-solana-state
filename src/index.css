@@ -18,6 +18,16 @@ img {
   will-change: transform;
 }
 
+/* CSS containment for cards */
+.contain-card {
+  contain: layout style paint;
+}
+
+/* Font display optimization */
+@font-face {
+  font-display: swap;
+}
+
 /* Minimum tap targets for mobile */
 @media (pointer: coarse) {
   button, a, [role="button"], input, select, textarea {
