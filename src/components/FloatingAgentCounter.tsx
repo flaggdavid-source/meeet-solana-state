@@ -29,7 +29,7 @@ const FloatingAgentCounter = () => {
     e.preventDefault();
     e.stopPropagation();
     setDismissed(true);
-    try { localStorage.setItem("liveActivityClosed", "true"); } catch {}
+    localStorage.setItem("liveActivityClosed", "true");
   };
 
   return (
