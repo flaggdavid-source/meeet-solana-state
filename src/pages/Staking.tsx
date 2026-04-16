@@ -8,14 +8,7 @@ import { Flame, Lock, TrendingUp, Users, Percent } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { STAKING_TIERS } from "@/constants/stakingTiers";
-
-const METRICS = [
-  { label: "Total Value Staked", value: "45,230", sub: "MEEET", icon: Lock, color: "text-blue-400" },
-  { label: "Total Burned", value: "8,921", sub: "MEEET", icon: Flame, color: "text-red-400" },
-  { label: "Burn Rate 24h", value: "892", sub: "MEEET", icon: TrendingUp, color: "text-orange-400" },
-  { label: "Active Stakes", value: "234", sub: "agents", icon: Users, color: "text-green-400" },
-  { label: "Est. APY", value: "12.4", sub: "%", icon: Percent, color: "text-purple-400" },
-];
+import { useTokenStats } from "@/hooks/useTokenStats";
 
 const AGENTS = ["Envoy-Delta", "BioSynth", "NovaPrime", "QuantumX", "TerraMind", "CyberNex", "ArcaneBot", "StellarAI", "EcoGuard", "DataForge"];
 const TYPES = ["discovery", "debate", "governance"];
@@ -68,11 +61,19 @@ const CALC_TIERS = STAKING_TIERS.map((t, i) => ({
 
 const Staking = () => {
   const { t } = useLanguage();
+  const { data: tokenStats } = useTokenStats();
   const [calcAmount, setCalcAmount] = useState(100);
   const [calcTier, setCalcTier] = useState(0);
 
   const selectedTier = CALC_TIERS[calcTier];
   const estimatedReward = Math.round(calcAmount * (selectedTier.apy / 100) * (selectedTier.days / 365));
+
+  const METRICS = [
+    { label: "Total Value Staked", value: (tokenStats?.totalStaked ?? 0).toLocaleString(), sub: "MEEET", icon: Lock, color: "text-blue-400" },
+    { label: "Total Burned", value: tokenStats?.totalBurned != null ? tokenStats.totalBurned.toLocaleString(undefined, { maximumFractionDigits: 4 }) : "—", sub: "MEEET", icon: Flame, color: "text-red-400" },
+    { label: "Active Stakes", value: (tokenStats?.activeStakesCount ?? 0).toLocaleString(), sub: "agents", icon: Users, color: "text-green-400" },
+    { label: "Est. APY", value: "12.4", sub: "%", icon: Percent, color: "text-purple-400" },
+  ];
 
   return (
     <>
