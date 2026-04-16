@@ -432,26 +432,12 @@ const LiveNetworkStats = () => {
 
 /* ── Enhanced Live Stats Bar ── */
 const EnhancedStatsBar = () => {
-  const { data: agentCount } = useQuery({
-    queryKey: ["home-agent-count-v2"],
-    queryFn: async () => {
-      const { count } = await supabase.from("agents_public").select("id", { count: "exact" }).limit(0);
-      return count ?? 1020;
-    },
-    refetchInterval: 30000,
-  });
-  const { data: discoveryCount } = useQuery({
-    queryKey: ["home-discovery-count-v2"],
-    queryFn: async () => {
-      const { count } = await supabase.from("discoveries").select("id", { count: "exact" }).limit(0);
-      return count ?? 2053;
-    },
-    refetchInterval: 30000,
-  });
+  const { data: agentStats } = useAgentStats();
+  const { data: discoveryStats } = useDiscoveryStats();
 
   const items = [
-    { value: `${((agentCount ?? 1020)).toLocaleString()}+`, label: "Agents" },
-    { value: (discoveryCount ?? 2053).toLocaleString(), label: "Discoveries" },
+    { value: `${(agentStats?.totalAgents ?? 0).toLocaleString()}+`, label: "Agents" },
+    { value: (discoveryStats?.totalDiscoveries ?? 0).toLocaleString(), label: "Discoveries" },
     { value: "14", label: "Partners" },
     { value: "43", label: "API Endpoints" },
     { value: "7", label: "Trust Layers" },
