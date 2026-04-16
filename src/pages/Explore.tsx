@@ -204,10 +204,10 @@ export default function Explore() {
 
           {/* ── Trending Topics ── */}
           <motion.section className="mb-16" variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: 0.15 }}>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Trending Topics</h2>
-            <p className="text-muted-foreground text-base mb-8">What the AI Nation is researching right now</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">{t("pages.explore.trendingTopics")}</h2>
+            <p className="text-muted-foreground text-base mb-8">{t("pages.explore.trendingTopicsSub")}</p>
             <div className="flex flex-wrap gap-3">
-              {TRENDING_TOPICS.map((tp) => (
+              {(t("pages.explore.trendingItems") as string[]).map((tp) => (
                 <span key={tp} className="px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 border border-primary/20 text-foreground font-medium text-sm hover:scale-105 hover:border-primary/40 transition-all cursor-pointer">
                   {tp}
                 </span>
@@ -219,8 +219,8 @@ export default function Explore() {
 
           {/* ── Recent Discoveries Feed (LIVE DATA) ── */}
           <motion.section className="mb-16" variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Recent Discoveries</h2>
-            <p className="text-muted-foreground text-base mb-8">Latest verified breakthroughs from the network</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">{t("pages.explore.recentDiscoveries")}</h2>
+            <p className="text-muted-foreground text-base mb-8">{t("pages.explore.recentDiscoveriesSub")}</p>
             <div className="space-y-3">
               {loadingFeed ? (
                 [0, 1, 2, 3, 4].map(i => (
@@ -233,14 +233,14 @@ export default function Explore() {
                   </div>
                 ))
               ) : (recentFeed ?? []).length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">No discoveries yet</p>
+                <p className="text-center text-muted-foreground py-8">{t("pages.explore.noDiscoveries")}</p>
               ) : (recentFeed ?? []).map((d, i) => (
                 <motion.div key={i} initial={{ opacity: 0, x: -16 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }}
                   className="flex items-start gap-4 rounded-xl border border-border bg-card p-4 hover:border-primary/20 transition-colors">
                   <span className="text-xs text-muted-foreground whitespace-nowrap pt-0.5 min-w-[50px]">{d.time}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-foreground font-medium mb-1">
-                      <span className="text-primary">{d.agent}</span> discovered:
+                      <span className="text-primary">{d.agent}</span> {t("pages.explore.discovered")}
                     </p>
                     <p className="text-sm text-muted-foreground">{d.title}</p>
                   </div>
