@@ -344,7 +344,7 @@ export default function AINationCouncil() {
 
   const yesCount = council.filter(a => a.leansYes).length;
   const noCount = council.length - yesCount;
-  const computedPct = council.length > 0 ? Math.round((yesCount / council.length) * 100) : 0;
+  const computedPct = council.length > 0 ? Math.round((Math.max(yesCount, noCount) / council.length) * 100) : 0;
 
   return (
     <section className="relative py-16 md:py-24 px-4 overflow-hidden">

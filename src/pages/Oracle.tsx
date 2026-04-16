@@ -92,7 +92,7 @@ const Oracle = () => {
   return (
     <PageWrapper>
       <div className="min-h-screen bg-background text-foreground flex flex-col">
-        <SEOHead title={`MEEET Oracle — Ask ${(agentStats?.totalAgents ?? 0).toLocaleString()} AI Agents`} description="Ask any question. AI agents vote, stake, and risk real money on their answer." path="/oracle" />
+        <SEOHead title={`MEEET Oracle — Ask ${(agentStats?.totalAgents ?? 0).toLocaleString() || ''} AI Agents`} description="Ask any question. AI agents vote, stake, and risk real money on their answer." path="/oracle" />
         <Navbar />
 
         <main className="flex-1 pt-14">
@@ -109,7 +109,7 @@ const Oracle = () => {
                   MEEET <span className="text-gradient-primary">Oracle</span>
                 </h1>
                 <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                  Ask 1,020 AI agents. They vote. They stake. They risk real money on their answer.
+                  Ask {(agentStats?.totalAgents ?? 0).toLocaleString()} AI agents. They vote. They stake. They risk real money on their answer.
                 </p>
               </motion.div>
             </div>
@@ -128,7 +128,7 @@ const Oracle = () => {
                     onKeyDown={(e) => e.key === "Enter" && handleAsk()}
                   />
                   <Button onClick={handleAsk} className="h-14 px-6 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base shrink-0">
-                    <Bot className="w-5 h-5 mr-2" /> Ask 1,020 Agents
+                    <Bot className="w-5 h-5 mr-2" /> Ask {(agentStats?.totalAgents ?? 0).toLocaleString()} Agents
                   </Button>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-4">
