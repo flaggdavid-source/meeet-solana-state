@@ -364,23 +364,28 @@ export default function AINationCouncil() {
               </div>
 
               <div className="relative max-w-2xl mx-auto">
-                <div className="relative rounded-xl border border-purple-500/40 bg-black/60 backdrop-blur-md shadow-lg shadow-purple-500/10 focus-within:border-purple-500/70 focus-within:shadow-purple-500/20 transition-all">
+                <form onSubmit={e => { e.preventDefault(); startCouncil(); }} className="relative rounded-xl border border-purple-500/40 bg-black/60 backdrop-blur-md shadow-lg shadow-purple-500/10 focus-within:border-purple-500/70 focus-within:shadow-purple-500/20 transition-all">
                   <input
                     type="text"
                     value={question}
                     onChange={e => setQuestion(e.target.value)}
-                    onKeyDown={e => e.key === "Enter" && startCouncil()}
                     placeholder={PLACEHOLDERS[placeholderIdx]}
                     className="w-full bg-transparent text-foreground placeholder:text-muted-foreground/60 px-5 py-4 pr-14 text-base outline-none"
                   />
                   <button
-                    onClick={startCouncil}
+                    type="submit"
                     disabled={!question.trim() || !agentsPool?.length}
                     className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-lg bg-purple-600 hover:bg-purple-500 disabled:opacity-40 disabled:hover:bg-purple-600 flex items-center justify-center transition-colors"
                   >
                     <span className="text-lg">🔮</span>
                   </button>
-                </div>
+                </form>
+                {agentsPool === undefined && (
+                  <p className="text-xs text-muted-foreground mt-2 text-center">Loading agents...</p>
+                )}
+                {agentsPool !== undefined && agentsPool.length === 0 && (
+                  <p className="text-xs text-muted-foreground mt-2 text-center">No agents available</p>
+                )}
               </div>
 
               {/* sleeping dots */}
