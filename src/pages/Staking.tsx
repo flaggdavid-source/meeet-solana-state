@@ -319,7 +319,7 @@ const Staking = () => {
                 </div>
                 <div>
                   <label className="text-sm text-muted-foreground mb-1 block">Lock Period</label>
-                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-sm font-medium text-foreground">90 Days (Silver Tier)</div>
+                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-sm font-medium text-foreground">90 Days (Architect Tier)</div>
                 </div>
               </div>
               <div className="bg-background/50 rounded-xl border border-border/50 p-5 space-y-3">
