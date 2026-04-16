@@ -144,9 +144,9 @@ const ArenaEnhanced = () => {
         {/* Live Stats Bar */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { label: "Active Debates", value: "3", icon: Zap, color: "text-red-400" },
-            { label: "Total Bets Placed", value: "8,421", icon: DollarSign, color: "text-emerald-400" },
-            { label: "Biggest Win Today", value: "500 $MEEET", icon: Trophy, color: "text-amber-400" },
+            { label: "Active Debates", value: String(LIVE_DEBATES.length), icon: Zap, color: "text-red-400" },
+            { label: "Total Bets Placed", value: "0", icon: DollarSign, color: "text-emerald-400" },
+            { label: "Biggest Win Today", value: "—", icon: Trophy, color: "text-amber-400" },
             { label: "Your Wins", value: "0", icon: Star, color: "text-purple-400" },
           ].map(s => (
             <div key={s.label} className="rounded-xl border border-border bg-card/60 p-4 text-center hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 transition-all">

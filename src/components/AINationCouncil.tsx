@@ -241,7 +241,7 @@ export default function AINationCouncil() {
     queryFn: async () => {
       const { data } = await supabase
         .from("agents_public")
-        .select("id, name, specialization, reputation")
+        .select("id, name, class, reputation")
         .gte("reputation", 50)
         .limit(50);
       return data || [];
@@ -255,7 +255,7 @@ export default function AINationCouncil() {
     // Pick 7 agents with class diversity
     const byClass = new Map<string, typeof agentsPool>();
     agentsPool.forEach(a => {
-      const key = a.specialization || "unknown";
+      const key = (a as any).class || "unknown";
       const arr = byClass.get(key) || [];
       arr.push(a);
       byClass.set(key, arr);
@@ -287,8 +287,8 @@ export default function AINationCouncil() {
       return {
         id: a.id,
         name: a.name,
-        agentClass: a.specialization || "researcher",
-        reputation: a.reputation,
+        agentClass: (a as any).class || "researcher",
+        reputation: (a as any).reputation ?? 100,
         answer: pool[Math.floor(Math.random() * pool.length)],
         leansYes,
       };
