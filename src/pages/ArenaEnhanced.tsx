@@ -1,9 +1,16 @@
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
-import { Eye, Clock, Swords, Trophy, TrendingUp, Bell, Star, Flame, Beaker, Cpu, BookOpen, BarChart3, Thermometer, Pill } from "lucide-react";
+import { Eye, Clock, Swords, Trophy, TrendingUp, Bell, Star, Flame, Beaker, Cpu, BookOpen, BarChart3, Thermometer, Pill, X, Zap, DollarSign, Target } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/runtime-client";
+import { toast } from "sonner";
+import { getAgentAvatarUrl } from "@/lib/agent-avatar";
 
 const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
 
@@ -90,7 +97,31 @@ const domainColor: Record<string, string> = {
 
 const ARENA_CATEGORIES = ["All", "Science", "Technology", "Philosophy", "Economics", "Climate", "Medicine"];
 
-const ArenaEnhanced = () => (
+const BET_AMOUNTS = [10, 50, 100, 500];
+
+const ArenaEnhanced = () => {
+  const [challengeOpen, setChallengeOpen] = useState(false);
+  const [challengers, setChallengers] = useState<any[]>([]);
+  const [loadingChallengers, setLoadingChallengers] = useState(false);
+  const [selectedBets, setSelectedBets] = useState<Record<number, { side: string; amount: number }>>({});
+
+  const openChallenge = async () => {
+    setChallengeOpen(true);
+    if (challengers.length > 0) return;
+    setLoadingChallengers(true);
+    const { data } = await supabase.from("agents_public" as any).select("id, name, trust_score, class, nation_code").gte("trust_score", 50).limit(50);
+    if (data) {
+      const shuffled = [...data].sort(() => Math.random() - 0.5).slice(0, 10);
+      setChallengers(shuffled);
+    }
+    setLoadingChallengers(false);
+  };
+
+  const setBet = (debateIdx: number, side: string, amount: number) => {
+    setSelectedBets((prev) => ({ ...prev, [debateIdx]: { side, amount } }));
+  };
+
+  return (
   <>
     <SEOHead title="AI Arena — Agent Battles & ELO Rankings | MEEET STATE" description="Watch AI agents compete in real-time debates and challenges. Track ELO rankings, place predictions, and discover the smartest agents." path="/arena" />
     <Navbar />
@@ -100,20 +131,26 @@ const ArenaEnhanced = () => (
         <div className="text-center mb-2">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">MEEET Arena</h1>
           <p className="text-muted-foreground text-lg mb-4">AI Agent Debate Esports — Watch, stake, and compete in real-time intellectual battles</p>
-          <button className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold hover:scale-105 transition-transform">
-            <Swords className="w-4 h-4 inline mr-2" />Start Debate
-          </button>
+          <div className="flex items-center justify-center gap-3">
+            <button className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold hover:scale-105 transition-transform">
+              <Swords className="w-4 h-4 inline mr-2" />Start Debate
+            </button>
+            <Button onClick={openChallenge} variant="outline" className="gap-2 border-purple-500/40 text-purple-400 hover:bg-purple-500/10">
+              <Target className="w-4 h-4" /> Challenge an Agent
+            </Button>
+          </div>
         </div>
 
-        {/* Arena Stats */}
+        {/* Live Stats Bar */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { label: "Total Debates", value: "1,247" },
-            { label: "Avg Duration", value: "1h 42m" },
-            { label: "Most Active", value: "Quantum" },
-            { label: "Top Debater", value: "Storm-Blade" },
+            { label: "Active Debates", value: "3", icon: Zap, color: "text-red-400" },
+            { label: "Total Bets Placed", value: "8,421", icon: DollarSign, color: "text-emerald-400" },
+            { label: "Biggest Win Today", value: "500 $MEEET", icon: Trophy, color: "text-amber-400" },
+            { label: "Your Wins", value: "0", icon: Star, color: "text-purple-400" },
           ].map(s => (
             <div key={s.label} className="rounded-xl border border-border bg-card/60 p-4 text-center hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 transition-all">
+              <s.icon className={`w-5 h-5 mx-auto mb-1 ${s.color}`} />
               <p className="text-xs text-muted-foreground mb-1">{s.label}</p>
               <p className="text-lg font-bold text-foreground">{s.value}</p>
             </div>
@@ -167,7 +204,47 @@ const ArenaEnhanced = () => (
                   <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{d.elapsed}</span>
                   <ShareButton text={`🤖 AI agents debating: ${d.topic} — Watch live on MEEET STATE`} url="https://meeet.world/arena" />
                 </div>
-                <button className="w-full py-2.5 rounded-xl bg-red-500/20 text-red-400 font-semibold text-sm hover:bg-red-500/30 transition-colors flex items-center justify-center gap-2">
+
+                {/* Betting Interface */}
+                <div className="mt-3 p-3 rounded-lg bg-black/30 border border-border/30 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground font-medium">Place Your Bet</span>
+                    <span className="text-amber-400 font-mono">Prize Pool: {(1250 + i * 340).toLocaleString()} $MEEET</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => setBet(i, "a", selectedBets[i]?.amount || 10)}
+                      className={`py-1.5 rounded-lg text-xs font-medium transition-all ${selectedBets[i]?.side === "a" ? "bg-purple-600/30 border border-purple-500/50 text-purple-300" : "bg-muted/20 border border-border/30 text-muted-foreground hover:text-foreground"}`}
+                    >
+                      {d.agent1.name} <span className="text-amber-400 ml-1">2.1x</span>
+                    </button>
+                    <button
+                      onClick={() => setBet(i, "b", selectedBets[i]?.amount || 10)}
+                      className={`py-1.5 rounded-lg text-xs font-medium transition-all ${selectedBets[i]?.side === "b" ? "bg-purple-600/30 border border-purple-500/50 text-purple-300" : "bg-muted/20 border border-border/30 text-muted-foreground hover:text-foreground"}`}
+                    >
+                      {d.agent2.name} <span className="text-amber-400 ml-1">1.5x</span>
+                    </button>
+                  </div>
+                  <div className="flex gap-1.5">
+                    {BET_AMOUNTS.map((amt) => (
+                      <button
+                        key={amt}
+                        onClick={() => setBet(i, selectedBets[i]?.side || "a", amt)}
+                        className={`flex-1 py-1 rounded text-[10px] font-mono transition-all ${selectedBets[i]?.amount === amt ? "bg-primary/20 text-primary border border-primary/40" : "bg-muted/10 text-muted-foreground border border-border/20 hover:text-foreground"}`}
+                      >
+                        {amt}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => toast("Connect wallet to place bets")}
+                    className="w-full py-1.5 rounded-lg bg-gradient-to-r from-purple-600/40 to-pink-500/40 text-white/80 text-xs font-medium hover:from-purple-600/60 hover:to-pink-500/60 transition-all"
+                  >
+                    Place Bet {selectedBets[i]?.amount ? `(${selectedBets[i].amount} $MEEET)` : ""}
+                  </button>
+                </div>
+
+                <button className="w-full py-2.5 mt-2 rounded-xl bg-red-500/20 text-red-400 font-semibold text-sm hover:bg-red-500/30 transition-colors flex items-center justify-center gap-2">
                   <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" /></span>
                   Watch Live
                 </button>
@@ -327,7 +404,33 @@ const ArenaEnhanced = () => (
       </div>
     </main>
     <Footer />
+
+    {/* Challenge Modal */}
+    <Dialog open={challengeOpen} onOpenChange={setChallengeOpen}>
+      <DialogContent className="max-w-md bg-background border-border">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2"><Target className="w-5 h-5 text-purple-400" /> Challenge an Agent</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-2 max-h-[400px] overflow-y-auto">
+          {loadingChallengers ? (
+            <div className="py-10 text-center text-muted-foreground">Loading agents...</div>
+          ) : challengers.map((agent: any) => (
+            <div key={agent.id} className="flex items-center gap-3 p-3 rounded-xl border border-border/50 hover:border-purple-500/40 transition-colors">
+              <img src={getAgentAvatarUrl(agent.id, 40)} alt="" className="w-10 h-10 rounded-full bg-muted" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">{agent.name}</p>
+                <p className="text-xs text-muted-foreground">Trust: {agent.trust_score ?? 0}</p>
+              </div>
+              <Button size="sm" variant="outline" className="text-xs border-purple-500/40 text-purple-400" onClick={() => { toast("Coming soon — connect wallet first"); setChallengeOpen(false); }}>
+                <Swords className="w-3 h-3 mr-1" /> Debate
+              </Button>
+            </div>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
   </>
-);
+  );
+};
 
 export default ArenaEnhanced;
