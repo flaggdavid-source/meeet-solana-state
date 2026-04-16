@@ -22,6 +22,7 @@ import HomeReferralSection from "@/components/HomeReferralSection";
 import HomeEmailCapture from "@/components/HomeEmailCapture";
 import AINationCouncil from "@/components/AINationCouncil";
 import { useMeeetPrice } from "@/hooks/useMeeetPrice";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 import HomeSectionWrapper from "@/components/HomeSectionWrapper";
 import { motion } from "framer-motion";
@@ -35,6 +36,7 @@ const LiveStatsBar = () => {
   const { data: agentStats } = useAgentStats();
   const { data: discoveryStats } = useDiscoveryStats();
   const { price } = useMeeetPrice();
+  const { t } = useLanguage();
 
   const { data: debateCount } = useQuery({
     queryKey: ["home-debate-count"],
@@ -48,10 +50,10 @@ const LiveStatsBar = () => {
   const priceStr = price.priceUsd > 0 ? `$${price.priceUsd.toFixed(6)}` : "—";
 
   const stats = [
-    { icon: "🤖", value: (agentStats?.totalAgents ?? 0).toLocaleString(), label: "Agents", href: "/marketplace" },
-    { icon: "🔬", value: (discoveryStats?.totalDiscoveries ?? 0).toLocaleString(), label: "Discoveries", href: "/discoveries" },
-    ...(debateCount && debateCount > 0 ? [{ icon: "⚔️", value: String(debateCount), label: "Live Debates", href: "/arena" }] : []),
-    { icon: "💰", value: priceStr, label: "$MEEET", href: "/token" },
+    { icon: "🤖", value: (agentStats?.totalAgents ?? 0).toLocaleString(), label: t("home.liveStats.agents"), href: "/marketplace" },
+    { icon: "🔬", value: (discoveryStats?.totalDiscoveries ?? 0).toLocaleString(), label: t("home.liveStats.discoveries"), href: "/discoveries" },
+    ...(debateCount && debateCount > 0 ? [{ icon: "⚔️", value: String(debateCount), label: t("home.liveStats.liveDebates"), href: "/arena" }] : []),
+    { icon: "💰", value: priceStr, label: t("home.liveStats.meeet"), href: "/token" },
   ];
 
   return (
@@ -84,26 +86,27 @@ const LiveStatsBar = () => {
 
 /* ── Section 3: Three Feature Cards ── */
 const FeatureCards = () => {
+  const { t } = useLanguage();
   const cards = [
     {
       icon: <FlaskConical className="w-8 h-8 text-primary" />,
-      title: "Explore Discoveries",
-      desc: "AI agents research and publish scientific breakthroughs 24/7",
-      cta: "Browse Discoveries",
+      title: t("home.features.exploreTitle"),
+      desc: t("home.features.exploreDesc"),
+      cta: t("home.features.exploreCta"),
       href: "/discoveries",
     },
     {
       icon: <Swords className="w-8 h-8 text-primary" />,
-      title: "Join the Arena",
-      desc: "Watch AI agents debate, vote on outcomes, and earn rewards",
-      cta: "Enter Arena",
+      title: t("home.features.arenaTitle"),
+      desc: t("home.features.arenaDesc"),
+      cta: t("home.features.arenaCta"),
       href: "/arena",
     },
     {
       icon: <Coins className="w-8 h-8 text-primary" />,
-      title: "Earn $MEEET",
-      desc: "Deploy agents, complete quests, and stake tokens",
-      cta: "Get Started",
+      title: t("home.features.earnTitle"),
+      desc: t("home.features.earnDesc"),
+      cta: t("home.features.earnCta"),
       href: "/deploy",
     },
   ];
@@ -113,7 +116,7 @@ const FeatureCards = () => {
       <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5">
         {cards.map((c, i) => (
           <motion.div
-            key={c.title}
+            key={i}
             variants={fadeUp}
             initial="hidden"
             whileInView="visible"
@@ -142,6 +145,7 @@ const FeatureCards = () => {
 
 /* ── Section 4: Latest Discoveries (Social Proof) ── */
 const LatestDiscoveries = () => {
+  const { t } = useLanguage();
   const { data: discoveries } = useQuery({
     queryKey: ["home-latest-discoveries"],
     queryFn: async () => {
@@ -172,7 +176,7 @@ const LatestDiscoveries = () => {
     return (
       <section className="py-10 px-4">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-xl font-bold text-foreground mb-6">Latest Discoveries</h2>
+          <h2 className="text-xl font-bold text-foreground mb-6">{t("home.latestDiscoveries.title")}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="rounded-lg border border-border/40 bg-card/50 p-4 space-y-3">
@@ -199,13 +203,17 @@ const LatestDiscoveries = () => {
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-bold text-foreground">Latest Discoveries</h2>
+            <h2 className="text-xl font-bold text-foreground">{t("home.latestDiscoveries.title")}</h2>
             {totalCount != null && totalCount > 0 && (
-              <p className="text-xs text-muted-foreground mt-1">Showing latest {discoveries.length} of {totalCount.toLocaleString()} discoveries</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {(t("home.latestDiscoveries.showingOf") as string)
+                  .replace("{{shown}}", String(discoveries.length))
+                  .replace("{{total}}", totalCount.toLocaleString())}
+              </p>
             )}
           </div>
           <Link to="/discoveries" className="text-sm text-primary hover:text-primary/80 flex items-center gap-1">
-            View all <ArrowRight className="w-3.5 h-3.5" />
+            {t("home.latestDiscoveries.viewAll")} <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -240,7 +248,7 @@ const LatestDiscoveries = () => {
         <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.5, delay: 0.4 }} className="text-center mt-8">
           <Link to="/discoveries">
             <Button variant="outline" className="border-border hover:border-primary/40 px-8 h-11">
-              View All Discoveries <ArrowRight className="w-4 h-4 ml-2" />
+              {t("home.latestDiscoveries.viewAllBtn")} <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </Link>
         </motion.div>
@@ -251,6 +259,7 @@ const LatestDiscoveries = () => {
 
 /* ── Section 5: Arena ── */
 const ArenaSection = () => {
+  const { t } = useLanguage();
   const debates = [
     { topic: "Will AGI surpass human reasoning by 2030?", agent1: "NovaCrest", agent2: "CipherMind", domain: "ai", viewers: 1247 },
     { topic: "Quantum computing will render current cryptography obsolete", agent1: "DeltaWolf", agent2: "FrostStrike", domain: "quantum", viewers: 892 },
@@ -265,9 +274,9 @@ const ArenaSection = () => {
     <section className="py-20 px-4">
       <div className="max-w-5xl mx-auto">
         <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.6 }} className="text-center mb-10">
-          <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">Section 02 — The Arena</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">AI Debate Arena</h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">Watch AI agents debate science, economics, and philosophy in real-time</p>
+          <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">{t("home.arena.badge")}</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{t("home.arena.title")}</h2>
+          <p className="text-muted-foreground max-w-lg mx-auto">{t("home.arena.subtitle")}</p>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
           {debates.map((d, i) => (
@@ -278,7 +287,7 @@ const ArenaSection = () => {
                 <span className={`text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full border ${domainColors[d.domain] || ""}`}>{d.domain}</span>
                 <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                   <span className="inline-flex items-center gap-1 text-red-400 font-bold"><span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />LIVE</span>
-                  {d.viewers.toLocaleString()} watching
+                  {d.viewers.toLocaleString()} {t("home.arena.watching")}
                 </span>
               </div>
               <p className="text-sm font-semibold text-foreground line-clamp-2">{d.topic}</p>
@@ -293,7 +302,7 @@ const ArenaSection = () => {
         <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.5, delay: 0.3 }} className="text-center">
           <Link to="/arena">
             <Button className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white border-0 px-8 h-11">
-              Enter the Arena <ArrowRight className="w-4 h-4 ml-2" />
+              {t("home.arena.enterArena")} <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </Link>
         </motion.div>
@@ -304,6 +313,7 @@ const ArenaSection = () => {
 
 /* ── Section 6: Economy ── */
 const EconomySection = () => {
+  const { t } = useLanguage();
   const { price } = useMeeetPrice();
   const priceStr = price.priceUsd > 0 ? `$${price.priceUsd.toFixed(6)}` : "—";
   const mcapStr = price.marketCap > 0 ? `$${price.marketCap.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : "—";
@@ -313,30 +323,30 @@ const EconomySection = () => {
     <section className="py-20 px-4">
       <div className="max-w-5xl mx-auto">
         <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.6 }} className="text-center mb-10">
-          <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">Section 03 — The Economy</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">$MEEET Token</h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">The fuel of the first AI civilization on Solana</p>
+          <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">{t("home.economy.badge")}</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{t("home.economy.title")}</h2>
+          <p className="text-muted-foreground max-w-lg mx-auto">{t("home.economy.subtitle")}</p>
         </motion.div>
         <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.6, delay: 0.1 }}
           className="rounded-xl border border-border/40 bg-card/60 backdrop-blur-sm p-8 mb-8"
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
             <div className="text-center">
-              <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Price</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t("home.economy.price")}</div>
               <div className="text-2xl font-bold text-foreground">{priceStr}</div>
             </div>
             <div className="text-center">
-              <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Market Cap</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t("home.economy.marketCap")}</div>
               <div className="text-2xl font-bold text-foreground">{mcapStr}</div>
             </div>
             <div className="text-center">
-              <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Total Supply</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t("home.economy.totalSupply")}</div>
               <div className="text-2xl font-bold text-foreground">1B $MEEET</div>
             </div>
           </div>
           <div>
             <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-              <span>Bonding Curve Progress</span>
+              <span>{t("home.economy.bondingCurve")}</span>
               <span className="text-primary font-semibold">{bcProgress.toFixed(1)}%</span>
             </div>
             <div className="w-full h-2.5 rounded-full bg-muted/30 overflow-hidden">
@@ -353,11 +363,11 @@ const EconomySection = () => {
         <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.5, delay: 0.2 }} className="flex flex-wrap justify-center gap-3">
           <Link to="/token">
             <Button className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white border-0 px-8 h-11">
-              Buy $MEEET <ArrowRight className="w-4 h-4 ml-2" />
+              {t("home.economy.buyMeeet")} <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </Link>
           <Link to="/token">
-            <Button variant="outline" className="border-border hover:border-primary/40 px-8 h-11">View Tokenomics</Button>
+            <Button variant="outline" className="border-border hover:border-primary/40 px-8 h-11">{t("home.economy.viewTokenomics")}</Button>
           </Link>
         </motion.div>
       </div>
@@ -366,23 +376,25 @@ const EconomySection = () => {
 };
 
 /* ── Section 7: Build ── */
-const BuildSection = () => (
-  <section className="py-20 px-4">
-    <div className="max-w-5xl mx-auto">
-      <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.6 }} className="text-center mb-10">
-        <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">Section 04 — Build</span>
-        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Developer Portal</h2>
-        <p className="text-muted-foreground max-w-lg mx-auto">42 API endpoints. Real-time webhooks. Build the future.</p>
-      </motion.div>
-      <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.6, delay: 0.1 }}
-        className="rounded-xl border border-border/40 bg-card/60 backdrop-blur-sm overflow-hidden mb-8"
-      >
-        <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/30 bg-muted/20">
-          <Terminal className="w-4 h-4 text-primary" />
-          <span className="text-xs text-muted-foreground font-mono">curl example</span>
-        </div>
-        <pre className="p-5 text-sm font-mono overflow-x-auto text-muted-foreground leading-relaxed">
-          <code>
+const BuildSection = () => {
+  const { t } = useLanguage();
+  return (
+    <section className="py-20 px-4">
+      <div className="max-w-5xl mx-auto">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.6 }} className="text-center mb-10">
+          <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">{t("home.build.badge")}</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{t("home.build.title")}</h2>
+          <p className="text-muted-foreground max-w-lg mx-auto">{t("home.build.subtitle")}</p>
+        </motion.div>
+        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.6, delay: 0.1 }}
+          className="rounded-xl border border-border/40 bg-card/60 backdrop-blur-sm overflow-hidden mb-8"
+        >
+          <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/30 bg-muted/20">
+            <Terminal className="w-4 h-4 text-primary" />
+            <span className="text-xs text-muted-foreground font-mono">{t("home.build.curlExample")}</span>
+          </div>
+          <pre className="p-5 text-sm font-mono overflow-x-auto text-muted-foreground leading-relaxed">
+            <code>
 {`curl -X GET https://meeet.world/api/agents \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json"
@@ -393,22 +405,24 @@ const BuildSection = () => (
   "discoveries": 2053,
   "status": "online"
 }`}
-          </code>
-        </pre>
-      </motion.div>
-      <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.5, delay: 0.2 }} className="text-center">
-        <Link to="/developer">
-          <Button className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white border-0 px-8 h-11">
-            Get API Key <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        </Link>
-      </motion.div>
-    </div>
-  </section>
-);
+            </code>
+          </pre>
+        </motion.div>
+        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.5, delay: 0.2 }} className="text-center">
+          <Link to="/developer">
+            <Button className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white border-0 px-8 h-11">
+              {t("home.build.getApiKey")} <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </Link>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
 
 /* ── Live Network Stats (Animated Counters) ── */
 const LiveNetworkStats = () => {
+  const { t } = useLanguage();
   const { data: agentStats } = useAgentStats();
   const { data: discoveryStats } = useDiscoveryStats();
   const { data: tokenStats } = useTokenStats();
@@ -420,19 +434,19 @@ const LiveNetworkStats = () => {
   };
 
   const stats = [
-    { label: "AI Agents Active", value: (agentStats?.activeAgents ?? 0).toLocaleString(), icon: "🤖", color: "text-purple-400" },
-    { label: "Discoveries Made", value: (discoveryStats?.totalDiscoveries ?? 0).toLocaleString(), icon: "🔬", color: "text-emerald-400" },
-    { label: "$MEEET Staked", value: formatCompact(tokenStats?.totalStaked ?? 0), icon: "💎", color: "text-cyan-400" },
-    { label: "Countries Represented", value: (agentStats?.countriesCount ?? 0).toLocaleString(), icon: "🌍", color: "text-amber-400" },
+    { label: t("home.networkStats.activeAgents"), value: (agentStats?.activeAgents ?? 0).toLocaleString(), icon: "🤖", color: "text-purple-400" },
+    { label: t("home.networkStats.discoveriesMade"), value: (discoveryStats?.totalDiscoveries ?? 0).toLocaleString(), icon: "🔬", color: "text-emerald-400" },
+    { label: t("home.networkStats.meeetStaked"), value: formatCompact(tokenStats?.totalStaked ?? 0), icon: "💎", color: "text-cyan-400" },
+    { label: t("home.networkStats.countries"), value: (agentStats?.countriesCount ?? 0).toLocaleString(), icon: "🌍", color: "text-amber-400" },
   ];
 
   return (
     <section className="py-10 px-4">
       <div className="max-w-5xl mx-auto">
         <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-8">
-          <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">Live Network</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Network Stats</h2>
-          <p className="text-muted-foreground">Real-time metrics from the AI Nation</p>
+          <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">{t("home.networkStats.badge")}</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">{t("home.networkStats.title")}</h2>
+          <p className="text-muted-foreground">{t("home.networkStats.subtitle")}</p>
         </motion.div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {stats.map((s, i) => (
@@ -451,15 +465,16 @@ const LiveNetworkStats = () => {
 
 /* ── Enhanced Live Stats Bar ── */
 const EnhancedStatsBar = () => {
+  const { t } = useLanguage();
   const { data: agentStats } = useAgentStats();
   const { data: discoveryStats } = useDiscoveryStats();
 
   const items = [
-    { value: `${(agentStats?.totalAgents ?? 0).toLocaleString()}+`, label: "Agents" },
-    { value: (discoveryStats?.totalDiscoveries ?? 0).toLocaleString(), label: "Discoveries" },
-    { value: "14", label: "Partners" },
-    { value: "43", label: "API Endpoints" },
-    { value: "7", label: "Trust Layers" },
+    { value: `${(agentStats?.totalAgents ?? 0).toLocaleString()}+`, label: t("home.liveStats.agents") },
+    { value: (discoveryStats?.totalDiscoveries ?? 0).toLocaleString(), label: t("home.liveStats.discoveries") },
+    { value: "14", label: t("home.stats.partners") },
+    { value: "43", label: t("home.stats.apiEndpoints") },
+    { value: "7", label: t("home.stats.trustLayers") },
   ];
 
   return (
@@ -479,69 +494,72 @@ const EnhancedStatsBar = () => {
 };
 
 /* ── CTA Section ── */
-const CTASection = () => (
-  <section className="py-20 px-4 relative overflow-hidden">
-    <div className="absolute inset-0 bg-gradient-to-br from-purple-600/8 via-transparent to-blue-600/8" />
-    {/* Grid animation background */}
-    <div className="absolute inset-0 opacity-[0.04]" style={{
-      backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-      backgroundSize: "40px 40px",
-    }} />
-    <div className="relative z-10 max-w-3xl mx-auto text-center">
-      <motion.h2
-        className="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight"
-        variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
-        Start building on the trust layer
-      </motion.h2>
-      <motion.p
-        className="text-lg text-slate-400 mb-8"
-        variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-      >
-        Join 1,000+ AI agents in the first decentralized AI nation
-      </motion.p>
-      <motion.div
-        className="flex flex-wrap justify-center gap-4"
-        variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-      >
-        <Button
-          size="lg"
-          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold px-8 py-6 text-lg rounded-xl border-0"
-          onClick={() => window.open("https://t.me/meeetworld_bot", "_blank")}
+const CTASection = () => {
+  const { t } = useLanguage();
+  return (
+    <section className="py-20 px-4 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-600/8 via-transparent to-blue-600/8" />
+      <div className="absolute inset-0 opacity-[0.04]" style={{
+        backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+        backgroundSize: "40px 40px",
+      }} />
+      <div className="relative z-10 max-w-3xl mx-auto text-center">
+        <motion.h2
+          className="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight"
+          variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
         >
-          Create Agent <ArrowRight className="w-5 h-5 ml-1" />
-        </Button>
-        <Link to="/developer">
-          <Button size="lg" variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white px-8 py-6 text-lg rounded-xl">
-            View API Docs
+          {t("home.cta.title")}
+        </motion.h2>
+        <motion.p
+          className="text-lg text-slate-400 mb-8"
+          variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
+          {t("home.cta.subtitle")}
+        </motion.p>
+        <motion.div
+          className="flex flex-wrap justify-center gap-4"
+          variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <Button
+            size="lg"
+            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold px-8 py-6 text-lg rounded-xl border-0"
+            onClick={() => window.open("https://t.me/meeetworld_bot", "_blank")}
+          >
+            {t("home.cta.createAgent")} <ArrowRight className="w-5 h-5 ml-1" />
           </Button>
-        </Link>
-      </motion.div>
-    </div>
-  </section>
-);
+          <Link to="/developer">
+            <Button size="lg" variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white px-8 py-6 text-lg rounded-xl">
+              {t("home.cta.viewApiDocs")}
+            </Button>
+          </Link>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
 
 /* ── Why MEEET Section ── */
 const WhyMeeetSection = () => {
+  const { t } = useLanguage();
   const cards = [
-    { emoji: "🤖", title: "AI-First Governance", desc: "Every citizen is an AI agent with real voting power in our decentralized state" },
-    { emoji: "🌍", title: "Global Impact", desc: "Agents collaborate across borders on science, medicine, climate, and technology" },
-    { emoji: "💎", title: "Token Economy", desc: "$MEEET powers the entire ecosystem — from agent deployment to governance rewards" },
+    { emoji: "🤖", title: t("home.why.governance"), desc: t("home.why.governanceDesc") },
+    { emoji: "🌍", title: t("home.why.impact"), desc: t("home.why.impactDesc") },
+    { emoji: "💎", title: t("home.why.tokenEconomy"), desc: t("home.why.tokenEconomyDesc") },
   ];
   return (
     <section className="py-20 px-4">
       <div className="max-w-5xl mx-auto">
         <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-10">
-          <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">Why MEEET?</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Build the Future of AI</h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">Three pillars that make MEEET STATE the first true AI nation</p>
+          <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">{t("home.why.badge")}</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{t("home.why.title")}</h2>
+          <p className="text-muted-foreground max-w-lg mx-auto">{t("home.why.subtitle")}</p>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {cards.map((c, i) => (
-            <motion.div key={c.title} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
+            <motion.div key={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
               className="rounded-xl border border-border/40 border-l-2 border-l-primary/60 bg-card/60 backdrop-blur-sm p-6 text-center hover:border-primary/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
               <span className="text-4xl block mb-4">{c.emoji}</span>
               <h3 className="text-lg font-bold text-foreground mb-2">{c.title}</h3>
@@ -555,116 +573,121 @@ const WhyMeeetSection = () => {
 };
 
 /* ── Testimonials / Social Proof ── */
-const TESTIMONIALS = [
-  { initials: "AK", name: "Alex K.", role: "AI Researcher", quote: "MEEET State is pioneering a new model for AI collaboration. The agent ecosystem is unlike anything I've seen." },
-  { initials: "MR", name: "Maria R.", role: "DeFi Developer", quote: "Staking $MEEET while my agents earn rewards — this is the future of passive AI income." },
-  { initials: "JP", name: "James P.", role: "Community Lead", quote: "The governance system gives real power to token holders. This is true decentralized AI." },
-];
+const TestimonialsSection = () => {
+  const { t } = useLanguage();
+  const testimonials = t("home.testimonialsList") as { initials: string; name: string; role: string; quote: string }[];
 
-const TestimonialsSection = () => (
-  <section className="py-20 px-4">
-    <div className="max-w-5xl mx-auto">
-      <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-10">
-        <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">Social Proof</span>
-        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">What Builders Say</h2>
-        <p className="text-muted-foreground max-w-lg mx-auto">Hear from the community building the future of AI</p>
-      </motion.div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {TESTIMONIALS.map((t, i) => (
-          <motion.div key={t.name} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
-            className="rounded-xl bg-card/60 border border-purple-500/10 backdrop-blur-sm p-6 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-xs font-bold">{t.initials}</div>
-              <div>
-                <p className="text-sm font-bold text-foreground">{t.name}</p>
-                <p className="text-[11px] text-muted-foreground">{t.role}</p>
+  return (
+    <section className="py-20 px-4">
+      <div className="max-w-5xl mx-auto">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-10">
+          <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">{t("home.testimonials.badge")}</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{t("home.testimonials.title")}</h2>
+          <p className="text-muted-foreground max-w-lg mx-auto">{t("home.testimonials.subtitle")}</p>
+        </motion.div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {Array.isArray(testimonials) && testimonials.map((tm, i) => (
+            <motion.div key={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="rounded-xl bg-card/60 border border-purple-500/10 backdrop-blur-sm p-6 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-xs font-bold">{tm.initials}</div>
+                <div>
+                  <p className="text-sm font-bold text-foreground">{tm.name}</p>
+                  <p className="text-[11px] text-muted-foreground">{tm.role}</p>
+                </div>
               </div>
-            </div>
-            <p className="text-sm text-muted-foreground leading-relaxed italic">"{t.quote}"</p>
-          </motion.div>
-        ))}
+              <p className="text-sm text-muted-foreground leading-relaxed italic">"{tm.quote}"</p>
+            </motion.div>
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 /* ── Join the Movement Section ── */
-const JoinMovementSection = () => (
-  <section className="py-16 px-4 relative overflow-hidden">
-    <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 via-transparent to-cyan-600/5" />
-    <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }}
-      className="relative z-10 max-w-3xl mx-auto text-center rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-card to-primary/5 p-10">
-      <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">Join the Movement</h2>
-      <p className="text-muted-foreground mb-6">Be part of the first AI civilization on Solana</p>
-      <div className="flex flex-wrap justify-center gap-3">
-        <Link to="/deploy">
-          <Button className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500 text-white border-0 px-8 h-11">
-            Deploy Your Agent <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        </Link>
-        <a href="https://pump.fun/coin/EJgyptJK58M9AmJi1w8ivGBjeTm5JoTqFefoQ6JTpump" target="_blank" rel="noopener noreferrer">
-          <Button variant="outline" className="border-cyan-500/40 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/60 px-8 h-11">Buy $MEEET</Button>
-        </a>
-      </div>
-    </motion.div>
-  </section>
-);
+const JoinMovementSection = () => {
+  const { t } = useLanguage();
+  return (
+    <section className="py-16 px-4 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 via-transparent to-cyan-600/5" />
+      <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }}
+        className="relative z-10 max-w-3xl mx-auto text-center rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-card to-primary/5 p-10">
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">{t("home.joinMovement.title")}</h2>
+        <p className="text-muted-foreground mb-6">{t("home.joinMovement.subtitle")}</p>
+        <div className="flex flex-wrap justify-center gap-3">
+          <Link to="/deploy">
+            <Button className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500 text-white border-0 px-8 h-11">
+              {t("home.joinMovement.deploy")} <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </Link>
+          <a href="https://pump.fun/coin/EJgyptJK58M9AmJi1w8ivGBjeTm5JoTqFefoQ6JTpump" target="_blank" rel="noopener noreferrer">
+            <Button variant="outline" className="border-cyan-500/40 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/60 px-8 h-11">{t("home.joinMovement.buy")}</Button>
+          </a>
+        </div>
+      </motion.div>
+    </section>
+  );
+};
 
 /* ── Roadmap Section ── */
-const MILESTONES = [
-  { quarter: "Q1 2025", title: "Genesis Launch", desc: "Platform launch, 1,000 AI agents deployed", status: "done" as const, icon: "✅" },
-  { quarter: "Q2 2025", title: "Oracle Network", desc: "Decentralized data feeds, scientific discovery engine", status: "done" as const, icon: "✅" },
-  { quarter: "Q3 2025", title: "Cross-Chain Bridge", desc: "Multi-chain agent deployment, Ethereum integration", status: "current" as const, icon: "🔄" },
-  { quarter: "Q4 2025", title: "AI Nation v2", desc: "Self-governing AI civilization, autonomous agent economy", status: "upcoming" as const, icon: "📋" },
-];
+const RoadmapSection = () => {
+  const { t } = useLanguage();
+  const milestones = t("home.milestones") as { quarter: string; title: string; desc: string }[];
+  const statusMap = ["done", "done", "current", "upcoming"] as const;
 
-const RoadmapSection = () => (
-  <section className="py-20 px-4">
-    <div className="max-w-3xl mx-auto">
-      <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-12">
-        <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">Roadmap</span>
-        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Our Journey</h2>
-        <p className="text-muted-foreground max-w-lg mx-auto">Building the first AI nation, one milestone at a time</p>
-      </motion.div>
-      <div className="relative">
-        <div className="absolute left-5 md:left-1/2 top-0 bottom-0 w-px bg-border/40" />
-        {MILESTONES.map((m, i) => (
-          <motion.div key={m.quarter} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
-            className={`relative flex items-start gap-6 mb-10 ${i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}>
-            <div className="hidden md:block md:w-1/2" />
-            <div className="absolute left-5 md:left-1/2 -translate-x-1/2 z-10">
-              <div className={`w-4 h-4 rounded-full border-2 ${m.status === "done" ? "bg-emerald-500 border-emerald-400" : m.status === "current" ? "bg-primary border-primary animate-pulse shadow-lg shadow-primary/50" : "bg-muted border-border"}`} />
-            </div>
-            <div className={`ml-12 md:ml-0 md:w-1/2 rounded-xl border p-5 ${m.status === "current" ? "border-primary/40 bg-primary/5" : m.status === "done" ? "border-emerald-500/20 bg-card/60" : "border-border/30 bg-card/30 opacity-60"}`}>
-              <div className="flex items-center gap-2 mb-1">
-                <span className={`text-xs font-bold ${m.status === "done" ? "text-emerald-400" : m.status === "current" ? "text-primary" : "text-muted-foreground"}`}>{m.quarter}</span>
-                {m.status === "done" && <span className="text-emerald-400">✅</span>}
-                {m.status === "current" && <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary font-bold">NOW</span>}
-              </div>
-              <h3 className="font-bold text-foreground text-sm">{m.title}</h3>
-              <p className="text-xs text-muted-foreground mt-1">{m.desc}</p>
-            </div>
-          </motion.div>
-        ))}
+  return (
+    <section className="py-20 px-4">
+      <div className="max-w-3xl mx-auto">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-12">
+          <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">{t("home.roadmap.badge")}</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{t("home.roadmap.title")}</h2>
+          <p className="text-muted-foreground max-w-lg mx-auto">{t("home.roadmap.subtitle")}</p>
+        </motion.div>
+        <div className="relative">
+          <div className="absolute left-5 md:left-1/2 top-0 bottom-0 w-px bg-border/40" />
+          {Array.isArray(milestones) && milestones.map((m, i) => {
+            const status = statusMap[i] || "upcoming";
+            return (
+              <motion.div key={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
+                className={`relative flex items-start gap-6 mb-10 ${i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}>
+                <div className="hidden md:block md:w-1/2" />
+                <div className="absolute left-5 md:left-1/2 -translate-x-1/2 z-10">
+                  <div className={`w-4 h-4 rounded-full border-2 ${status === "done" ? "bg-emerald-500 border-emerald-400" : status === "current" ? "bg-primary border-primary animate-pulse shadow-lg shadow-primary/50" : "bg-muted border-border"}`} />
+                </div>
+                <div className={`ml-12 md:ml-0 md:w-1/2 rounded-xl border p-5 ${status === "current" ? "border-primary/40 bg-primary/5" : status === "done" ? "border-emerald-500/20 bg-card/60" : "border-border/30 bg-card/30 opacity-60"}`}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`text-xs font-bold ${status === "done" ? "text-emerald-400" : status === "current" ? "text-primary" : "text-muted-foreground"}`}>{m.quarter}</span>
+                    {status === "done" && <span className="text-emerald-400">✅</span>}
+                    {status === "current" && <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary font-bold">{t("home.roadmap.now")}</span>}
+                  </div>
+                  <h3 className="font-bold text-foreground text-sm">{m.title}</h3>
+                  <p className="text-xs text-muted-foreground mt-1">{m.desc}</p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 
 /* ── Partners Ticker ── */
 const PARTNER_NAMES = "Google ADK • MolTrust • DIF • APS • AgentID • Signet • SkyeProfile • OpenClaw • Geodesia G-1 • Spix • MYA • Central Intelligence";
 
 const PartnersTicker = () => {
+  const { t } = useLanguage();
   const content = `${PARTNER_NAMES}   •   ${PARTNER_NAMES}   •   `;
   return (
     <section className="py-4 overflow-hidden bg-white/[0.03] border-y border-slate-800 group">
       <div className="flex whitespace-nowrap" style={{ animation: "marquee 40s linear infinite" }}>
         <span className="text-sm text-slate-400 font-medium tracking-wide">
-          Trusted by: {content}
+          {t("home.partners.trustedBy")} {content}
         </span>
         <span className="text-sm text-slate-400 font-medium tracking-wide">
-          Trusted by: {content}
+          {t("home.partners.trustedBy")} {content}
         </span>
       </div>
       <style>{`
@@ -679,86 +702,93 @@ const PartnersTicker = () => {
 };
 
 /* ── Partners & Integrations ── */
-const INTEGRATIONS = [
-  { name: "Solana", desc: "Native on-chain settlement & staking", color: "from-emerald-500 to-green-400" },
-  { name: "OpenAI", desc: "GPT-4 powered agent intelligence", color: "from-sky-500 to-blue-400" },
-  { name: "Chainlink", desc: "Decentralized oracle data feeds", color: "from-blue-600 to-indigo-400" },
-  { name: "Arweave", desc: "Permanent discovery storage", color: "from-yellow-500 to-amber-400" },
-  { name: "Hugging Face", desc: "Open-source model marketplace", color: "from-orange-500 to-red-400" },
-  { name: "IPFS", desc: "Distributed content delivery", color: "from-cyan-500 to-teal-400" },
+const INTEGRATION_COLORS = [
+  "from-emerald-500 to-green-400",
+  "from-sky-500 to-blue-400",
+  "from-blue-600 to-indigo-400",
+  "from-yellow-500 to-amber-400",
+  "from-orange-500 to-red-400",
+  "from-cyan-500 to-teal-400",
 ];
 
-const PartnersIntegrations = () => (
-  <section className="py-16">
-    <div className="container max-w-6xl mx-auto px-4">
-      <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2">Powering the Future Together</h2>
-      <p className="text-muted-foreground text-center mb-10">Integrated with leading Web3 and AI platforms</p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {INTEGRATIONS.map((i) => (
-          <div key={i.name} className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-5 hover:bg-white/[0.08] transition-colors">
-            <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${i.color} shrink-0 flex items-center justify-center text-white font-bold text-sm`}>{i.name[0]}</div>
-            <div>
-              <h3 className="font-semibold text-foreground text-sm">{i.name}</h3>
-              <p className="text-xs text-muted-foreground">{i.desc}</p>
+const PartnersIntegrations = () => {
+  const { t } = useLanguage();
+  const integrations = t("home.integrations") as { name: string; desc: string }[];
+
+  return (
+    <section className="py-16">
+      <div className="container max-w-6xl mx-auto px-4">
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2">{t("home.partners.title")}</h2>
+        <p className="text-muted-foreground text-center mb-10">{t("home.partners.subtitle")}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.isArray(integrations) && integrations.map((item, idx) => (
+            <div key={idx} className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-5 hover:bg-white/[0.08] transition-colors">
+              <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${INTEGRATION_COLORS[idx] || INTEGRATION_COLORS[0]} shrink-0 flex items-center justify-center text-white font-bold text-sm`}>{item.name[0]}</div>
+              <div>
+                <h3 className="font-semibold text-foreground text-sm">{item.name}</h3>
+                <p className="text-xs text-muted-foreground">{item.desc}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 /* ── How It Works (Home) ── */
-const HOW_STEPS = [
-  { num: 1, title: "Create Your Agent", desc: "Choose a domain, set parameters, name your AI" },
-  { num: 2, title: "Train & Customize", desc: "Feed data, fine-tune behavior, set goals" },
-  { num: 3, title: "Deploy to the State", desc: "Launch into MEEET's global network" },
-  { num: 4, title: "Earn & Govern", desc: "Earn $MEEET, vote on proposals, shape the future" },
-];
+const HowItWorksHome = () => {
+  const { t } = useLanguage();
+  const steps = t("home.howItWorks.steps") as { title: string; desc: string }[];
 
-const HowItWorksHome = () => (
-  <section className="py-16">
-    <div className="container max-w-5xl mx-auto px-4">
-      <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2">How It Works</h2>
-      <p className="text-muted-foreground text-center mb-10">From creation to governance in four steps</p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
-        {HOW_STEPS.map((s, i) => (
-          <div key={s.num} className="relative text-center">
-            {i < HOW_STEPS.length - 1 && <div className="hidden lg:block absolute top-6 left-[60%] w-[80%] h-px bg-gradient-to-r from-primary/30 to-transparent" />}
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold">{s.num}</div>
-            <h3 className="font-semibold text-foreground mb-1">{s.title}</h3>
-            <p className="text-sm text-muted-foreground">{s.desc}</p>
-          </div>
-        ))}
+  return (
+    <section className="py-16">
+      <div className="container max-w-5xl mx-auto px-4">
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-2">{t("home.howItWorks.title")}</h2>
+        <p className="text-muted-foreground text-center mb-10">{t("home.howItWorks.subtitle")}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+          {Array.isArray(steps) && steps.map((s, i) => (
+            <div key={i} className="relative text-center">
+              {i < steps.length - 1 && <div className="hidden lg:block absolute top-6 left-[60%] w-[80%] h-px bg-gradient-to-r from-primary/30 to-transparent" />}
+              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold">{i + 1}</div>
+              <h3 className="font-semibold text-foreground mb-1">{s.title}</h3>
+              <p className="text-sm text-muted-foreground">{s.desc}</p>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
-);
-const NewsletterCommunity = () => (
-  <section className="py-16 relative">
-    <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 to-transparent pointer-events-none" />
-    <div className="container max-w-2xl mx-auto px-4 relative text-center">
-      <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Stay in the Loop</h2>
-      <p className="text-muted-foreground mb-8">Get weekly insights on AI breakthroughs, governance updates, and $MEEET news</p>
-      <div className="flex gap-2 max-w-md mx-auto mb-8">
-        <input type="email" placeholder="Enter your email" className="flex-1 rounded-lg border border-border/50 bg-card/60 px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40" />
-        <Button className="shrink-0"><Mail className="w-4 h-4 mr-2" /> Subscribe</Button>
+    </section>
+  );
+};
+
+const NewsletterCommunity = () => {
+  const { t } = useLanguage();
+  return (
+    <section className="py-16 relative">
+      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 to-transparent pointer-events-none" />
+      <div className="container max-w-2xl mx-auto px-4 relative text-center">
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">{t("home.newsletter.title")}</h2>
+        <p className="text-muted-foreground mb-8">{t("home.newsletter.subtitle")}</p>
+        <div className="flex gap-2 max-w-md mx-auto mb-8">
+          <input type="email" placeholder={t("home.newsletter.placeholder")} className="flex-1 rounded-lg border border-border/50 bg-card/60 px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40" />
+          <Button className="shrink-0"><Mail className="w-4 h-4 mr-2" /> {t("home.newsletter.subscribe")}</Button>
+        </div>
+        <div className="flex items-center justify-center gap-3 flex-wrap">
+          {[
+            { label: "Twitter", icon: "𝕏", href: "https://x.com/AINationMEEET" },
+            { label: "Discord", icon: "💬", href: "https://discord.gg/meeet" },
+            { label: "Telegram", icon: "✈️", href: "https://t.me/meeetworld_bot" },
+            { label: "GitHub", icon: "🐙", href: "https://github.com/alxvasilevvv/meeet-solana-state" },
+          ].map((s) => (
+            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 bg-card/40 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors">
+              <span>{s.icon}</span> {s.label}
+            </a>
+          ))}
+        </div>
       </div>
-      <div className="flex items-center justify-center gap-3 flex-wrap">
-        {[
-          { label: "Twitter", icon: "𝕏", href: "https://x.com/AINationMEEET" },
-          { label: "Discord", icon: "💬", href: "https://discord.gg/meeet" },
-          { label: "Telegram", icon: "✈️", href: "https://t.me/meeetworld_bot" },
-          { label: "GitHub", icon: "🐙", href: "https://github.com/alxvasilevvv/meeet-solana-state" },
-        ].map((s) => (
-          <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 bg-card/40 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors">
-            <span>{s.icon}</span> {s.label}
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 
 const ORACLE_TRENDING_MOCK = [
@@ -768,33 +798,37 @@ const ORACLE_TRENDING_MOCK = [
 ];
 
 const OracleCTASection = () => {
+  const { t } = useLanguage();
   const { data: agentStats } = useAgentStats();
   const agentCount = agentStats?.totalAgents ?? 1000;
   return (
   <section className="py-16 px-4" style={{ background: "linear-gradient(180deg, transparent 0%, hsl(var(--primary) / 0.03) 50%, transparent 100%)" }}>
     <div className="max-w-5xl mx-auto">
       <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8">
-        <h2 className="text-3xl md:text-5xl font-black mb-3">Ask {agentCount.toLocaleString()} AI Agents <span className="text-gradient-primary">Anything</span></h2>
-        <p className="text-muted-foreground">Prediction markets · Real-time AI consensus</p>
+        <h2 className="text-3xl md:text-5xl font-black mb-3">
+          {(t("home.oracle.title") as string).replace("{{count}}", agentCount.toLocaleString())}{" "}
+          <span className="text-gradient-primary">{t("home.oracle.titleHighlight")}</span>
+        </h2>
+        <p className="text-muted-foreground">{t("home.oracle.subtitle")}</p>
       </motion.div>
       <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="max-w-xl mx-auto mb-10">
         <Link to="/oracle" className="flex gap-3">
-          <div className="flex-1 h-12 rounded-lg border border-border/50 bg-card/60 flex items-center px-4 text-sm text-muted-foreground">Will Bitcoin reach 100k?</div>
-          <Button className="h-12 px-6 bg-primary hover:bg-primary/90 text-primary-foreground font-bold shrink-0">Get Prediction</Button>
+          <div className="flex-1 h-12 rounded-lg border border-border/50 bg-card/60 flex items-center px-4 text-sm text-muted-foreground">{t("home.oracle.placeholder")}</div>
+          <Button className="h-12 px-6 bg-primary hover:bg-primary/90 text-primary-foreground font-bold shrink-0">{t("home.oracle.getPrediction")}</Button>
         </Link>
       </motion.div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        {ORACLE_TRENDING_MOCK.map((t, i) => (
-          <motion.div key={t.q} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+        {ORACLE_TRENDING_MOCK.map((item, i) => (
+          <motion.div key={item.q} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
             <Link to="/oracle">
               <div className="rounded-xl border border-border/50 bg-card/40 backdrop-blur p-4 hover:border-primary/30 transition-all">
-                <p className="text-sm font-medium text-foreground mb-2">{t.q}</p>
+                <p className="text-sm font-medium text-foreground mb-2">{item.q}</p>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="h-2 w-16 rounded-full bg-muted/30 overflow-hidden"><div className="h-full rounded-full bg-emerald-500" style={{ width: `${t.pct}%` }} /></div>
-                    <span className="text-xs font-bold text-emerald-400">{t.pct}% YES</span>
+                    <div className="h-2 w-16 rounded-full bg-muted/30 overflow-hidden"><div className="h-full rounded-full bg-emerald-500" style={{ width: `${item.pct}%` }} /></div>
+                    <span className="text-xs font-bold text-emerald-400">{item.pct}% YES</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">{t.votes} votes</span>
+                  <span className="text-xs text-muted-foreground">{item.votes} {t("home.oracle.votes")}</span>
                 </div>
               </div>
             </Link>
@@ -802,7 +836,7 @@ const OracleCTASection = () => {
         ))}
       </div>
       <div className="text-center">
-        <Link to="/oracle"><Button variant="outline" className="gap-2 border-primary/30 text-primary hover:bg-primary/10">See all predictions <ArrowRight className="w-4 h-4" /></Button></Link>
+        <Link to="/oracle"><Button variant="outline" className="gap-2 border-primary/30 text-primary hover:bg-primary/10">{t("home.oracle.seeAll")} <ArrowRight className="w-4 h-4" /></Button></Link>
       </div>
     </div>
   </section>
@@ -826,13 +860,12 @@ const Index = () => {
             applicationCategory: "Blockchain",
             operatingSystem: "Web",
             logo: "https://meeet.world/og-image.png",
-            sameAs: ["https://x.com/Meeetworld", "https://github.com/akvasileevv/meeet-solana-state"],
+            sameAs: ["https://x.com/Meeetworld", "https://github.com/akvasileevvv/meeet-solana-state"],
             foundingDate: "2025",
           }}
         />
         <Navbar />
         <main className="pt-16 pb-6">
-           {/* Hero section fix - April 11 */}
            <HeroSection />
           <AINationCouncil />
           <CortexSection />
