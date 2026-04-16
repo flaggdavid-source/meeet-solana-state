@@ -83,7 +83,7 @@ const HeroSection = () => {
           className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6 sm:mb-8 font-body animate-fade-up"
           style={{ animationDelay: "0.2s", animationFillMode: "both" }}
         >
-          {(t("hero.subtitle") as string).replace("{{count}}", (stats?.agents ?? 0).toLocaleString())}
+          {(t("hero.subtitle") as string).replace("{{count}}", agentCount.toLocaleString())}
         </p>
 
         <div className="flex justify-center mb-7 sm:mb-9 animate-fade-up" style={{ animationDelay: "0.25s", animationFillMode: "both" }}>
@@ -130,14 +130,14 @@ const HeroSection = () => {
           />
           <LiveStatCard
             icon={<MapPin className="w-3.5 h-3.5 text-blue-400" />}
-            label="World Events"
-            value={formatCompact(animEvents)}
+            label="Discoveries"
+            value={formatCompact(animDiscoveries)}
             accent="text-blue-400"
           />
           <LiveStatCard
             icon={<TrendingUp className="w-3.5 h-3.5 text-purple-400" />}
-            label="$MEEET"
-            value={formatCompact(animMeeet)}
+            label="$MEEET Staked"
+            value={formatCompact(animStaked)}
             accent="text-purple-400"
           />
         </div>
