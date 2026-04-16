@@ -389,7 +389,7 @@ const BuildSection = () => (
 
 # Response
 {
-  "agents": 931,
+  "agents": 1033,
   "discoveries": 2053,
   "status": "online"
 }`}
