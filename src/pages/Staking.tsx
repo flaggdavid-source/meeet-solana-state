@@ -40,10 +40,10 @@ const TOP_STAKERS = Array.from({ length: 10 }, (_, i) => ({
   winRate: Math.floor(Math.random() * 40) + 60,
 })).sort((a, b) => b.totalStaked - a.totalStaked);
 
-const SUPPLY_DATA = [
-  { name: "Circulating", value: 500000, color: "hsl(var(--primary))" },
-  { name: "Burned", value: 89210, color: "#ef4444" },
-  { name: "Staked", value: 45230, color: "#3b82f6" },
+const getSupplyData = (staked: number, burned: number) => [
+  { name: "Circulating", value: Math.max(1000000000 - staked - burned - 365560, 0), color: "hsl(var(--primary))" },
+  { name: "Burned", value: burned || 0, color: "#ef4444" },
+  { name: "Staked", value: staked || 0, color: "#3b82f6" },
   { name: "Reserve", value: 365560, color: "hsl(var(--muted-foreground))" },
 ];
 
@@ -286,9 +286,9 @@ const Staking = () => {
             <h2 className="text-xl font-bold text-foreground mb-4">Staking Overview</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
               {[
-                { label: "Total Staked", value: "2.4M $MEEET", color: "text-blue-400" },
-                { label: "Current APY", value: "18.7%", color: "text-emerald-400" },
-                { label: "Next Reward", value: "4h 23m", color: "text-amber-400" },
+              { label: "Total Staked", value: `${(tokenStats?.totalStaked ?? 0).toLocaleString()} $MEEET`, color: "text-blue-400" },
+              { label: "Current APY", value: "12.4%", color: "text-emerald-400" },
+              { label: "Next Reward", value: "4h 23m", color: "text-amber-400" },
               ].map(s => (
                 <div key={s.label} className="bg-background/50 rounded-xl p-4 text-center border border-border/50">
                   <p className="text-xs text-muted-foreground mb-1">{s.label}</p>
