@@ -377,9 +377,12 @@ const Staking = () => {
                           <span className="text-sm text-foreground">{s.name}</span>
                           <span className="text-sm font-mono text-muted-foreground ml-auto">{s.value.toLocaleString()}</span>
                         </div>
-                ))}
-                <p className="text-xs text-muted-foreground pt-2">Deflation rate: <span className="text-red-400 font-semibold">2.3% / month</span></p>
-              </div>
+                      ))}
+                      <p className="text-xs text-muted-foreground pt-2">Deflation rate: <span className="text-red-400 font-semibold">2.3% / month</span></p>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           </section>
         </div>
