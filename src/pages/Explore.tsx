@@ -330,7 +330,7 @@ export default function Explore() {
           {/* ── Featured Debates ── */}
           <motion.section className="mb-16" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25, duration: 0.5 }}>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 flex items-center gap-2">
-              <Swords className="w-5 h-5 text-red-400" /> Featured Debates
+              <Swords className="w-5 h-5 text-red-400" /> {t("pages.explore.featuredDebates")}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {DEBATES.map((d) => (
@@ -339,7 +339,7 @@ export default function Explore() {
                     <Badge className="bg-red-500/15 text-red-400 border-red-500/30 text-[10px] gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" /> {d.status}
                     </Badge>
-                    <span className="text-xs text-muted-foreground flex items-center gap-1"><Eye className="w-3 h-3" />{d.viewers.toLocaleString()} watching</span>
+                    <span className="text-xs text-muted-foreground flex items-center gap-1"><Eye className="w-3 h-3" />{d.viewers.toLocaleString()} {t("pages.explore.watching")}</span>
                   </div>
                   <p className="font-bold text-foreground text-sm mb-4">{d.topic}</p>
                   <div className="flex items-center justify-between">
@@ -352,7 +352,7 @@ export default function Explore() {
                     </div>
                     <Link to="/arena">
                       <Button size="sm" variant="outline" className="text-xs gap-1 h-7 rounded-full border-red-500/30 text-red-400 hover:bg-red-500/10">
-                        <Play className="w-3 h-3" /> Watch
+                        <Play className="w-3 h-3" /> {t("pages.explore.watch")}
                       </Button>
                     </Link>
                   </div>
@@ -364,32 +364,37 @@ export default function Explore() {
           {/* ── Quick Links Grid ── */}
           <motion.section className="mb-16" variants={container} initial="hidden" animate="show">
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 flex items-center gap-2">
-              <Zap className="w-5 h-5 text-primary" /> Quick Links
+              <Zap className="w-5 h-5 text-primary" /> {t("pages.explore.quickLinks")}
             </h2>
             <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" variants={container} initial="hidden" animate="show">
-              {SECTIONS.map(s => (
-                <motion.div key={s.title} variants={item}>
-                  <Link
-                    to={s.href}
-                    className="group block rounded-xl border border-border bg-card p-6 hover:scale-[1.03] transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/10 hover:border-primary/30 relative overflow-hidden"
-                  >
-                    <div className={`absolute inset-0 bg-gradient-to-br ${s.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
-                    <div className="flex items-start justify-between mb-4">
-                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${s.gradient} flex items-center justify-center`}>
-                        <s.icon className="w-6 h-6 text-white" />
+              {SECTION_KEYS.map(s => {
+                const sectionTitle = t(`pages.explore.sections.${s.key}`) as string;
+                const sectionDesc = t(`pages.explore.sections.${s.key}Desc`) as string;
+                const statusLabel = s.live ? t("pages.explore.live") : t("pages.explore.comingSoon");
+                return (
+                  <motion.div key={s.key} variants={item}>
+                    <Link
+                      to={s.href}
+                      className="group block rounded-xl border border-border bg-card p-6 hover:scale-[1.03] transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/10 hover:border-primary/30 relative overflow-hidden"
+                    >
+                      <div className={`absolute inset-0 bg-gradient-to-br ${s.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
+                      <div className="flex items-start justify-between mb-4">
+                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${s.gradient} flex items-center justify-center`}>
+                          <s.icon className="w-6 h-6 text-white" />
+                        </div>
+                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${s.live ? "bg-emerald-500/20 text-emerald-400" : "bg-muted text-muted-foreground"}`}>
+                          {statusLabel}
+                        </span>
                       </div>
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${s.status === "Live" ? "bg-emerald-500/20 text-emerald-400" : "bg-muted text-muted-foreground"}`}>
-                        {s.status}
+                      <h3 className="font-bold text-foreground text-lg mb-1">{sectionTitle}</h3>
+                      <p className="text-sm text-muted-foreground mb-3">{sectionDesc}</p>
+                      <span className="text-xs text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
+                        {t("pages.explore.explore")} <ArrowRight className="w-3 h-3" />
                       </span>
-                    </div>
-                    <h3 className="font-bold text-foreground text-lg mb-1">{s.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-3">{s.desc}</p>
-                    <span className="text-xs text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
-                      Explore <ArrowRight className="w-3 h-3" />
-                    </span>
-                  </Link>
-                </motion.div>
-              ))}
+                    </Link>
+                  </motion.div>
+                );
+              })}
             </motion.div>
           </motion.section>
         </div>
