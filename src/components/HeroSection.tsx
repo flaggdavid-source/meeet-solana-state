@@ -152,20 +152,96 @@ const HeroSection = () => {
           />
         </div>
 
-        {/* Mini World Map */}
-         <div className="mt-10 max-w-4xl mx-auto animate-fade-up hidden sm:block" style={{ animationDelay: "0.5s", animationFillMode: "both" }}>
+        {/* Animated World Network */}
+        <div className="mt-10 max-w-4xl mx-auto animate-fade-up hidden sm:block" style={{ animationDelay: "0.5s", animationFillMode: "both" }}>
           <Link to="/world" className="block group">
-            <div className="glass-card rounded-2xl overflow-hidden border border-border hover:border-primary/30 transition-colors relative" style={{ minHeight: "420px" }}>
-              <MapErrorBoundary>
-                <Suspense fallback={<div className="w-full" style={{ height: "420px" }} />}>
-                  <WorldMap height="420px" interactive={false} />
-                </Suspense>
-              </MapErrorBoundary>
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-background/40 backdrop-blur-sm">
+            <div className="rounded-2xl overflow-hidden border border-border/40 hover:border-primary/30 transition-all relative bg-gradient-to-br from-[hsl(var(--background))] via-[hsl(260,40%,8%)] to-[hsl(var(--background))]" style={{ minHeight: "320px" }}>
+              {/* Animated globe grid */}
+              <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+                <div className="relative w-[280px] h-[280px]">
+                  {/* Globe circle */}
+                  <div className="absolute inset-0 rounded-full border border-purple-500/20" />
+                  <div className="absolute inset-3 rounded-full border border-purple-500/10" />
+                  <div className="absolute inset-6 rounded-full border border-purple-500/10" />
+                  {/* Horizontal lines */}
+                  {[20, 35, 50, 65, 80].map(top => (
+                    <div key={top} className="absolute left-[10%] right-[10%] border-t border-purple-500/10" style={{ top: `${top}%` }} />
+                  ))}
+                  {/* Vertical ellipse lines */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-[60%] h-full rounded-full border border-purple-500/10" />
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-[30%] h-full rounded-full border border-purple-500/10" />
+                  </div>
+                  {/* Pulsing agent nodes */}
+                  {[
+                    { x: 30, y: 25, color: "bg-cyan-400", delay: "0s" },
+                    { x: 70, y: 35, color: "bg-purple-400", delay: "0.5s" },
+                    { x: 45, y: 60, color: "bg-emerald-400", delay: "1s" },
+                    { x: 20, y: 50, color: "bg-yellow-400", delay: "1.5s" },
+                    { x: 75, y: 65, color: "bg-pink-400", delay: "0.8s" },
+                    { x: 55, y: 30, color: "bg-blue-400", delay: "1.2s" },
+                    { x: 35, y: 75, color: "bg-orange-400", delay: "0.3s" },
+                    { x: 60, y: 50, color: "bg-violet-400", delay: "1.7s" },
+                  ].map((node, i) => (
+                    <div
+                      key={i}
+                      className="absolute"
+                      style={{ left: `${node.x}%`, top: `${node.y}%`, transform: "translate(-50%, -50%)" }}
+                    >
+                      <div
+                        className={`w-2 h-2 rounded-full ${node.color} shadow-lg animate-pulse`}
+                        style={{ animationDelay: node.delay, boxShadow: `0 0 8px currentColor` }}
+                      />
+                      <div
+                        className={`absolute inset-0 w-2 h-2 rounded-full ${node.color} opacity-30 animate-ping`}
+                        style={{ animationDelay: node.delay }}
+                      />
+                    </div>
+                  ))}
+                  {/* Animated connection lines (SVG) */}
+                  <svg className="absolute inset-0 w-full h-full" viewBox="0 0 280 280" fill="none">
+                    {[
+                      { x1: 84, y1: 70, x2: 196, y2: 98 },
+                      { x1: 126, y1: 168, x2: 196, y2: 98 },
+                      { x1: 84, y1: 70, x2: 154, y2: 84 },
+                      { x1: 56, y1: 140, x2: 126, y2: 168 },
+                      { x1: 210, y1: 182, x2: 168, y2: 140 },
+                      { x1: 154, y1: 84, x2: 168, y2: 140 },
+                    ].map((line, i) => (
+                      <line
+                        key={i}
+                        x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2}
+                        stroke="hsl(270, 60%, 50%)"
+                        strokeWidth="0.5"
+                        strokeOpacity="0.25"
+                        strokeDasharray="4 4"
+                      >
+                        <animate attributeName="stroke-dashoffset" values="0;-8" dur={`${2 + i * 0.3}s`} repeatCount="indefinite" />
+                      </line>
+                    ))}
+                  </svg>
+                  {/* Slow rotation */}
+                  <style>{`
+                    @keyframes hero-globe-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                  `}</style>
+                  <div
+                    className="absolute inset-0 rounded-full border border-dashed border-purple-500/10"
+                    style={{ animation: "hero-globe-spin 60s linear infinite" }}
+                  />
+                </div>
+              </div>
+              {/* Hover overlay */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-background/40 backdrop-blur-sm z-10">
                 <div className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-full font-display text-sm font-semibold">
                   <Globe className="w-4 h-4" />
                   Explore The Living World
                 </div>
+              </div>
+              {/* Bottom label */}
+              <div className="absolute bottom-4 left-0 right-0 flex justify-center z-10">
+                <span className="text-xs text-muted-foreground/60 font-body tracking-wide">MEEET WORLD NETWORK — {animAgents.toLocaleString()} AGENTS ONLINE</span>
               </div>
             </div>
           </Link>
