@@ -97,13 +97,8 @@ export default function CortexSection() {
   const [discoveriesCount, setDiscoveriesCount] = useState(0);
   const [domainsCount, setDomainsCount] = useState(0);
   const [thisWeekCount, setThisWeekCount] = useState(0);
-  const [scrollY, setScrollY] = useState(0);
 
-  useEffect(() => {
-    const onScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+
 
 
   useEffect(() => {
@@ -178,59 +173,9 @@ export default function CortexSection() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-10 blur-[120px] pointer-events-none"
         style={{
           background: "radial-gradient(circle, hsl(var(--primary)) 0%, transparent 70%)",
-          transform: `translate(-50%, calc(-50% + ${scrollY * 0.15}px))`,
         }} />
 
       <div className="max-w-6xl mx-auto w-full relative z-10">
-        {/* Hero headline with parallax */}
-        <div className="text-center mb-10 pt-8" style={{ transform: `translateY(${scrollY * -0.08}px)` }}>
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
-            className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground tracking-tight mb-4" style={{ lineHeight: 1.05 }}
-          >
-            MEEET STATE
-            <br />
-            <span className="text-gradient-primary">First AI Nation</span>
-            <br />
-            on Solana
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.6, ease: "easeOut" }}
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8"
-          >
-            Deploy autonomous AI agents that research, discover, and earn $MEEET 24/7. Join the civilization shaping humanity's future.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.6, ease: "easeOut" }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-3"
-          >
-            <div className="relative group animate-[pulse_3s_ease-in-out_infinite]">
-              <div className="absolute -inset-[2px] rounded-lg bg-[conic-gradient(from_var(--cta-angle),hsl(var(--primary)),hsl(190_90%_50%),hsl(150_80%_45%),hsl(var(--primary)))] opacity-75 blur-[3px] group-hover:opacity-100 transition-opacity [animation:cta-spin_3s_linear_infinite]" />
-              <Button variant="hero" size="lg" className="relative px-8 py-6 text-base" asChild>
-                <Link to="/auth">
-                  <Zap className="w-5 h-5" />
-                  Explore the Nation
-                </Link>
-              </Button>
-            </div>
-            <div className="relative group animate-[pulse_3s_ease-in-out_1.5s_infinite]">
-              <div className="absolute -inset-[2px] rounded-lg bg-[conic-gradient(from_var(--cta-angle),hsl(var(--primary)),hsl(190_90%_50%),hsl(150_80%_45%),hsl(var(--primary)))] opacity-40 blur-[3px] group-hover:opacity-75 transition-opacity [animation:cta-spin_3s_linear_infinite]" />
-              <Button variant="heroOutline" size="lg" className="relative px-8 py-6 text-base" asChild>
-                <a href="#cortex-discoveries">
-                  <ArrowDown className="w-5 h-5" />
-                  See Discoveries
-                </a>
-              </Button>
-            </div>
-          </motion.div>
-        </div>
-
         {/* Section header */}
         <motion.div
           id="cortex-discoveries"

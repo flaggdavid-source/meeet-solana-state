@@ -872,9 +872,6 @@ const Index = () => {
         <main className="pt-16 pb-6">
            {/* Hero section fix - April 11 */}
            <HeroSection />
-          {/* Getting Started Banner */}
-          <GettingStartedBanner />
-          <HomeSectionWrapper index={0}><LiveNetworkStats /></HomeSectionWrapper>
           <CortexSection />
           <LiveTicker />
           <HomeSectionWrapper index={1}><LiveStatsBar /></HomeSectionWrapper>
