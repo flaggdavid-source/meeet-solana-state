@@ -225,7 +225,7 @@ export default function AINationCouncil() {
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const [council, setCouncil] = useState<CouncilAgent[]>([]);
   const [activeAgent, setActiveAgent] = useState(-1);
-  const [consensusPct, setConsensusPct] = useState(0);
+  const [_consensusPct, setConsensusPct] = useState(0); // kept for effect cleanup
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   // Rotate placeholder
