@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "@/integrations/supabase/runtime-client";
 import { Button } from "@/components/ui/button";
 import ParticleCanvas from "@/components/ParticleCanvas";
-import { Component, lazy, Suspense, type ReactNode } from "react";
+import { Component, lazy, Suspense, useEffect, useRef, type ReactNode } from "react";
 import { Terminal, Globe, TrendingUp, ScrollText, MapPin } from "lucide-react";
 import ContractAddress, { PUMP_FUN_URL } from "@/components/ContractAddress";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -12,10 +12,56 @@ import JoinedTodayCounter from "@/components/JoinedTodayCounter";
 
 const WorldMap = lazy(() => import("@/components/WorldMap"));
 
-class MapErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+/* ── Animated dot-map fallback when MapLibre fails ── */
+const DOTS = Array.from({ length: 60 }, () => ({
+  x: Math.random(),
+  y: 0.15 + Math.random() * 0.7,
+  r: 2 + Math.random() * 3,
+  speed: 0.3 + Math.random() * 0.7,
+  hue: [270, 190, 150, 45, 340][Math.floor(Math.random() * 5)],
+}));
+
+const MapFallback = ({ height }: { height: string }) => {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const c = ref.current;
+    if (!c) return;
+    const ctx = c.getContext("2d");
+    if (!ctx) return;
+    let frame = 0;
+    const dpr = window.devicePixelRatio || 1;
+    const resize = () => { c.width = c.offsetWidth * dpr; c.height = c.offsetHeight * dpr; ctx.scale(dpr, dpr); };
+    resize();
+    const w = () => c.offsetWidth;
+    const h = () => c.offsetHeight;
+    let raf: number;
+    const draw = () => {
+      frame++;
+      ctx.clearRect(0, 0, w(), h());
+      DOTS.forEach(d => {
+        const pulse = 0.5 + 0.5 * Math.sin(frame * 0.02 * d.speed);
+        ctx.beginPath();
+        ctx.arc(d.x * w(), d.y * h(), d.r * (0.8 + pulse * 0.4), 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${d.hue}, 80%, 60%, ${0.3 + pulse * 0.5})`;
+        ctx.fill();
+        // glow
+        ctx.beginPath();
+        ctx.arc(d.x * w(), d.y * h(), d.r * 2.5 * (0.8 + pulse * 0.3), 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${d.hue}, 80%, 60%, ${0.05 + pulse * 0.1})`;
+        ctx.fill();
+      });
+      raf = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  return <canvas ref={ref} className="w-full" style={{ height }} />;
+};
+
+class MapErrorBoundary extends Component<{ children: ReactNode; fallbackHeight: string }, { hasError: boolean }> {
   state = { hasError: false };
   static getDerivedStateFromError() { return { hasError: true }; }
-  render() { return this.state.hasError ? null : this.props.children; }
+  render() { return this.state.hasError ? <MapFallback height={this.props.fallbackHeight} /> : this.props.children; }
 }
 
 interface HeroStats {
@@ -156,8 +202,8 @@ const HeroSection = () => {
          <div className="mt-10 max-w-4xl mx-auto animate-fade-up hidden sm:block" style={{ animationDelay: "0.5s", animationFillMode: "both" }}>
           <Link to="/world" className="block group">
             <div className="glass-card rounded-2xl overflow-hidden border border-border hover:border-primary/30 transition-colors relative" style={{ minHeight: "420px" }}>
-              <MapErrorBoundary>
-                <Suspense fallback={<div className="w-full" style={{ height: "420px" }} />}>
+              <MapErrorBoundary fallbackHeight="420px">
+                <Suspense fallback={<MapFallback height="420px" />}>
                   <WorldMap height="420px" interactive={false} />
                 </Suspense>
               </MapErrorBoundary>
