@@ -343,6 +343,7 @@ export default function AINationCouncil() {
 
   const yesCount = council.filter(a => a.leansYes).length;
   const noCount = council.length - yesCount;
+  const computedPct = council.length > 0 ? Math.round((yesCount / council.length) * 100) : 0;
 
   return (
     <section className="relative py-16 md:py-24 px-4 overflow-hidden">
@@ -502,11 +503,11 @@ export default function AINationCouncil() {
                     <motion.div
                       className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400"
                       initial={{ width: 0 }}
-                      animate={{ width: `${consensusPct}%` }}
+                      animate={{ width: `${computedPct}%` }}
                       transition={{ duration: 1.5, ease: "easeOut" }}
                     />
                   </div>
-                  <AnimatedPercent target={consensusPct} />
+                  <AnimatedPercent target={computedPct} />
                 </div>
 
                 <p className="text-sm text-muted-foreground max-w-md mx-auto">
