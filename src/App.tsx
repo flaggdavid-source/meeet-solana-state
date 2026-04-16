@@ -112,6 +112,8 @@ const Calculator = React.lazy(() => import("./pages/Calculator.tsx"));
 const AITools = React.lazy(() => import("./pages/AITools.tsx"));
 const TrustApi = React.lazy(() => import("./pages/TrustApi.tsx"));
 const Portfolio = React.lazy(() => import("./pages/Portfolio.tsx"));
+const Notifications = React.lazy(() => import("./pages/Notifications.tsx"));
+const SettingsPage = React.lazy(() => import("./pages/Settings.tsx"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -261,6 +263,8 @@ const AnimatedRoutes = () => {
           <Route path="/ai-tools" element={<RouteErrorBoundary><AITools /></RouteErrorBoundary>} />
           <Route path="/trust-api" element={<RouteErrorBoundary><TrustApi /></RouteErrorBoundary>} />
           <Route path="/portfolio" element={<RouteErrorBoundary><Portfolio /></RouteErrorBoundary>} />
+          <Route path="/notifications" element={<RouteErrorBoundary><Notifications /></RouteErrorBoundary>} />
+          <Route path="/settings" element={<RouteErrorBoundary><SettingsPage /></RouteErrorBoundary>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
