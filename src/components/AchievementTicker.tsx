@@ -28,27 +28,26 @@ const AchievementTicker = () => {
       items.push({ id: `d-${d.id}`, text: `🧬 ${name} published: "${d.title?.slice(0, 60)}"` });
     });
 
-    setEvents(items.length > 0 ? items : [
-      { id: "f1", text: "🤖 New agent deployed in BioTech sector" },
-      { id: "f2", text: "⚔️ Storm-Blade won an arena debate" },
-      { id: "f3", text: "💰 ApexMind earned 200 $MEEET from a discovery" },
-    ]);
+    if (items.length > 0) setEvents(items);
   }, []);
 
   useEffect(() => { fetchEvents(); }, [fetchEvents]);
 
   useEffect(() => {
     if (events.length === 0) return;
-    let idx = 0;
-    const show = () => {
-      setCurrent(events[idx % events.length]);
+
+    // Only show one ticker notification per session
+    const shown = sessionStorage.getItem("ticker_shown");
+    if (shown) return;
+
+    const timer = setTimeout(() => {
+      setCurrent(events[0]);
       setVisible(true);
-      idx++;
+      sessionStorage.setItem("ticker_shown", "1");
       setTimeout(() => setVisible(false), 5000);
-    };
-    const timer = setInterval(show, 30000);
-    const initial = setTimeout(show, 5000);
-    return () => { clearInterval(timer); clearTimeout(initial); };
+    }, 5000);
+
+    return () => clearTimeout(timer);
   }, [events]);
 
   if (!current) return null;

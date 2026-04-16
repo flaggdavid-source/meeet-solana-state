@@ -228,7 +228,6 @@ const Navbar = () => {
           {/* Desktop right links */}
           <div className="hidden lg:flex items-center gap-2 shrink-0">
             <Link to="/dashboard" className={`px-2.5 py-1 text-sm rounded-md transition-colors ${location.pathname === "/dashboard" ? "text-foreground bg-muted/50" : "text-muted-foreground hover:text-foreground"}`}>{t("nav.dashboard")}</Link>
-            <Link to="/social-bot" className={`px-2.5 py-1 text-sm rounded-md transition-colors ${location.pathname === "/social-bot" ? "text-foreground bg-muted/50" : "text-muted-foreground hover:text-foreground"}`}>{t("nav.socialBot")}</Link>
           </div>
 
           {/* Right actions */}
