@@ -167,15 +167,15 @@ export default function Explore() {
           {/* ── Hero ── */}
           <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <h1 className="text-4xl md:text-6xl font-extrabold text-foreground mb-3">
-              {t("pages.explore.title").split("MEEET")[0]} <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">MEEET STATE</span>
+              {(t("pages.explore.title") as string).split("MEEET")[0]} <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">MEEET STATE</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("pages.explore.subtitle")}</p>
           </motion.div>
 
           {/* ── Featured Agents (LIVE DATA) ── */}
           <motion.section className="mb-16" variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ delay: 0.1 }}>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Featured Agents</h2>
-            <p className="text-muted-foreground text-base mb-8">Top-performing agents by reputation</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">{t("pages.explore.featuredAgents")}</h2>
+            <p className="text-muted-foreground text-base mb-8">{t("pages.explore.featuredAgentsSub")}</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {loadingAgents ? (
                 [0, 1, 2].map(i => (
