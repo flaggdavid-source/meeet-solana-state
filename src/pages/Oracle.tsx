@@ -1,6 +1,10 @@
 import { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAgentStats } from "@/hooks/useAgentStats";
+import { useTokenStats } from "@/hooks/useTokenStats";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -36,6 +40,18 @@ const TRENDING = [
 
 const Oracle = () => {
   const { toast } = useToast();
+  const { data: agentStats } = useAgentStats();
+  const { data: tokenStats } = useTokenStats();
+
+  const { data: oracleStats } = useQuery({
+    queryKey: ["oracle-stats"],
+    queryFn: async () => {
+      const { count } = await supabase.from("oracle_bets").select("id", { count: "exact", head: true });
+      return { predictions: count ?? 0 };
+    },
+    staleTime: 60000,
+  });
+
   const [question, setQuestion] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [showResults, setShowResults] = useState(false);
