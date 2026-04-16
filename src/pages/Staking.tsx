@@ -172,7 +172,7 @@ const Staking = () => {
                       className="w-full bg-muted/30 border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-primary/50"
                     >
                       {CALC_TIERS.map((ct, i) => (
-                        <option key={tier.name} value={i}>{tier.name} — {t.days} {t("pages.staking.days")}</option>
+                        <option key={ct.name} value={i}>{ct.name} — {ct.days} {t("pages.staking.days")}</option>
                       ))}
                     </select>
                   </div>
