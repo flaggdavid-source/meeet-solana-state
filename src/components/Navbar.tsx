@@ -76,7 +76,7 @@ function useNavItems(): { navItems: NavItem[]; mobileLinks: { href: string; labe
         ],
       },
       { href: "/live", label: t("nav.live") },
-      { href: "/world-map", label: t("nav.worldMap") },
+      { href: "/world", label: t("nav.worldMap") },
     ],
     mobileLinks: [
       { href: "/discoveries", label: t("nav.explore") },
@@ -84,7 +84,7 @@ function useNavItems(): { navItems: NavItem[]; mobileLinks: { href: string; labe
       { href: "/arena", label: t("nav.arenaNav") },
       { href: "/token", label: t("nav.economy") },
       { href: "/live", label: t("nav.live") },
-      { href: "/world-map", label: t("nav.worldMap") },
+      { href: "/world", label: t("nav.worldMap") },
       { href: "/dashboard", label: t("nav.dashboard") },
       { href: "/daily-quests", label: t("nav.dailyQuests") },
       { href: "/staking", label: t("nav.staking") },
