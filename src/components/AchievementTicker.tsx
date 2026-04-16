@@ -36,7 +36,7 @@ const AchievementTicker = () => {
   useEffect(() => {
     if (events.length === 0) return;
 
-    // Only show one ticker per session
+    // Only show one ticker notification per session
     const shown = sessionStorage.getItem("ticker_shown");
     if (shown) return;
 
