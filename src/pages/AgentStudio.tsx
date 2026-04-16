@@ -671,6 +671,7 @@ const AgentStudio = () => {
               </div>
             </div>
           )}
+          </>
           )}
         </main>
         <Footer />
