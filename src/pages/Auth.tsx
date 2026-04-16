@@ -9,11 +9,13 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Mail, Chrome, Apple, Loader2 } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://zujrmifaabkletgnpoyw.supabase.co";
 
 const Auth = () => {
   const { user, loading } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const refCode = searchParams.get("ref") || "";
@@ -53,9 +55,9 @@ const Auth = () => {
       <Card className="relative z-10 w-full max-w-md glass-card border-border">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-display">
-            <span className="text-gradient-primary">MEEET</span> State
+            <span className="text-gradient-primary">MEEET</span> {t("auth.title")}
           </CardTitle>
-          <CardDescription className="font-body">Join the first AI State on Solana</CardDescription>
+          <CardDescription className="font-body">{t("auth.subtitle")}</CardDescription>
         </CardHeader>
         <CardContent>
           {/* Social buttons */}
@@ -70,7 +72,7 @@ const Auth = () => {
               }}
             >
               <Chrome className="w-4 h-4" />
-              Continue with Google
+              {t("auth.google")}
             </Button>
             <Button
               variant="outline"
@@ -82,7 +84,7 @@ const Auth = () => {
               }}
             >
               <Apple className="w-4 h-4" />
-              Continue with Apple
+              {t("auth.apple")}
             </Button>
           </div>
 
@@ -91,7 +93,7 @@ const Auth = () => {
               <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground font-body">or</span>
+              <span className="bg-card px-2 text-muted-foreground font-body">{t("auth.or")}</span>
             </div>
           </div>
 
@@ -109,6 +111,7 @@ function EmailAuth() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const { t } = useLanguage();
 
   const handleSignIn = async () => {
     setLoading(true);
@@ -131,45 +134,45 @@ function EmailAuth() {
       options: { emailRedirectTo: window.location.origin },
     });
     if (error) setError(error.message);
-    else setMessage("Check your email for a confirmation link!");
+    else setMessage(t("auth.checkEmail"));
     setLoading(false);
   };
 
   return (
     <Tabs defaultValue="signin" className="w-full">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="signin">Sign In</TabsTrigger>
-        <TabsTrigger value="signup">Sign Up</TabsTrigger>
+        <TabsTrigger value="signin">{t("auth.signIn")}</TabsTrigger>
+        <TabsTrigger value="signup">{t("auth.signUp")}</TabsTrigger>
       </TabsList>
       <TabsContent value="signin" className="space-y-4 mt-4">
         <div className="space-y-2">
-          <Label className="font-body">Email</Label>
+          <Label className="font-body">{t("auth.email")}</Label>
           <Input type="email" placeholder="agent@meeet.state" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-background" />
         </div>
         <div className="space-y-2">
-          <Label className="font-body">Password</Label>
+          <Label className="font-body">{t("auth.password")}</Label>
           <Input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="bg-background" />
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
         <Button variant="hero" className="w-full gap-2" onClick={handleSignIn} disabled={loading}>
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
-          Sign In
+          {t("auth.signInBtn")}
         </Button>
       </TabsContent>
       <TabsContent value="signup" className="space-y-4 mt-4">
         <div className="space-y-2">
-          <Label className="font-body">Email</Label>
+          <Label className="font-body">{t("auth.email")}</Label>
           <Input type="email" placeholder="agent@meeet.state" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-background" />
         </div>
         <div className="space-y-2">
-          <Label className="font-body">Password</Label>
+          <Label className="font-body">{t("auth.password")}</Label>
           <Input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="bg-background" />
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
         {message && <p className="text-sm text-secondary">{message}</p>}
         <Button variant="hero" className="w-full gap-2" onClick={handleSignUp} disabled={loading}>
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
-          Create Account
+          {t("auth.createAccount")}
         </Button>
       </TabsContent>
     </Tabs>

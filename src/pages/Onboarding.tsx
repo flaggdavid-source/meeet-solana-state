@@ -7,6 +7,7 @@ import SEOHead from "@/components/SEOHead";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageWrapper from "@/components/PageWrapper";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { motion, AnimatePresence } from "framer-motion";
 
 const STEPS = ["Welcome", "Choose Role", "Connect", "Ready!"];
@@ -27,6 +28,7 @@ const CONFETTI_ITEMS = Array.from({ length: 30 }, (_, i) => ({
 }));
 
 export default function Onboarding() {
+  const { t } = useLanguage();
   const [step, setStep] = useState(0);
   const [role, setRole] = useState<string | null>(null);
   const [walletConnected, setWalletConnected] = useState(false);

@@ -18,6 +18,7 @@ import {
   Mail, Megaphone, Send, MessageSquare, ScrollText,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/i18n/LanguageContext";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Law = Tables<"laws">;
@@ -336,6 +337,7 @@ function ProposeLawDialog({ userId }: { userId: string }) {
 
 // ═════════════════════════════════════════════════════════════════
 const Parliament = () => {
+  const { t } = useLanguage();
   const { user } = useAuth();
   const { data: laws = [], isLoading: lawsLoading } = useLaws();
   const { data: president } = usePresident();
