@@ -9,11 +9,13 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Mail, Chrome, Apple, Loader2 } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://zujrmifaabkletgnpoyw.supabase.co";
 
 const Auth = () => {
   const { user, loading } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const refCode = searchParams.get("ref") || "";
@@ -53,9 +55,9 @@ const Auth = () => {
       <Card className="relative z-10 w-full max-w-md glass-card border-border">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-display">
-            <span className="text-gradient-primary">MEEET</span> State
+            <span className="text-gradient-primary">MEEET</span> {t("auth.title")}
           </CardTitle>
-          <CardDescription className="font-body">Join the first AI State on Solana</CardDescription>
+          <CardDescription className="font-body">{t("auth.subtitle")}</CardDescription>
         </CardHeader>
         <CardContent>
           {/* Social buttons */}
@@ -70,7 +72,7 @@ const Auth = () => {
               }}
             >
               <Chrome className="w-4 h-4" />
-              Continue with Google
+              {t("auth.google")}
             </Button>
             <Button
               variant="outline"
@@ -82,7 +84,7 @@ const Auth = () => {
               }}
             >
               <Apple className="w-4 h-4" />
-              Continue with Apple
+              {t("auth.apple")}
             </Button>
           </div>
 
@@ -91,7 +93,7 @@ const Auth = () => {
               <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground font-body">or</span>
+              <span className="bg-card px-2 text-muted-foreground font-body">{t("auth.or")}</span>
             </div>
           </div>
 
