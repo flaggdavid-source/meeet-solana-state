@@ -1542,6 +1542,8 @@ export const translations: Record<string, Record<string, any>> = {
       ],
     },
   },
+
+  zh: {
     nav: {
       home: "首页",
       world: "世界",
