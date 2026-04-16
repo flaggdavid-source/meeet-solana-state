@@ -99,10 +99,10 @@ const Governance = () => {
   }, [laws, sortKey, sortDir]);
 
   const statsRow = [
-    { label: "Total Proposals", value: govStats?.totalProposals ?? "—", icon: FileText, color: "text-purple-400" },
-    { label: "Active Votes", value: govStats?.activeVotes ?? "—", icon: Vote, color: "text-blue-400" },
-    { label: "Participation Rate", value: govStats?.participationRate ?? "—", icon: Users, color: "text-emerald-400" },
-    { label: "Treasury", value: govStats?.treasury ?? "—", icon: Shield, color: "text-amber-400" },
+    { label: t("pages.governance.totalProposals"), value: govStats?.totalProposals ?? "—", icon: FileText, color: "text-purple-400" },
+    { label: t("pages.governance.activeVotes"), value: govStats?.activeVotes ?? "—", icon: Vote, color: "text-blue-400" },
+    { label: t("pages.governance.participation"), value: govStats?.participationRate ?? "—", icon: Users, color: "text-emerald-400" },
+    { label: t("pages.governance.treasury"), value: govStats?.treasury ?? "—", icon: Shield, color: "text-amber-400" },
   ];
 
   return (
@@ -130,9 +130,9 @@ const Governance = () => {
 
           <Tabs defaultValue="active" className="space-y-6">
             <TabsList className="w-full sm:w-auto">
-              <TabsTrigger value="active">Active ({activeProposals.length})</TabsTrigger>
-              <TabsTrigger value="passed">Passed Laws ({passedLaws.length})</TabsTrigger>
-              <TabsTrigger value="history">All History</TabsTrigger>
+              <TabsTrigger value="active">{t("pages.governance.activeProposals")} ({activeProposals.length})</TabsTrigger>
+              <TabsTrigger value="passed">{t("pages.governance.passedLaws")} ({passedLaws.length})</TabsTrigger>
+              <TabsTrigger value="history">{t("pages.governance.allHistory")}</TabsTrigger>
             </TabsList>
 
             {/* Active tab */}
@@ -146,7 +146,7 @@ const Governance = () => {
                   </div>
                 ))
               ) : activeProposals.length === 0 ? (
-                <p className="text-center text-muted-foreground py-12">No active proposals right now</p>
+                <p className="text-center text-muted-foreground py-12">{t("pages.governance.noActiveProposals")}</p>
               ) : activeProposals.map(p => {
                 const votesFor = Number(p.votes_yes ?? 0);
                 const votesAgainst = Number(p.votes_no ?? 0);
@@ -166,28 +166,28 @@ const Governance = () => {
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0">
                         <Users className="w-4 h-4" />
-                        <span>{p.voter_count ?? 0} voters</span>
+                        <span>{p.voter_count ?? 0} {t("pages.governance.voters")}</span>
                       </div>
                     </div>
 
                     <div className="mb-4">
                       <div className="flex justify-between text-xs mb-1.5">
-                        <span className="text-green-400 flex items-center gap-1"><ThumbsUp className="w-3 h-3" /> For {forPct}% ({votesFor.toLocaleString()})</span>
-                        <span className="text-red-400 flex items-center gap-1"><ThumbsDown className="w-3 h-3" /> Against {100 - forPct}% ({votesAgainst.toLocaleString()})</span>
+                        <span className="text-green-400 flex items-center gap-1"><ThumbsUp className="w-3 h-3" /> {t("pages.governance.for")} {forPct}% ({votesFor.toLocaleString()})</span>
+                        <span className="text-red-400 flex items-center gap-1"><ThumbsDown className="w-3 h-3" /> {t("pages.governance.against")} {100 - forPct}% ({votesAgainst.toLocaleString()})</span>
                       </div>
                       <div className="h-3 rounded-full bg-muted overflow-hidden flex">
                         <div className="h-full bg-green-500/70" style={{ width: `${forPct}%` }} />
                         <div className="h-full bg-red-500/50 flex-1" />
                       </div>
-                      <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><Users className="w-3 h-3" /> {total.toLocaleString()} votes</p>
+                      <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><Users className="w-3 h-3" /> {total.toLocaleString()} {t("pages.governance.votes")}</p>
                     </div>
 
                     <div className="flex gap-3">
                       <button className="flex-1 py-2.5 rounded-xl bg-green-500/20 text-green-400 font-semibold hover:bg-green-500/30 transition-colors flex items-center justify-center gap-2">
-                        <ThumbsUp className="w-4 h-4" /> Vote For
+                        <ThumbsUp className="w-4 h-4" /> {t("pages.governance.voteFor")}
                       </button>
                       <button className="flex-1 py-2.5 rounded-xl bg-red-500/20 text-red-400 font-semibold hover:bg-red-500/30 transition-colors flex items-center justify-center gap-2">
-                        <ThumbsDown className="w-4 h-4" /> Vote Against
+                        <ThumbsDown className="w-4 h-4" /> {t("pages.governance.voteAgainst")}
                       </button>
                     </div>
                   </div>
