@@ -53,14 +53,14 @@ const statusStyle: Record<string, string> = {
   slashed: "bg-red-500/20 text-red-400",
 };
 
-const CALC_TIERS = STAKING_TIERS.map((tier, i) => ({
-  name: t.name,
-  days: [0, 30, 90, 365][i],
-  apy: t.apy,
-}));
-
 const Staking = () => {
   const { t } = useLanguage();
+
+  const CALC_TIERS = STAKING_TIERS.map((tier, i) => ({
+    name: tier.name,
+    days: [0, 30, 90, 365][i],
+    apy: tier.apy,
+  }));
   const { data: tokenStats } = useTokenStats();
   const [calcAmount, setCalcAmount] = useState(100);
   const [calcTier, setCalcTier] = useState(0);
@@ -172,7 +172,7 @@ const Staking = () => {
                       className="w-full bg-muted/30 border border-border rounded-lg px-4 py-2.5 text-foreground focus:outline-none focus:border-primary/50"
                     >
                       {CALC_TIERS.map((ct, i) => (
-                        <option key={tier.name} value={i}>{tier.name} — {t.days} {t("pages.staking.days")}</option>
+                        <option key={ct.name} value={i}>{ct.name} — {ct.days} {t("pages.staking.days")}</option>
                       ))}
                     </select>
                   </div>
