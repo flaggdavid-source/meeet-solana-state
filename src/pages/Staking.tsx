@@ -40,10 +40,10 @@ const TOP_STAKERS = Array.from({ length: 10 }, (_, i) => ({
   winRate: Math.floor(Math.random() * 40) + 60,
 })).sort((a, b) => b.totalStaked - a.totalStaked);
 
-const SUPPLY_DATA = [
-  { name: "Circulating", value: 500000, color: "hsl(var(--primary))" },
-  { name: "Burned", value: 89210, color: "#ef4444" },
-  { name: "Staked", value: 45230, color: "#3b82f6" },
+const getSupplyData = (staked: number, burned: number) => [
+  { name: "Circulating", value: Math.max(1000000000 - staked - burned - 365560, 0), color: "hsl(var(--primary))" },
+  { name: "Burned", value: burned || 0, color: "#ef4444" },
+  { name: "Staked", value: staked || 0, color: "#3b82f6" },
   { name: "Reserve", value: 365560, color: "hsl(var(--muted-foreground))" },
 ];
 
@@ -286,9 +286,9 @@ const Staking = () => {
             <h2 className="text-xl font-bold text-foreground mb-4">Staking Overview</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
               {[
-                { label: "Total Staked", value: "2.4M $MEEET", color: "text-blue-400" },
-                { label: "Current APY", value: "18.7%", color: "text-emerald-400" },
-                { label: "Next Reward", value: "4h 23m", color: "text-amber-400" },
+              { label: "Total Staked", value: `${(tokenStats?.totalStaked ?? 0).toLocaleString()} $MEEET`, color: "text-blue-400" },
+              { label: "Current APY", value: "12.4%", color: "text-emerald-400" },
+              { label: "Next Reward", value: "4h 23m", color: "text-amber-400" },
               ].map(s => (
                 <div key={s.label} className="bg-background/50 rounded-xl p-4 text-center border border-border/50">
                   <p className="text-xs text-muted-foreground mb-1">{s.label}</p>
@@ -361,21 +361,28 @@ const Staking = () => {
           <section className="bg-card border border-border rounded-2xl p-6">
             <h2 className="text-xl font-bold text-foreground mb-4">Supply Distribution</h2>
             <div className="flex flex-col md:flex-row items-center gap-8">
-              <ResponsiveContainer width={220} height={220}>
-                <PieChart><Pie data={SUPPLY_DATA} cx="50%" cy="50%" innerRadius={50} outerRadius={90} paddingAngle={2} dataKey="value">
-                  {SUPPLY_DATA.map((s, i) => <Cell key={i} fill={s.color} />)}
-                </Pie></PieChart>
-              </ResponsiveContainer>
-              <div className="space-y-2">
-                {SUPPLY_DATA.map(s => (
-                  <div key={s.name} className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full" style={{ background: s.color }} />
-                    <span className="text-sm text-foreground">{s.name}</span>
-                    <span className="text-sm font-mono text-muted-foreground ml-auto">{s.value.toLocaleString()}</span>
-                  </div>
-                ))}
-                <p className="text-xs text-muted-foreground pt-2">Deflation rate: <span className="text-red-400 font-semibold">2.3% / month</span></p>
-              </div>
+              {(() => {
+                const supplyData = getSupplyData(tokenStats?.totalStaked ?? 0, tokenStats?.totalBurned ?? 0);
+                return (
+                  <>
+                    <ResponsiveContainer width={220} height={220}>
+                      <PieChart><Pie data={supplyData} cx="50%" cy="50%" innerRadius={50} outerRadius={90} paddingAngle={2} dataKey="value">
+                        {supplyData.map((s, i) => <Cell key={i} fill={s.color} />)}
+                      </Pie></PieChart>
+                    </ResponsiveContainer>
+                    <div className="space-y-2">
+                      {supplyData.map(s => (
+                        <div key={s.name} className="flex items-center gap-3">
+                          <div className="w-3 h-3 rounded-full" style={{ background: s.color }} />
+                          <span className="text-sm text-foreground">{s.name}</span>
+                          <span className="text-sm font-mono text-muted-foreground ml-auto">{s.value.toLocaleString()}</span>
+                        </div>
+                      ))}
+                      <p className="text-xs text-muted-foreground pt-2">Deflation rate: <span className="text-red-400 font-semibold">2.3% / month</span></p>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           </section>
         </div>
