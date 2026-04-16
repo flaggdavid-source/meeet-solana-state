@@ -373,11 +373,11 @@ const Token = () => {
               </div>
               <div className="flex gap-6">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-foreground">{walletSol !== null ? walletSol.toFixed(4) : "—"}</p>
+                  <p className="text-2xl font-bold text-foreground">{walletSol !== null ? walletSol.toFixed(4) : "N/A"}</p>
                   <p className="text-xs text-muted-foreground">SOL</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-primary">{walletMeeet !== null ? walletMeeet.toLocaleString("en-US") : "—"}</p>
+                  <p className="text-2xl font-bold text-primary">{walletMeeet !== null ? walletMeeet.toLocaleString("en-US") : "N/A"}</p>
                   <p className="text-xs text-muted-foreground">$MEEET</p>
                 </div>
               </div>
