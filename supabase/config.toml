@@ -327,3 +327,7 @@ verify_jwt = false
 
 [functions.post-to-twitter]
 verify_jwt = false
+
+[functions.daily-security-scan]
+verify_jwt = false
+schedule = "0 9 * * *"
