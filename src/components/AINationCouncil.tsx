@@ -238,6 +238,8 @@ export default function AINationCouncil() {
   const [questionType, setQuestionType] = useState<QuestionType>("open");
   const [aiSummary, setAiSummary] = useState<string>("");
   const [aiError, setAiError] = useState<string>("");
+  const [history, setHistory] = useState<RoundHistory[]>([]);
+  const [followUp, setFollowUp] = useState("");
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   // Rotate placeholder
