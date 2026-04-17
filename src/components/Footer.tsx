@@ -29,8 +29,9 @@ const Footer = forwardRef<HTMLElement>((_props, ref) => {
       title: t("footer.resources"),
       links: [
         { label: t("footer.developerPortal"), href: "/developer" },
+        { label: "Integrations", href: "/integrations" },
+        { label: "DID Resolver", href: "/did-resolver" },
         { label: "Trust API", href: "/trust-api" },
-        { label: t("footer.apiReference"), href: "/developer" },
         { label: t("footer.statusPage"), href: "/live" },
         { label: t("footer.blog"), href: "/herald" },
       ],

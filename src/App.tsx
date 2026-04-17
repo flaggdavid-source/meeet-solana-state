@@ -114,6 +114,9 @@ const TrustApi = React.lazy(() => import("./pages/TrustApi.tsx"));
 const Portfolio = React.lazy(() => import("./pages/Portfolio.tsx"));
 const Notifications = React.lazy(() => import("./pages/Notifications.tsx"));
 const SettingsPage = React.lazy(() => import("./pages/Settings.tsx"));
+const Integrations = React.lazy(() => import("./pages/Integrations.tsx"));
+const MolTrustIntegration = React.lazy(() => import("./pages/MolTrustIntegration.tsx"));
+const DidResolver = React.lazy(() => import("./pages/DidResolver.tsx"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -265,6 +268,9 @@ const AnimatedRoutes = () => {
           <Route path="/portfolio" element={<RouteErrorBoundary><Portfolio /></RouteErrorBoundary>} />
           <Route path="/notifications" element={<RouteErrorBoundary><Notifications /></RouteErrorBoundary>} />
           <Route path="/settings" element={<RouteErrorBoundary><SettingsPage /></RouteErrorBoundary>} />
+          <Route path="/integrations" element={<RouteErrorBoundary><Integrations /></RouteErrorBoundary>} />
+          <Route path="/integrations/moltrust" element={<RouteErrorBoundary><MolTrustIntegration /></RouteErrorBoundary>} />
+          <Route path="/did-resolver" element={<RouteErrorBoundary><DidResolver /></RouteErrorBoundary>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
