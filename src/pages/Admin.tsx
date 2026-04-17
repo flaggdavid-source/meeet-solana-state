@@ -44,16 +44,19 @@ function useAdminCheck() {
   });
 }
 
-function useUserStats() {
+function useUserStats(enabled: boolean) {
   return useQuery({
     queryKey: ["admin-user-stats"],
     queryFn: async () => {
-      const { data: profiles, count: totalUsers } = await supabase.from("profiles").select("id, created_at, is_onboarded, passport_tier, wallet_address", { count: "exact" });
+      // Note: wallet_address intentionally NOT selected — exposing it leaks PII even to admins
+      // via the network tab. Aggregated counts are derived from non-sensitive columns only.
+      const { data: profiles, count: totalUsers } = await supabase
+        .from("profiles")
+        .select("id, created_at, is_onboarded, passport_tier", { count: "exact" });
       const onboarded = profiles?.filter(p => p.is_onboarded).length ?? 0;
-      const withWallet = profiles?.filter(p => p.wallet_address).length ?? 0;
       const tiers = { resident: 0, citizen: 0, elite: 0 };
       profiles?.forEach(p => { if (p.passport_tier) tiers[p.passport_tier as keyof typeof tiers]++; });
-      
+
       // Registration by day (last 30 days)
       const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       const dailyReg: Record<string, number> = {};
@@ -63,13 +66,14 @@ function useUserStats() {
       });
       const regChart = Object.entries(dailyReg).sort().map(([date, count]) => ({ date: date.slice(5), count }));
 
-      return { totalUsers: totalUsers ?? 0, onboarded, withWallet, tiers, regChart };
+      return { totalUsers: totalUsers ?? 0, onboarded, withWallet: 0, tiers, regChart };
     },
+    enabled,
     refetchInterval: 60000,
   });
 }
 
-function useAgentStats() {
+function useAgentStats(enabled: boolean) {
   return useQuery({
     queryKey: ["admin-agent-stats"],
     queryFn: async () => {
@@ -98,11 +102,12 @@ function useAgentStats() {
 
       return { total, classChart, levelChart, statusChart, totalBalance, totalXp, totalKills, totalQuests, avgLevel: total ? (agents.reduce((s, a) => s + a.level, 0) / total).toFixed(1) : "0" };
     },
+    enabled,
     refetchInterval: 60000,
   });
 }
 
-function useEconomyStats() {
+function useEconomyStats(enabled: boolean) {
   return useQuery({
     queryKey: ["admin-economy-stats"],
     queryFn: async () => {
@@ -126,6 +131,7 @@ function useEconomyStats() {
 
       return { treasury, txTypeChart, volumeChart, totalTxs: txs?.length ?? 0 };
     },
+    enabled,
     refetchInterval: 30000,
   });
 }
@@ -531,9 +537,9 @@ const Admin = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { data: isAdmin, isLoading: adminLoading } = useAdminCheck();
-  const { data: userStats } = useUserStats();
-  const { data: agentStats } = useAgentStats();
-  const { data: economyStats } = useEconomyStats();
+  const { data: userStats } = useUserStats(isAdmin === true);
+  const { data: agentStats } = useAgentStats(isAdmin === true);
+  const { data: economyStats } = useEconomyStats(isAdmin === true);
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth");
