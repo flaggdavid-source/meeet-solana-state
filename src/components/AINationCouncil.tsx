@@ -21,6 +21,12 @@ interface CouncilAgent {
   leansYes: boolean;
 }
 
+interface RoundHistory {
+  question: string;
+  summary: string;
+  responses: { name: string; class: string; leansYes: boolean; answer: string }[];
+}
+
 /* ── response bank ── */
 const RESPONSES: Record<string, { yes: string[]; no: string[] }> = {
   crypto: {
@@ -232,6 +238,8 @@ export default function AINationCouncil() {
   const [questionType, setQuestionType] = useState<QuestionType>("open");
   const [aiSummary, setAiSummary] = useState<string>("");
   const [aiError, setAiError] = useState<string>("");
+  const [history, setHistory] = useState<RoundHistory[]>([]);
+  const [followUp, setFollowUp] = useState("");
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   // Rotate placeholder
@@ -281,59 +289,116 @@ export default function AINationCouncil() {
     setActiveAgent(0);
   }, [question]);
 
-  const startCouncil = useCallback(async () => {
-    if (!question.trim() || !agentsPool?.length) return;
+  const startCouncil = useCallback(async (opts?: { followUp?: boolean; followUpQuestion?: string }) => {
+    const isFollowUp = !!opts?.followUp;
+    const currentQuestion = isFollowUp ? (opts?.followUpQuestion || "").trim() : question.trim();
+    if (!currentQuestion) return;
+    if (!isFollowUp && !agentsPool?.length) return;
 
-    // Pick 7 agents with class diversity
-    const byClass = new Map<string, typeof agentsPool>();
-    agentsPool.forEach(a => {
-      const key = (a as any).class || "unknown";
-      const arr = byClass.get(key) || [];
-      arr.push(a);
-      byClass.set(key, arr);
-    });
+    let picked: any[];
 
-    const selected: typeof agentsPool = [];
-    const classes = Array.from(byClass.keys());
-    for (const cls of classes) {
-      if (selected.length >= 7) break;
-      const pool = byClass.get(cls)!;
-      const pick = pool[Math.floor(Math.random() * pool.length)];
-      selected.push(pick);
+    if (isFollowUp && council.length > 0) {
+      // Reuse the same council for continuity
+      picked = council.map(a => ({
+        id: a.id,
+        name: a.name,
+        class: a.agentClass,
+        reputation: a.reputation,
+      }));
+      // Push previous round into history before resetting answers
+      setHistory(prev => [
+        ...prev,
+        {
+          question,
+          summary: aiSummary,
+          responses: council.map(a => ({
+            name: a.name,
+            class: a.agentClass,
+            leansYes: a.leansYes,
+            answer: a.answer,
+          })),
+        },
+      ]);
+      setQuestion(currentQuestion);
+      setCouncil(picked.map(a => ({
+        id: a.id,
+        name: a.name,
+        agentClass: a.class || "researcher",
+        reputation: a.reputation ?? 100,
+        answer: "",
+        leansYes: false,
+      })));
+    } else {
+      // Pick 7 agents with class diversity
+      const byClass = new Map<string, typeof agentsPool>();
+      agentsPool!.forEach(a => {
+        const key = (a as any).class || "unknown";
+        const arr = byClass.get(key) || [];
+        arr.push(a);
+        byClass.set(key, arr);
+      });
+
+      const selected: typeof agentsPool = [];
+      const classes = Array.from(byClass.keys());
+      for (const cls of classes) {
+        if (selected.length >= 7) break;
+        const pool = byClass.get(cls)!;
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        selected.push(pick);
+      }
+      const remaining = agentsPool!.filter(a => !selected.some(s => s.id === a.id));
+      while (selected.length < 7 && remaining.length > 0) {
+        const idx = Math.floor(Math.random() * remaining.length);
+        selected.push(remaining.splice(idx, 1)[0]);
+      }
+
+      picked = selected.slice(0, 7);
+      setCouncil(picked.map(a => ({
+        id: a.id,
+        name: a.name,
+        agentClass: (a as any).class || "researcher",
+        reputation: (a as any).reputation ?? 100,
+        answer: "",
+        leansYes: false,
+      })));
     }
-    const remaining = agentsPool.filter(a => !selected.some(s => s.id === a.id));
-    while (selected.length < 7 && remaining.length > 0) {
-      const idx = Math.floor(Math.random() * remaining.length);
-      selected.push(remaining.splice(idx, 1)[0]);
-    }
 
-    const picked = selected.slice(0, 7);
-    setCouncil(picked.map(a => ({
-      id: a.id,
-      name: a.name,
-      agentClass: (a as any).class || "researcher",
-      reputation: (a as any).reputation ?? 100,
-      answer: "",
-      leansYes: false,
-    })));
     setActiveAgent(-1);
     setConsensusPct(0);
     setAiSummary("");
     setAiError("");
     setPhase("selecting");
 
+    // Snapshot history at this moment for the request
+    const historyForRequest = isFollowUp
+      ? [
+          ...history,
+          {
+            question,
+            summary: aiSummary,
+            responses: council.map(a => ({
+              name: a.name,
+              class: a.agentClass,
+              leansYes: a.leansYes,
+              answer: a.answer,
+            })),
+          },
+        ]
+      : [];
+
     timerRef.current = setTimeout(async () => {
       setPhase("analyzing");
       try {
         const { data, error } = await supabase.functions.invoke("council-analyze", {
           body: {
-            question,
+            question: currentQuestion,
             language: lang,
-            agents: picked.map(a => ({
+            agents: picked.map((a: any) => ({
               name: a.name,
-              class: (a as any).class || "researcher",
+              class: (a as any).class || a.agentClass || "researcher",
               reputation: (a as any).reputation ?? 100,
             })),
+            history: historyForRequest,
           },
         });
         if (error) throw error;
@@ -349,20 +414,22 @@ export default function AINationCouncil() {
         }
 
         const responses = data?.responses || [];
-        const filled: CouncilAgent[] = picked.map((a, i) => {
+        const filled: CouncilAgent[] = picked.map((a: any, i: number) => {
           const r = responses[i] || {};
           return {
             id: a.id,
             name: a.name,
-            agentClass: (a as any).class || "researcher",
+            agentClass: (a as any).class || a.agentClass || "researcher",
             reputation: (a as any).reputation ?? 100,
             answer: r.answer || "Анализирую...",
             leansYes: !!r.leansYes,
           };
         });
-        for (let i = filled.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [filled[i], filled[j]] = [filled[j], filled[i]];
+        if (!isFollowUp) {
+          for (let i = filled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [filled[i], filled[j]] = [filled[j], filled[i]];
+          }
         }
         setCouncil(filled);
         setQuestionType((data?.question_type as QuestionType) || "open");
@@ -375,7 +442,7 @@ export default function AINationCouncil() {
         fallbackResponses(picked);
       }
     }, 1500);
-  }, [question, agentsPool, lang, fallbackResponses]);
+  }, [question, agentsPool, lang, fallbackResponses, council, history, aiSummary]);
 
   // Sequential agent reveal
   useEffect(() => {
@@ -406,6 +473,16 @@ export default function AINationCouncil() {
     setConsensusPct(0);
     setAiSummary("");
     setAiError("");
+    setHistory([]);
+    setFollowUp("");
+  };
+
+  const handleFollowUp = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const q = followUp.trim();
+    if (!q) return;
+    setFollowUp("");
+    startCouncil({ followUp: true, followUpQuestion: q });
   };
 
   const yesCount = council.filter(a => a.leansYes).length;
@@ -664,6 +741,53 @@ export default function AINationCouncil() {
                   }}>
                     📤 {t("council.share")}
                   </Button>
+                </div>
+
+                {/* ── Follow-up: deepen the conversation ── */}
+                <div className="pt-4 border-t border-white/10 space-y-3">
+                  <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                    <span>💬</span>
+                    <span>Углубитесь в тему — задайте уточняющий вопрос тому же совету</span>
+                    {history.length > 0 && (
+                      <span className="px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-300 font-semibold">
+                        Раунд {history.length + 1}
+                      </span>
+                    )}
+                  </div>
+                  <form onSubmit={handleFollowUp} className="relative max-w-2xl mx-auto">
+                    <div className="relative rounded-xl border border-purple-500/40 bg-black/60 backdrop-blur-md focus-within:border-purple-500/70 transition-all">
+                      <input
+                        type="text"
+                        value={followUp}
+                        onChange={e => setFollowUp(e.target.value)}
+                        placeholder="А что если…? Уточните, углубите, оспорьте…"
+                        className="w-full bg-transparent text-foreground placeholder:text-muted-foreground/60 px-4 py-3 pr-12 text-sm outline-none"
+                      />
+                      <button
+                        type="submit"
+                        disabled={!followUp.trim()}
+                        className="absolute right-1.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-lg bg-purple-600 hover:bg-purple-500 disabled:opacity-40 disabled:hover:bg-purple-600 flex items-center justify-center transition-colors"
+                        aria-label="Отправить уточняющий вопрос"
+                      >
+                        <Send className="w-4 h-4 text-white" />
+                      </button>
+                    </div>
+                  </form>
+                  {history.length > 0 && (
+                    <details className="max-w-2xl mx-auto text-left">
+                      <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
+                        📜 История диалога ({history.length} {history.length === 1 ? "раунд" : "раундов"})
+                      </summary>
+                      <div className="mt-2 space-y-2 max-h-48 overflow-y-auto pr-2">
+                        {history.map((h, idx) => (
+                          <div key={idx} className="text-xs bg-black/30 rounded-lg p-2 border border-white/5">
+                            <div className="text-purple-300 font-semibold mb-1">Раунд {idx + 1}: "{h.question}"</div>
+                            {h.summary && <div className="text-muted-foreground italic">{h.summary}</div>}
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  )}
                 </div>
 
                 <button onClick={reset} className="text-sm text-primary hover:text-primary/80 underline underline-offset-4 transition-colors">

@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const { question, agents, language = "ru" } = await req.json();
+    const { question, agents, language = "ru", history } = await req.json();
     if (!question || !Array.isArray(agents) || agents.length === 0) {
       return new Response(JSON.stringify({ error: "question and agents required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -57,7 +57,20 @@ ${langInstruction}
   "summary": "..."
 }`;
 
-    const userPrompt = `Вопрос: "${question}"\n\nАгенты совета:\n${agentList}\n\nПроведи анализ.`;
+    // Build conversation history block for follow-up questions
+    let historyBlock = "";
+    if (Array.isArray(history) && history.length > 0) {
+      historyBlock = "\n\nИСТОРИЯ ОБСУЖДЕНИЯ (предыдущие раунды этого же совета):\n" +
+        history.map((h: any, idx: number) => {
+          const responsesTxt = Array.isArray(h.responses)
+            ? h.responses.map((r: any) => `  • ${r.name} (${r.class}, ${r.leansYes ? "YES" : "NO"}): ${r.answer}`).join("\n")
+            : "";
+          return `Раунд ${idx + 1}:\nВопрос: "${h.question}"\nОтветы:\n${responsesTxt}\nSummary: ${h.summary || "—"}`;
+        }).join("\n\n") +
+        "\n\nЭто УТОЧНЯЮЩИЙ вопрос. Не повторяй прошлые аргументы — углубись, ответь конкретно на новый вопрос с учётом того, что уже обсуждалось. Каждый агент должен сохранить свою позицию/характер.";
+    }
+
+    const userPrompt = `${historyBlock ? "ТЕКУЩИЙ ВОПРОС" : "Вопрос"}: "${question}"\n\nАгенты совета:\n${agentList}${historyBlock}\n\nПроведи анализ.`;
 
     const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
