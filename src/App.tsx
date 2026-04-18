@@ -65,6 +65,7 @@ const Academy = React.lazy(() => import("./pages/Academy.tsx"));
 const Launch = React.lazy(() => import("./pages/Launch.tsx"));
 const SimulationLab = React.lazy(() => import("./pages/SimulationLab.tsx"));
 const Skills = React.lazy(() => import("./pages/Skills.tsx"));
+const Sectors = React.lazy(() => import("./pages/Sectors.tsx"));
 const Activity = React.lazy(() => import("./pages/Activity.tsx"));
 const Reports = React.lazy(() => import("./pages/Reports.tsx"));
 const Chat = React.lazy(() => import("./pages/Chat.tsx"));
@@ -238,6 +239,7 @@ const AnimatedRoutes = () => {
           <Route path="/launch" element={<RouteErrorBoundary><Launch /></RouteErrorBoundary>} />
           <Route path="/simulation" element={<RouteErrorBoundary><SimulationLab /></RouteErrorBoundary>} />
           <Route path="/skills" element={<RouteErrorBoundary><Skills /></RouteErrorBoundary>} />
+          <Route path="/sectors" element={<RouteErrorBoundary><Sectors /></RouteErrorBoundary>} />
           <Route path="/partners" element={<RouteErrorBoundary><Partners /></RouteErrorBoundary>} />
           <Route path="/discord" element={<RouteErrorBoundary><Discord /></RouteErrorBoundary>} />
           <Route path="/install" element={<RouteErrorBoundary><Install /></RouteErrorBoundary>} />
