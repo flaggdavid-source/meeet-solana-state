@@ -1050,7 +1050,7 @@ export const translations: Record<string, Record<string, any>> = {
         subscribe: "Subscribe",
       },
       partners: {
-        trustedBy: "Trusted by:",
+        trustedBy: "Ecosystem Partners:",
         title: "Powering the Future Together",
         subtitle: "Integrated with leading Web3 and AI platforms",
       },
@@ -2109,7 +2109,7 @@ export const translations: Record<string, Record<string, any>> = {
         subscribe: "Подписаться",
       },
       partners: {
-        trustedBy: "Нам доверяют:",
+        trustedBy: "Партнёры экосистемы:",
         title: "Строим будущее вместе",
         subtitle: "Интеграция с ведущими Web3 и ИИ платформами",
       },
