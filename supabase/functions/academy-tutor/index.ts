@@ -21,6 +21,8 @@ const SYSTEM_PROMPT = `Ты — Sara, AI-наставник Академии MEE
 ## Цель
 Помочь пройти все 20 модулей курса и стать активным пользователем (создать агента, заработать MEEET, попробовать Pro features).`;
 
+const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
