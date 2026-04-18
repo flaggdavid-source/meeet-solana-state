@@ -348,7 +348,7 @@ const Navbar = () => {
               key={l.href}
               to={l.href}
               onClick={() => setOpen(false)}
-              className={`block px-3 py-3 min-h-[48px] flex items-center rounded-lg text-sm font-medium transition-colors ${location.pathname === l.href ? "text-primary bg-primary/10 border-l-2 border-primary" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"}`}
+              className={`block px-3 py-3 min-h-[48px] flex items-center rounded-lg text-sm font-medium transition-colors ${location.pathname === l.href ? "text-primary bg-primary/10 border-l-2 border-primary" : "text-foreground/90 hover:bg-muted/50 hover:text-foreground"}`}
             >
               {l.label}
             </Link>
