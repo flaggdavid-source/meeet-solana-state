@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "@/integrations/supabase/runtime-client";
 import { Button } from "@/components/ui/button";
 import ParticleCanvas from "@/components/ParticleCanvas";
-import {} from "react";
+import React from "react";
 import { Terminal, Globe, TrendingUp, ScrollText, MapPin } from "lucide-react";
 import ContractAddress, { PUMP_FUN_URL } from "@/components/ContractAddress";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -261,6 +261,7 @@ const LiveStatCard = React.forwardRef<HTMLDivElement, {
       <span className={`text-base sm:text-xl font-bold font-display ${accent} tabular-nums`}>{value}</span>
     )}
   </div>
-);
+));
+LiveStatCard.displayName = "LiveStatCard";
 
 export default HeroSection;
