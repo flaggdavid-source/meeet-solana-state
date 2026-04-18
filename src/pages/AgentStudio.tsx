@@ -290,17 +290,22 @@ const AgentStudio = () => {
         <Navbar />
         <main className="flex-1 container mx-auto px-4 py-6">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
             <div className="flex items-center gap-3">
               <Wand2 className="w-7 h-7 text-purple-400" />
               <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Agent Studio</h1>
             </div>
-            <Button
-              onClick={() => setShowWizard(!showWizard)}
-              className={showWizard ? "bg-muted text-muted-foreground" : "bg-gradient-to-r from-purple-600 to-pink-500 text-white border-0"}
-            >
-              {showWizard ? "Advanced Builder" : "✨ Quick Create"}
-            </Button>
+            <div className="flex items-center gap-2">
+              <a href="/sectors" className="text-xs px-3 py-2 rounded-lg border border-border/50 bg-card/40 text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors">
+                🏛 Pick a Sector
+              </a>
+              <Button
+                onClick={() => setShowWizard(!showWizard)}
+                className={showWizard ? "bg-muted text-muted-foreground" : "bg-gradient-to-r from-purple-600 to-pink-500 text-white border-0"}
+              >
+                {showWizard ? "Advanced Builder" : "✨ Quick Create"}
+              </Button>
+            </div>
           </div>
 
           {showWizard ? (
