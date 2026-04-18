@@ -14,6 +14,180 @@ export type Database = {
   }
   public: {
     Tables: {
+      academy_certificates: {
+        Row: {
+          certificate_token: string
+          id: string
+          issued_at: string
+          level_chosen: string | null
+          modules_completed: number
+          referral_boost_active: boolean | null
+          referral_boost_expires_at: string | null
+          total_meeet_earned: number
+          total_xp_earned: number
+          trial_pro_active: boolean | null
+          trial_pro_expires_at: string | null
+          user_id: string
+        }
+        Insert: {
+          certificate_token: string
+          id?: string
+          issued_at?: string
+          level_chosen?: string | null
+          modules_completed?: number
+          referral_boost_active?: boolean | null
+          referral_boost_expires_at?: string | null
+          total_meeet_earned?: number
+          total_xp_earned?: number
+          trial_pro_active?: boolean | null
+          trial_pro_expires_at?: string | null
+          user_id: string
+        }
+        Update: {
+          certificate_token?: string
+          id?: string
+          issued_at?: string
+          level_chosen?: string | null
+          modules_completed?: number
+          referral_boost_active?: boolean | null
+          referral_boost_expires_at?: string | null
+          total_meeet_earned?: number
+          total_xp_earned?: number
+          trial_pro_active?: boolean | null
+          trial_pro_expires_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      academy_chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          module_slug: string | null
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          module_slug?: string | null
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          module_slug?: string | null
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      academy_modules: {
+        Row: {
+          action_payload: Json | null
+          action_type: string | null
+          content_md: string
+          created_at: string
+          description: string | null
+          estimated_minutes: number | null
+          id: string
+          is_pro_unlock: boolean | null
+          level: string
+          order_index: number
+          prerequisites: string[] | null
+          reward_meeet: number | null
+          reward_xp: number | null
+          slug: string
+          subtitle: string | null
+          title: string
+          track: string
+        }
+        Insert: {
+          action_payload?: Json | null
+          action_type?: string | null
+          content_md: string
+          created_at?: string
+          description?: string | null
+          estimated_minutes?: number | null
+          id?: string
+          is_pro_unlock?: boolean | null
+          level?: string
+          order_index: number
+          prerequisites?: string[] | null
+          reward_meeet?: number | null
+          reward_xp?: number | null
+          slug: string
+          subtitle?: string | null
+          title: string
+          track: string
+        }
+        Update: {
+          action_payload?: Json | null
+          action_type?: string | null
+          content_md?: string
+          created_at?: string
+          description?: string | null
+          estimated_minutes?: number | null
+          id?: string
+          is_pro_unlock?: boolean | null
+          level?: string
+          order_index?: number
+          prerequisites?: string[] | null
+          reward_meeet?: number | null
+          reward_xp?: number | null
+          slug?: string
+          subtitle?: string | null
+          title?: string
+          track?: string
+        }
+        Relationships: []
+      }
+      academy_progress: {
+        Row: {
+          completed_at: string | null
+          id: string
+          level_chosen: string | null
+          meeet_awarded: number | null
+          metadata: Json | null
+          module_slug: string
+          reward_claimed: boolean
+          started_at: string
+          status: string
+          user_id: string
+          xp_awarded: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          id?: string
+          level_chosen?: string | null
+          meeet_awarded?: number | null
+          metadata?: Json | null
+          module_slug: string
+          reward_claimed?: boolean
+          started_at?: string
+          status?: string
+          user_id: string
+          xp_awarded?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          id?: string
+          level_chosen?: string | null
+          meeet_awarded?: number | null
+          metadata?: Json | null
+          module_slug?: string
+          reward_claimed?: boolean
+          started_at?: string
+          status?: string
+          user_id?: string
+          xp_awarded?: number | null
+        }
+        Relationships: []
+      }
       academy_steps: {
         Row: {
           agent_id: string
