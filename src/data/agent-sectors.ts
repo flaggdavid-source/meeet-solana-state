@@ -3,6 +3,7 @@ export type SectorBranch = "knowledge" | "governance" | "economy" | "society";
 
 export interface SectorInfo {
   key: string;
+  slug: string;
   branch: SectorBranch;
   name: string;
   nameRu: string;
@@ -11,6 +12,8 @@ export interface SectorInfo {
   description: string;
   descriptionRu: string;
   linkedFeatures: string[];
+  /** Demo/seed agent count shown in hub & cards */
+  agentCount: number;
 }
 
 export const BRANCH_META: Record<SectorBranch, { name: string; nameRu: string; icon: string; color: string }> = {
