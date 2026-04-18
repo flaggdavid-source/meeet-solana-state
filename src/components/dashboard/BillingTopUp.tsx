@@ -16,7 +16,7 @@ const QUICK_AMOUNTS = [1, 5, 20, 50];
 
 export default function BillingTopUp({ userId }: Props) {
   const qc = useQueryClient();
-  const { provider, publicKey, connect } = useSolanaWallet();
+  const { address, getProvider, connect } = useSolanaWallet();
   const [selectedUsd, setSelectedUsd] = useState<number>(5);
   const [isProcessing, setIsProcessing] = useState(false);
   const [info, setInfo] = useState<{ treasury_address: string; sol_usd_price: number } | null>(null);
@@ -54,7 +54,8 @@ export default function BillingTopUp({ userId }: Props) {
 
   const handleTopUp = async () => {
     if (!info) return toast.error("Treasury info not loaded yet");
-    if (!provider || !publicKey) {
+    const provider = getProvider();
+    if (!provider || !address) {
       toast.error("Connect a Solana wallet first");
       await connect("phantom");
       return;
@@ -67,7 +68,7 @@ export default function BillingTopUp({ userId }: Props) {
       const conn = new Connection("https://api.mainnet-beta.solana.com", "confirmed");
 
       const lamports = Math.round(solAmount * LAMPORTS_PER_SOL);
-      const fromPubkey = new PublicKey(publicKey);
+      const fromPubkey = new PublicKey(address);
       const toPubkey = new PublicKey(info.treasury_address);
 
       const tx = new Transaction().add(
@@ -186,7 +187,7 @@ export default function BillingTopUp({ userId }: Props) {
             <>
               <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading...
             </>
-          ) : !publicKey ? (
+          ) : !address ? (
             <>
               <Wallet className="w-3.5 h-3.5" /> Connect wallet to top up
             </>
