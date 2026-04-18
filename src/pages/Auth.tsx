@@ -18,17 +18,24 @@ const Auth = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const refCode = searchParams.get("ref") || "";
+  const refCode = searchParams.get("ref") || (typeof window !== "undefined" ? localStorage.getItem("meeet_pending_ref") || "" : "");
 
   useEffect(() => {
     if (!loading && user) {
-      // If there's a ref code, record the referral
+      // If there's a ref code (from URL or stored from earlier visit), record the referral
       if (refCode) {
         fetch(`${SUPABASE_URL}/functions/v1/referral-api`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "record", ref_code: refCode, user_id: user.id }),
-        }).catch(() => {});
+        })
+          .then(() => {
+            try {
+              localStorage.removeItem("meeet_pending_ref");
+              localStorage.removeItem("meeet_pending_ref_at");
+            } catch {}
+          })
+          .catch(() => {});
       }
 
       supabase.from("profiles").select("is_onboarded").eq("user_id", user.id).maybeSingle().then(({ data }) => {

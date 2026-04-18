@@ -156,6 +156,22 @@ const RealtimeProvider = ({ children }: { children: React.ReactNode }) => {
 
 const AnimatedRoutes = () => {
   const location = useLocation();
+
+  // Capture ?ref= param on first visit and persist it across navigations
+  React.useEffect(() => {
+    try {
+      const params = new URLSearchParams(location.search);
+      const ref = params.get("ref");
+      if (ref && ref.length > 0 && ref.length < 64) {
+        const existing = localStorage.getItem("meeet_pending_ref");
+        if (!existing) {
+          localStorage.setItem("meeet_pending_ref", ref);
+          localStorage.setItem("meeet_pending_ref_at", String(Date.now()));
+        }
+      }
+    } catch {}
+  }, [location.search]);
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
