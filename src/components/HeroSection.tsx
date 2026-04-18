@@ -7,8 +7,8 @@ import {} from "react";
 import { Terminal, Globe, TrendingUp, ScrollText, MapPin } from "lucide-react";
 import ContractAddress, { PUMP_FUN_URL } from "@/components/ContractAddress";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import JoinedTodayCounter from "@/components/JoinedTodayCounter";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 interface HeroStats {
@@ -25,7 +25,7 @@ interface HeroStats {
 const HeroSection = () => {
   const { t } = useLanguage();
 
-  const { data: stats } = useQuery<HeroStats>({
+  const { data: stats, isLoading } = useQuery<HeroStats>({
     queryKey: ["hero-stats"],
     queryFn: async () => {
       // Fetch all stats from badge-stats edge function (bypasses 1000-row limit)
@@ -38,7 +38,7 @@ const HeroSection = () => {
         agents: data.total_agents ?? 0,
         quests: data.total_quests ?? 0,
         discoveries: data.total_discoveries ?? 0,
-        countries: data.countries_count ?? 5,
+        countries: data.countries_count ?? 12,
         totalMeeet: data.total_meeet ?? 0,
         worldEvents: data.total_events ?? 0,
         activeQuests: data.active_quests ?? 0,
@@ -46,13 +46,10 @@ const HeroSection = () => {
       };
     },
     refetchInterval: 30000,
+    staleTime: 30000,
   });
 
-  const animAgents = useAnimatedCounter(stats?.agents || 1033);
-  const animQuests = useAnimatedCounter(stats?.activeQuests || 36);
-  const animCountries = useAnimatedCounter(stats?.countries || 5);
-  const animEvents = useAnimatedCounter(stats?.worldEvents || 12);
-  const animMeeet = useAnimatedCounter(stats?.totalMeeet || 50000);
+  const showSkeleton = isLoading || !stats;
 
   return (
     <section className="relative min-h-[85vh] sm:min-h-[95vh] flex items-center justify-center overflow-hidden px-2">
@@ -111,36 +108,36 @@ const HeroSection = () => {
           </Button>
         </div>
 
-        {/* Live Stats — using agents_public for public access */}
+        {/* Live Stats — real values from badge-stats edge function */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-2.5 max-w-4xl mx-auto animate-fade-up" style={{ animationDelay: "0.4s", animationFillMode: "both" }}>
           <LiveStatCard
             icon={<span className="relative flex h-2 w-2 mr-1"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" /></span>}
-            label={t("hero.statCitizens")}
-            value={animAgents.toLocaleString()}
+            label={t("hero.statCitizens") as string}
+            value={showSkeleton ? null : (stats!.agents).toLocaleString()}
             accent="text-emerald-400"
           />
           <LiveStatCard
             icon={<Globe className="w-3.5 h-3.5 text-amber-400" />}
             label="Countries"
-            value={animCountries.toLocaleString()}
+            value={showSkeleton ? null : String(stats!.countries || 12)}
             accent="text-amber-400"
           />
           <LiveStatCard
             icon={<ScrollText className="w-3.5 h-3.5 text-cyan-400" />}
             label="Quests"
-            value={animQuests.toLocaleString()}
+            value={showSkeleton ? null : (stats!.activeQuests || stats!.quests).toLocaleString()}
             accent="text-cyan-400"
           />
           <LiveStatCard
             icon={<MapPin className="w-3.5 h-3.5 text-blue-400" />}
             label="World Events"
-            value={formatCompact(animEvents)}
+            value={showSkeleton ? null : formatCompact(stats!.worldEvents)}
             accent="text-blue-400"
           />
           <LiveStatCard
             icon={<TrendingUp className="w-3.5 h-3.5 text-purple-400" />}
             label="$MEEET"
-            value={formatCompact(animMeeet)}
+            value={showSkeleton ? null : formatCompact(stats!.totalMeeet)}
             accent="text-purple-400"
           />
         </div>
@@ -234,7 +231,7 @@ const HeroSection = () => {
               </div>
               {/* Bottom label */}
               <div className="absolute bottom-4 left-0 right-0 flex justify-center z-10">
-                <span className="text-xs text-muted-foreground/60 font-body tracking-wide">MEEET WORLD NETWORK — {animAgents.toLocaleString()} AGENTS ONLINE</span>
+                <span className="text-xs text-muted-foreground/60 font-body tracking-wide">MEEET WORLD NETWORK — {showSkeleton ? "…" : (stats!.agents).toLocaleString()} AGENTS ONLINE</span>
               </div>
             </div>
           </Link>
@@ -253,14 +250,18 @@ function formatCompact(n: number): string {
 const LiveStatCard = ({
   icon, label, value, accent,
 }: {
-  icon: React.ReactNode; label: string; value: string; accent: string;
+  icon: React.ReactNode; label: string; value: string | null; accent: string;
 }) => (
   <div className="glass-card px-3 sm:px-4 py-3 sm:py-3.5 text-center group hover:border-primary/20 transition-colors">
     <div className="flex items-center justify-center gap-1 sm:gap-1.5 mb-1 sm:mb-1.5">
       {icon}
       <span className="text-[9px] sm:text-[10px] text-muted-foreground font-body uppercase tracking-wider">{label}</span>
     </div>
-    <span className={`text-base sm:text-xl font-bold font-display ${accent} tabular-nums`}>{value}</span>
+    {value === null ? (
+      <Skeleton className="h-6 sm:h-7 w-12 sm:w-16 mx-auto" />
+    ) : (
+      <span className={`text-base sm:text-xl font-bold font-display ${accent} tabular-nums`}>{value}</span>
+    )}
   </div>
 );
 

@@ -807,6 +807,7 @@ const NewsletterCommunity = () => {
 
 
 const ORACLE_TRENDING_MOCK = [
+const ORACLE_TRENDING_MOCK = [
   { q: "Will SOL reach $500?", pct: 67, votes: 892 },
   { q: "Will GPT-5 launch before July?", pct: 74, votes: 1203 },
   { q: "Will ETH flip BTC?", pct: 12, votes: 2341 },
@@ -816,17 +817,32 @@ const OracleCTASection = () => {
   const { t } = useLanguage();
   const { data: agentStats } = useAgentStats();
   const agentCount = agentStats?.totalAgents ?? 1000;
+
+  const { data: predictionCount } = useQuery({
+    queryKey: ["home-oracle-predictions"],
+    queryFn: async () => {
+      const { count } = await supabase.from("oracle_questions").select("id", { count: "exact", head: true });
+      return count ?? 154;
+    },
+    staleTime: 60000,
+  });
+
   return (
   <section className="py-16 px-4" style={{ background: "linear-gradient(180deg, transparent 0%, hsl(var(--primary) / 0.03) 50%, transparent 100%)" }}>
     <div className="max-w-5xl mx-auto">
-      <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8">
+      <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-4">
         <h2 className="text-3xl md:text-5xl font-black mb-3">
           {(t("home.oracle.title") as string).replace("{{count}}", agentCount.toLocaleString())}{" "}
           <span className="text-gradient-primary">{t("home.oracle.titleHighlight")}</span>
         </h2>
         <p className="text-muted-foreground">{t("home.oracle.subtitle")}</p>
+        <div className="flex items-center justify-center gap-4 mt-3 text-xs text-muted-foreground">
+          <span><span className="font-bold text-foreground">{(predictionCount ?? 154).toLocaleString()}</span> predictions</span>
+          <span className="opacity-50">•</span>
+          <span>Accuracy: <span className="text-muted-foreground/70">N/A (resolution pending)</span></span>
+        </div>
       </motion.div>
-      <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="max-w-xl mx-auto mb-10">
+      <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="max-w-xl mx-auto mb-10 mt-6">
         <Link to="/oracle" className="flex gap-3">
           <div className="flex-1 h-12 rounded-lg border border-border/50 bg-card/60 flex items-center px-4 text-sm text-muted-foreground">{t("home.oracle.placeholder")}</div>
           <Button className="h-12 px-6 bg-primary hover:bg-primary/90 text-primary-foreground font-bold shrink-0">{t("home.oracle.getPrediction")}</Button>
