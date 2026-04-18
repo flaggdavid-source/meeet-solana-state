@@ -40,11 +40,11 @@ const TOP_STAKERS = Array.from({ length: 10 }, (_, i) => ({
   winRate: Math.floor(Math.random() * 40) + 60,
 })).sort((a, b) => b.totalStaked - a.totalStaked);
 
+const TOTAL_SUPPLY = 1_000_000_000;
 const getSupplyData = (staked: number, burned: number) => [
-  { name: "Circulating", value: Math.max(1000000000 - staked - burned - 365560, 0), color: "hsl(var(--primary))" },
-  { name: "Burned", value: burned || 0, color: "#ef4444" },
+  { name: "Circulating", value: Math.max(TOTAL_SUPPLY - staked - burned, 0), color: "hsl(var(--primary))" },
   { name: "Staked", value: staked || 0, color: "#3b82f6" },
-  { name: "Reserve", value: 365560, color: "hsl(var(--muted-foreground))" },
+  { name: "Burned", value: burned || 0, color: "#ef4444" },
 ];
 
 const statusStyle: Record<string, string> = {
@@ -375,7 +375,7 @@ const Staking = () => {
                           <span className="text-sm font-mono text-muted-foreground ml-auto">{s.value.toLocaleString()}</span>
                         </div>
                       ))}
-                      <p className="text-xs text-muted-foreground pt-2">Deflation rate: <span className="text-red-400 font-semibold">2.3% / month</span></p>
+                      <p className="text-xs text-muted-foreground pt-2">Total Supply: <span className="text-foreground font-semibold">{TOTAL_SUPPLY.toLocaleString()} $MEEET</span></p>
                     </div>
                   </>
                 );

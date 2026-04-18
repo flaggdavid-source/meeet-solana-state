@@ -178,7 +178,7 @@ const AnimatedRoutes = () => {
   }, [location.search]);
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence>
       <motion.div
         key={location.pathname}
         initial={{ opacity: 0 }}

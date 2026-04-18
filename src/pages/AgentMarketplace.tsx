@@ -441,12 +441,12 @@ const AgentMarketplace = () => {
                 <p className="text-muted-foreground mb-2">Create specialized AI agents and earn $MEEET from every hire</p>
                 <div className="flex flex-wrap justify-center gap-6 my-6">
                   {[
-                    { value: "2,400", label: "Avg $MEEET earned/month" },
-                    { value: "892", label: "Active creators" },
-                    { value: "< 5 min", label: "Time to list" },
+                    { icon: "💰", label: "Earn MEEET from every hire" },
+                    { icon: "🌱", label: "Growing creator community" },
+                    { icon: "⚡", label: "Quick listing process" },
                   ].map(s => (
                     <div key={s.label} className="text-center">
-                      <p className="text-xl font-black text-primary">{s.value}</p>
+                      <p className="text-2xl mb-1">{s.icon}</p>
                       <p className="text-xs text-muted-foreground">{s.label}</p>
                     </div>
                   ))}

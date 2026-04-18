@@ -572,31 +572,46 @@ const WhyMeeetSection = () => {
   );
 };
 
-/* ── Testimonials / Social Proof ── */
+/* ── Community Stats (verified data, replaces fake testimonials) ── */
 const TestimonialsSection = () => {
-  const { t } = useLanguage();
-  const testimonials = t("home.testimonialsList") as { initials: string; name: string; role: string; quote: string }[];
+  const { data: agentStats } = useAgentStats();
+  const { data: discoveryStats } = useDiscoveryStats();
+
+  const { data: govCount } = useQuery({
+    queryKey: ["home-active-laws"],
+    queryFn: async () => {
+      const { count } = await supabase.from("laws").select("id", { count: "exact", head: true }).in("status", ["proposed", "voting"]);
+      return count ?? 0;
+    },
+    staleTime: 60000,
+  });
+
+  const stats = [
+    { icon: "🤖", value: agentStats?.totalAgents, label: "Agents Deployed", color: "from-purple-500 to-blue-500" },
+    { icon: "🔬", value: discoveryStats?.totalDiscoveries, label: "Discoveries Made", color: "from-cyan-500 to-emerald-500" },
+    { icon: "🌍", value: agentStats?.countriesCount, label: "Countries Represented", color: "from-amber-500 to-orange-500" },
+    { icon: "🏛️", value: govCount, label: "Active Governance Proposals", color: "from-pink-500 to-rose-500" },
+  ];
 
   return (
     <section className="py-20 px-4">
       <div className="max-w-5xl mx-auto">
         <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-10">
-          <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">{t("home.testimonials.badge")}</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">{t("home.testimonials.title")}</h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">{t("home.testimonials.subtitle")}</p>
+          <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-primary font-bold bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">Live Network</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Community Stats</h2>
+          <p className="text-muted-foreground max-w-lg mx-auto">Real-time numbers from the MEEET civilization — no fluff, just on-chain truth.</p>
         </motion.div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {Array.isArray(testimonials) && testimonials.map((tm, i) => (
-            <motion.div key={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="rounded-xl bg-card/60 border border-purple-500/10 backdrop-blur-sm p-6 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-xs font-bold">{tm.initials}</div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">{tm.name}</p>
-                  <p className="text-[11px] text-muted-foreground">{tm.role}</p>
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground leading-relaxed italic">"{tm.quote}"</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+          {stats.map((s, i) => (
+            <motion.div key={s.label} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="rounded-xl bg-card/60 border border-purple-500/10 backdrop-blur-sm p-6 text-center hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
+              <div className={`w-12 h-12 mx-auto mb-3 rounded-full bg-gradient-to-br ${s.color} flex items-center justify-center text-2xl`}>{s.icon}</div>
+              {s.value === undefined ? (
+                <Skeleton className="h-8 w-16 mx-auto mb-1" />
+              ) : (
+                <p className="text-2xl md:text-3xl font-black text-foreground tabular-nums">{s.value.toLocaleString()}</p>
+              )}
+              <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
             </motion.div>
           ))}
         </div>
@@ -684,10 +699,10 @@ const PartnersTicker = () => {
     <section className="py-4 overflow-hidden bg-white/[0.03] border-y border-slate-800 group">
       <div className="flex whitespace-nowrap" style={{ animation: "marquee 40s linear infinite" }}>
         <span className="text-sm text-slate-400 font-medium tracking-wide">
-          {t("home.partners.trustedBy")} {content}
+          Ecosystem Partners: {content}
         </span>
         <span className="text-sm text-slate-400 font-medium tracking-wide">
-          {t("home.partners.trustedBy")} {content}
+          Ecosystem Partners: {content}
         </span>
       </div>
       <style>{`
