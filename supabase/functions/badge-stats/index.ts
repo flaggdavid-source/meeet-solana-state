@@ -11,63 +11,62 @@ Deno.serve(async (req) => {
   // Full stats mode — returns all aggregated platform stats
   if (format === "full") {
     const [
-      agentsRes,
+      agentsBalRes,
       questsRes,
       activeQuestsRes,
       guildsRes,
       discoveriesRes,
-      eventsDiscovery,
-      eventsDiplomacy,
+      eventsTotalRes,
       duelsRes,
       lawsRes,
       agentsCountRes,
+      countriesRaw,
     ] = await Promise.all([
-      sc.from("agents").select("id, balance_meeet"),
-      sc.from("quests").select("id", { count: "exact" }),
-      sc.from("quests").select("id", { count: "exact" }).eq("status", "open"),
-      sc.from("guilds").select("id", { count: "exact" }),
-      sc.from("discoveries").select("id", { count: "exact" }),
-      // Count only meaningful events: discoveries, diplomacy (not bulk geopolitical/conflict noise)
-      sc.from("world_events").select("id", { count: "exact" }).eq("event_type", "discovery"),
-      sc.from("world_events").select("id", { count: "exact" }).eq("event_type", "diplomacy"),
-      sc.from("duels").select("id", { count: "exact" }),
-      sc.from("laws").select("id", { count: "exact" }),
-      sc.from("agents").select("id", { count: "exact" }),
-      sc.from("agents").select("country_code").not("country_code", "is", null),
+      sc.from("agents").select("balance_meeet"),
+      sc.from("quests").select("id", { count: "exact", head: true }),
+      sc.from("quests").select("id", { count: "exact", head: true }).eq("status", "open"),
+      sc.from("guilds").select("id", { count: "exact", head: true }),
+      sc.from("discoveries").select("id", { count: "exact", head: true }),
+      // All world events count (every meaningful platform event)
+      sc.from("world_events").select("id", { count: "exact", head: true }),
+      sc.from("duels").select("id", { count: "exact", head: true }),
+      sc.from("laws").select("id", { count: "exact", head: true }),
+      sc.from("agents").select("id", { count: "exact", head: true }),
+      // Distinct countries — use nation_code (primary) with country_code fallback
+      sc.from("agents").select("nation_code, country_code"),
     ]);
 
-    const agents = agentsRes.data || [];
-    const totalMeeet = agents.reduce((s: number, a: any) => s + Number(a.balance_meeet || 0), 0);
-    const totalAgentsCount = agentsCountRes.count ?? agents.length;
+    const balances = agentsBalRes.data || [];
+    const totalMeeet = balances.reduce((s: number, a: any) => s + Number(a.balance_meeet || 0), 0);
+    const totalAgentsCount = agentsCountRes.count ?? balances.length;
 
-    // Count distinct countries from agents
-    const countryData = (agentsRes as any).__countryRes?.data;
-    // Use the last parallel query result for countries
-    const countriesRaw = await sc.from("agents").select("country_code").not("country_code", "is", null);
-    const distinctCountries = new Set((countriesRaw.data || []).map((r: any) => r.country_code)).size;
-
-    // Real platform events = discoveries + diplomacy events + duels + laws + discoveries table
-    const realEvents = (eventsDiscovery.count ?? 0) + (eventsDiplomacy.count ?? 0) +
-      (duelsRes.count ?? 0) + (lawsRes.count ?? 0) + (discoveriesRes.count ?? 0);
+    const countrySet = new Set<string>();
+    for (const r of (countriesRaw.data || []) as any[]) {
+      const code = r.nation_code || r.country_code;
+      if (code) countrySet.add(code);
+    }
 
     return new Response(JSON.stringify({
       total_agents: totalAgentsCount,
       total_meeet: totalMeeet,
-      countries_count: distinctCountries || 5,
+      countries_count: countrySet.size || 5,
       total_quests: questsRes.count ?? 0,
       active_quests: activeQuestsRes.count ?? 0,
-      total_events: realEvents,
+      total_events: eventsTotalRes.count ?? 0,
       total_guilds: guildsRes.count ?? 0,
       total_discoveries: discoveriesRes.count ?? 0,
+      // legacy fields (kept for compatibility)
+      total_duels: duelsRes.count ?? 0,
+      total_laws: lawsRes.count ?? 0,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json", "Cache-Control": "max-age=30" },
     });
   }
 
   // Badge format (shields.io compatible)
-  const { count: agents } = await sc.from("agents").select("id", { count: "exact" });
-  const { count: discoveries } = await sc.from("discoveries").select("id", { count: "exact" });
-  const { count: quests } = await sc.from("quests").select("id", { count: "exact" });
+  const { count: agents } = await sc.from("agents").select("id", { count: "exact", head: true });
+  const { count: discoveries } = await sc.from("discoveries").select("id", { count: "exact", head: true });
+  const { count: quests } = await sc.from("quests").select("id", { count: "exact", head: true });
 
   const data: Record<string, { schemaVersion: number; label: string; message: string; color: string }> = {
     agents: { schemaVersion: 1, label: "AI Agents", message: `${agents ?? 0} live`, color: "blue" },
