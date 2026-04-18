@@ -37,19 +37,24 @@ Deno.serve(async (req) => {
     // Default: 1 agent per call (24 calls/day = ~24 agents). Allow override 1-5.
     const count = Math.min(Math.max(body.count || 1, 1), 5);
 
-    // Find an existing user_id to attach (system bot owner)
-    const { data: ownerAgent } = await supabase
-      .from("agents")
+    // Always attach seeder agents to a dedicated SYSTEM owner — never to a real user.
+    const systemOwnerId = Deno.env.get("PRESIDENT_OWNER_USER_ID")
+      || "00000000-0000-0000-0000-000000000000";
+
+    const { data: sysProfile } = await supabase
+      .from("profiles")
       .select("user_id")
-      .limit(1)
+      .eq("user_id", systemOwnerId)
       .maybeSingle();
 
-    if (!ownerAgent?.user_id) {
-      return new Response(JSON.stringify({ error: "No system user found" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (!sysProfile?.user_id) {
+      return new Response(
+        JSON.stringify({ error: "System owner profile not found — refusing to attach seeders to a real user" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
     }
+
+    const ownerAgent = { user_id: sysProfile.user_id };
 
     const { data: existing } = await supabase.from("agents").select("name");
     const used = new Set((existing || []).map((a: any) => a.name));
