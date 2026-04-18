@@ -28,6 +28,7 @@ const Parliament = React.lazy(() => import("./pages/Parliament.tsx"));
 const Herald = React.lazy(() => import("./pages/Herald.tsx"));
 const Onboarding = React.lazy(() => import("./pages/Onboarding.tsx"));
 const OnboardingCourse = React.lazy(() => import("./pages/OnboardingCourse.tsx"));
+const FloatingSara = React.lazy(() => import("@/components/FloatingSara"));
 const ProfilePage = React.lazy(() => import("./pages/Profile.tsx"));
 const Tokenomics = React.lazy(() => import("./pages/Tokenomics.tsx"));
 const Arena = React.lazy(() => import("./pages/Arena.tsx"));
@@ -198,10 +199,13 @@ const AnimatedRoutes = () => {
           <Route path="/dashboard/agents" element={<RouteErrorBoundary><AgentDashboard /></RouteErrorBoundary>} />
           <Route path="/parliament" element={<RouteErrorBoundary><Parliament /></RouteErrorBoundary>} />
           <Route path="/herald" element={<RouteErrorBoundary><Herald /></RouteErrorBoundary>} />
-          <Route path="/onboarding" element={<RouteErrorBoundary><Onboarding /></RouteErrorBoundary>} />
-          <Route path="/onboarding-course" element={<RouteErrorBoundary><OnboardingCourse /></RouteErrorBoundary>} />
-          <Route path="/course" element={<Navigate to="/onboarding-course" replace />} />
-          <Route path="/learn" element={<Navigate to="/onboarding-course" replace />} />
+          <Route path="/onboarding" element={<Navigate to="/academy" replace />} />
+          <Route path="/onboarding-course" element={<Navigate to="/academy" replace />} />
+          <Route path="/course" element={<Navigate to="/academy" replace />} />
+          <Route path="/learn" element={<Navigate to="/academy" replace />} />
+          <Route path="/welcome" element={<Navigate to="/academy" replace />} />
+          <Route path="/start" element={<Navigate to="/academy" replace />} />
+          <Route path="/tutorial" element={<Navigate to="/academy" replace />} />
           <Route path="/profile" element={<RouteErrorBoundary><ProfilePage /></RouteErrorBoundary>} />
           <Route path="/tokenomics" element={<RouteErrorBoundary><Tokenomics /></RouteErrorBoundary>} />
           <Route path="/arena" element={<RouteErrorBoundary><ArenaEnhanced /></RouteErrorBoundary>} />
@@ -209,7 +213,7 @@ const AnimatedRoutes = () => {
           <Route path="/social-graph" element={<RouteErrorBoundary><SocialGraph /></RouteErrorBoundary>} />
           <Route path="/admin" element={<RouteErrorBoundary><Admin /></RouteErrorBoundary>} />
           <Route path="/connect" element={<RouteErrorBoundary><Connect /></RouteErrorBoundary>} />
-          <Route path="/join" element={<RouteErrorBoundary><Join /></RouteErrorBoundary>} />
+          <Route path="/join" element={<Navigate to="/academy" replace />} />
           <Route path="/tools/badge" element={<RouteErrorBoundary><BadgeGenerator /></RouteErrorBoundary>} />
           <Route path="/dashboard/referrals" element={<RouteErrorBoundary><Referrals /></RouteErrorBoundary>} />
           <Route path="/referrals" element={<RouteErrorBoundary><Referrals /></RouteErrorBoundary>} />
@@ -329,6 +333,7 @@ const App = () => (
                     <ExitIntentPopup />
                     <FloatingTokenBanner />
                     <ShareEarnButton />
+                    <FloatingSara />
                   </Suspense>
                  </div>
                 </Suspense>
