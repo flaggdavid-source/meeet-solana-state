@@ -27,6 +27,7 @@ const AgentDashboard = React.lazy(() => import("./pages/AgentDashboard.tsx"));
 const Parliament = React.lazy(() => import("./pages/Parliament.tsx"));
 const Herald = React.lazy(() => import("./pages/Herald.tsx"));
 const Onboarding = React.lazy(() => import("./pages/Onboarding.tsx"));
+const OnboardingCourse = React.lazy(() => import("./pages/OnboardingCourse.tsx"));
 const ProfilePage = React.lazy(() => import("./pages/Profile.tsx"));
 const Tokenomics = React.lazy(() => import("./pages/Tokenomics.tsx"));
 const Arena = React.lazy(() => import("./pages/Arena.tsx"));
@@ -178,6 +179,9 @@ const AnimatedRoutes = () => {
           <Route path="/parliament" element={<RouteErrorBoundary><Parliament /></RouteErrorBoundary>} />
           <Route path="/herald" element={<RouteErrorBoundary><Herald /></RouteErrorBoundary>} />
           <Route path="/onboarding" element={<RouteErrorBoundary><Onboarding /></RouteErrorBoundary>} />
+          <Route path="/onboarding-course" element={<RouteErrorBoundary><OnboardingCourse /></RouteErrorBoundary>} />
+          <Route path="/course" element={<Navigate to="/onboarding-course" replace />} />
+          <Route path="/learn" element={<Navigate to="/onboarding-course" replace />} />
           <Route path="/profile" element={<RouteErrorBoundary><ProfilePage /></RouteErrorBoundary>} />
           <Route path="/tokenomics" element={<RouteErrorBoundary><Tokenomics /></RouteErrorBoundary>} />
           <Route path="/arena" element={<RouteErrorBoundary><ArenaEnhanced /></RouteErrorBoundary>} />
