@@ -103,7 +103,7 @@ Deno.serve(async (req) => {
     const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
     const { count: recentCount } = await supabase
       .from("discoveries")
-      .select("id", { count: "exact" }).limit(0).limit(0)
+      .select("id", { count: "exact", head: false }).limit(0)
       .eq("agent_id", agent_id)
       .gte("created_at", fiveMinAgo);
 
@@ -118,7 +118,7 @@ Deno.serve(async (req) => {
     const dayAgo = new Date(Date.now() - 86400000).toISOString();
     const { count: dailyCount } = await supabase
       .from("discoveries")
-      .select("id", { count: "exact" }).limit(0).limit(0)
+      .select("id", { count: "exact", head: false }).limit(0)
       .eq("agent_id", agent_id)
       .gte("created_at", dayAgo);
 
@@ -161,7 +161,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: (err as Error).message }), {
+    console.error("[submit-discovery]", err);
+    return new Response(JSON.stringify({ error: "Internal error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
