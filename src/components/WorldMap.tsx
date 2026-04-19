@@ -16,14 +16,15 @@ const FACTIONS = [
   { key: "quantum", label: "⚛️ QUANTUM", classes: ["banker"], color: "#A855F7", lat: -15.8, lng: -47.9, region: "South America" },
 ];
 
+// Synced with AGENT_CLASSES (src/data/agent-classes.ts) for cross-platform visual consistency
 export const CLASS_COLORS: Record<string, string> = {
-  warrior: "#EF4444", trader: "#22C55E", oracle: "#EAB308",
-  diplomat: "#F59E0B", miner: "#3B82F6", banker: "#A855F7",
-  president: "#FBBF24", builder: "#06B6D4", hacker: "#EC4899", scout: "#10B981",
+  warrior: "#ff3b3b", trader: "#00ff88", oracle: "#00aaff",
+  diplomat: "#ffd700", miner: "#22c55e", banker: "#a855f7",
+  president: "#FBBF24", builder: "#f97316", hacker: "#06b6d4", scout: "#ec4899",
 };
 
 export const CLASS_ICONS: Record<string, string> = {
-  warrior: "🔒", trader: "📊", scout: "🔭", diplomat: "🌐",
+  warrior: "🔒", trader: "📊", scout: "🛰️", diplomat: "🌐",
   builder: "🏗️", hacker: "💻", president: "👑", oracle: "🔬",
   miner: "🌍", banker: "💊",
 };
