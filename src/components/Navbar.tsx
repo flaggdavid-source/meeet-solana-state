@@ -70,6 +70,8 @@ function useNavItems(): { navItems: NavItem[]; mobileLinks: { href: string; labe
           { href: "/passport-grades", label: "Passport Grades", icon: "🎖️" },
           { href: "/api-playground", label: "API Playground", icon: "🧪" },
           { href: "/api", label: "API Docs", icon: "📚" },
+          { href: "/changelog", label: "Changelog", icon: "📜" },
+          { href: "/status", label: "Status", icon: "📡" },
         ],
       },
       { href: "/dashboard", label: t("nav.dashboard") },
