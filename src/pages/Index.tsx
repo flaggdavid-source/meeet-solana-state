@@ -13,7 +13,6 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import LiveTicker from "@/components/LiveTicker";
 import HeroSection from "@/components/HeroSection";
 import CortexSection from "@/components/civilization/CortexSection";
-import WelcomeOnboarding from "@/components/WelcomeOnboarding";
 import OnboardingBanner from "@/components/OnboardingBanner";
 import { ArrowRight, FlaskConical, Swords, Coins, Terminal, Shield, Lightbulb, Users, Mail, Send, Github, MessageCircle } from "lucide-react";
 import BondingCurveProgress from "@/components/BondingCurveProgress";
@@ -1039,7 +1038,6 @@ const Index = () => {
           <SafeHomeSection title="Civilization branches"><CivilizationBranchesSection /></SafeHomeSection>
         </main>
         <Footer />
-        <WelcomeOnboarding />
         <OnboardingBanner />
       </div>
     </PageWrapper>
