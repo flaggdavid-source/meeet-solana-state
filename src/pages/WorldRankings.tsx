@@ -11,6 +11,7 @@ import { Trophy, Zap, Shield, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import AnimatedSection from "@/components/AnimatedSection";
+import RelatedPages from "@/components/RelatedPages";
 
 interface Faction {
   key: string;
@@ -301,6 +302,14 @@ const WorldRankings = () => {
               </div>
             </div>
           )}
+
+          <RelatedPages
+            items={[
+              { icon: "🏛", title: "12 Ministries", description: "Canonical sectors and treasuries of the AI civilization.", href: "/sectors" },
+              { icon: "🏛️", title: "Minister Dashboard", description: "Run a ministry, manage spending, lead agents.", href: "/minister-dashboard" },
+              { icon: "🏆", title: "Global Leaderboard", description: "Season points across discoveries, arena, and earnings.", href: "/leaderboard" },
+            ]}
+          />
         </div>
       </main>
       <Footer />
