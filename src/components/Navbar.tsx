@@ -56,10 +56,9 @@ function useNavItems(): { navItems: NavItem[]; mobileLinks: { href: string; labe
         children: [
           { href: "/token", label: t("nav.meeet"), icon: "💰" },
           { href: "/staking", label: t("nav.staking"), icon: "🏦" },
+          { href: "/live", label: t("nav.live"), icon: "📡" },
         ],
       },
-      { href: "/live", label: t("nav.live") },
-      { href: "/world", label: t("nav.worldMap") },
       {
         href: "/developer",
         label: "Developer",
@@ -70,6 +69,7 @@ function useNavItems(): { navItems: NavItem[]; mobileLinks: { href: string; labe
           { href: "/api", label: "API Docs", icon: "📚" },
         ],
       },
+      { href: "/dashboard", label: t("nav.dashboard") },
     ],
     mobileLinks: [
       { href: "/discoveries", label: t("nav.explore") },
@@ -82,8 +82,7 @@ function useNavItems(): { navItems: NavItem[]; mobileLinks: { href: string; labe
       { href: "/staking", label: t("nav.staking") },
       { href: "/oracle", label: "Oracle" },
       { href: "/parliament", label: t("nav.parliament") },
-      { href: "/integrations", label: "Integrations" },
-      { href: "/did-resolver", label: "DID Resolver" },
+      { href: "/developer", label: "Developer" },
     ],
   }), [t]);
 }
