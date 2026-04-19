@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import PageWrapper from "@/components/PageWrapper";
+import RelatedPages from "@/components/RelatedPages";
 import { Sparkles, Tag } from "lucide-react";
 
 interface Entry {
@@ -127,6 +128,14 @@ const Changelog = () => {
                 );
               })}
             </ol>
+
+            <RelatedPages
+              items={[
+                { icon: "📡", title: "System Status", description: "Real-time platform uptime and incidents.", href: "/status" },
+                { icon: "🧪", title: "API Playground", description: "Test new endpoints from each release.", href: "/api-playground" },
+                { icon: "🛡️", title: "Trust API", description: "Latest 7-gate trust composition.", href: "/trust-api" },
+              ]}
+            />
           </div>
         </main>
 

@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import RelatedPages from "@/components/RelatedPages";
 import { Copy, Send, Terminal, Check } from "lucide-react";
 
 type Method = "GET" | "POST";
@@ -372,6 +373,15 @@ const ApiPlayground = () => {
                 </Tabs>
               </section>
             </div>
+
+            <RelatedPages
+              items={[
+                { icon: "🛡️", title: "Trust API", description: "7-gate composite trust profile in one call.", href: "/trust-api" },
+                { icon: "🔀", title: "Crosswalk Standard", description: "Signal-to-issuer mapping powering each gate.", href: "/crosswalk" },
+                { icon: "🧑‍💻", title: "Developer Portal", description: "SDK quick-start, tokens, and integration guides.", href: "/developer" },
+                { icon: "📜", title: "Changelog", description: "Latest endpoints shipped this release cycle.", href: "/changelog" },
+              ]}
+            />
           </div>
         </main>
 

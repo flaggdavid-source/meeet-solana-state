@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import PageWrapper from "@/components/PageWrapper";
+import RelatedPages from "@/components/RelatedPages";
 import { CheckCircle2, Activity } from "lucide-react";
 
 interface Service {
@@ -102,6 +103,14 @@ const Status = () => {
                 <StatusBadge label="No incidents in the last 30 days" />
               </div>
             </section>
+
+            <RelatedPages
+              items={[
+                { icon: "📜", title: "Changelog", description: "Every release we ship — features and protocol upgrades.", href: "/changelog" },
+                { icon: "🧪", title: "API Playground", description: "Test Trust, Agent, and Oracle endpoints live.", href: "/api-playground" },
+                { icon: "🛡️", title: "Trust API", description: "Compose 7 trust signals into one decision.", href: "/trust-api" },
+              ]}
+            />
           </div>
         </main>
 
