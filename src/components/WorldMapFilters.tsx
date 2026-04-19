@@ -91,7 +91,7 @@ const WorldMapFilters = ({
                         className="w-2 h-2 shrink-0"
                         style={{ backgroundColor: classFilters.has(cls) ? color : "#333", imageRendering: "pixelated" }}
                       />
-                      <span>{CLASS_LABELS[cls]?.split(" ")[0] || ""} {cls}</span>
+                      <span className="truncate">{CLASS_LABELS[cls] || cls}</span>
                     </button>
                   ))}
                 </div>
