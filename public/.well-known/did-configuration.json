@@ -1,0 +1,15 @@
+{
+  "@context": "https://identity.foundation/.well-known/did-configuration/v1",
+  "linked_dids": [
+    {
+      "@context": ["https://www.w3.org/2018/credentials/v1"],
+      "type": ["VerifiableCredential", "DomainLinkageCredential"],
+      "issuer": "did:meeet:world",
+      "issuanceDate": "2025-04-22T00:00:00.000Z",
+      "credentialSubject": {
+        "id": "did:meeet:world",
+        "origin": "https://meeet.world"
+      }
+    }
+  ]
+}
