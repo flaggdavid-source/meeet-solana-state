@@ -1,0 +1,23 @@
+{
+  "name": "@meeet/mcp-server",
+  "version": "1.0.0",
+  "description": "MCP Server for MEEET World Trust Verification API",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.16.5",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.0"
+  }
+}
